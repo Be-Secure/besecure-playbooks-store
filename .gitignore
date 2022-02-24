@@ -1,1 +1,4 @@
 .templates/*
+.github
+issue_template
+pr_template
