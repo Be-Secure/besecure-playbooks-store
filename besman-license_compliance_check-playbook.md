@@ -26,4 +26,4 @@
 
 8. Run the below command to kill the container.
 
-    `$ docker kill <container id>
+    `$ docker kill <container id>`
