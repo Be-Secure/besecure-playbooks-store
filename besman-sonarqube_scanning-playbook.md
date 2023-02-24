@@ -1,5 +1,5 @@
 1. Execute the below command as a Non-root user :
-    /opt/sonarqube/bin/[OS]/sonar.sh consoleton
+    /opt/sonarqube/bin/[OS]/sonar.sh console
 
 2. Once your instance is up and running, Log in to http://localhost:9000 from any Web Browser
 
