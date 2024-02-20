@@ -1,22 +1,22 @@
 {
-  "schema_version": "STRING",
+  "schema_version": "0.1.0",
   "playbooks": [
     {
-      "name": "STRING",
-      "version": "STRING",
-      "type": "STRING",
+      "name": "besman-ossgroking",
+      "version": "0.1.0",
+      "type": "tool",
       "author": {
-        "name": "STRING",
-        "type": "STRING"
+        "name": "Be-Secure",
+        "type": "Organization"
       },
-      "date_of_creation": "STRING",
-      "last_update_date": "STRING",
+      "date_of_creation": "2024-01-19T14:30:00",
+      "last_update_date": "2024-01-19T14:30:00",
       "last_execution": {
-        "name": "STRING",
-        "type": "STRING",
-        "status": "STRING",
-        "timestamp": "STRING",
-        "environment": "Which environment"
+        "name": "Be-Secure",
+        "type": "Organization",
+        "status": "Success",
+        "timestamp": "2024-01-20T16:30:00",
+        "environment": "besman-fastjson"
       },
       "detailed_report_path": "STRING",
       "compatible_envs": [
