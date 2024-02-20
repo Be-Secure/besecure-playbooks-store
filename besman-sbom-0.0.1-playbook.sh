@@ -1,22 +1,17 @@
 #!/bin/bash
 
-function __besman_init_sbom()
+function __besman_init()
 {
-    # export OSSP_NAME="fastjson"
-    # export OSSP_VERSION="1.2.24"
-    # export DETAILED_REPORT_PATH=$HOME/besecure-assessment-datastore/
-    # export ASSESSMENT_SUMMARY_PATH=$HOME/besecure-OSAR-store/
+    # All the required environment variables should be set by BeSman environment scripts or BeSLab.
 
-    # All the required environment variables should be set by BeSman.
+    local var_array=("BESMAN_OSSP_NAME" "BESMAN_OSSP_DIR" "BESMAN_OSSP_VERSION" "BESLAB_ASSESSMENT_DATASTORE_DIR" "BESLAB_ASSESSMENT_SUMMARY_DATASTORE_DIR" "BESLAB_ARTIFACT_PATH" "BESLAB_REPORT_FORMAT" "BESLAB_SBOM_TOOL" "BESLAB_ASSESSMENT_DATASTORE_URL" "BESLAB_ASSESSMENT_SUMMARY_DATASTORE_URL")
 
-    local var_array=("OSSP_NAME" "OSSP_VERSION" "ASSESSMENT_DATASTORE" "ASSESSMENT_SUMMARY_DATASTORE" "ARTIFACT_PATH" "OSSP_DIR" "REPORT_FORMAT")
     local flag=false
-
     for var in "${var_array[@]}";
     do
-        
-        if [[ -z "$var" ]] 
+        if [[ ! -v $var ]] 
         then
+
             echo "$var is not set"
             flag=true
         fi
@@ -24,15 +19,17 @@ function __besman_init_sbom()
     done
     
 
-    local dir_array=("ASSESSMENT_DATASTORE" "ASSESSMENT_SUMMARY_DATASTORE")
+    local dir_array=("BESLAB_ASSESSMENT_DATASTORE_DIR" "BESLAB_ASSESSMENT_SUMMARY_DATASTORE_DIR")
 
     for dir in "${dir_array[@]}";
     do
-    
-        if [[ ! -d "$dir" ]] 
+        # Get the value of the variable with the name stored in $dir
+        dir_path="${!dir}"
+
+        if [[ ! -d $dir_path ]] 
         then
     
-            echo "Could not find $dir"
+            echo "Could not find $dir_path"
     
             flag=true
     
@@ -40,7 +37,7 @@ function __besman_init_sbom()
     
     done
 
-    [[ -f "$ARTIFACT_PATH" ]] && echo "Could not find artifact @ $ARTIFACT_PATH" && flag=true
+    [[ ! -f $BESLAB_ARTIFACT_PATH/$BESLAB_SBOM_TOOL ]] && echo "Could not find artifact @ $BESLAB_ARTIFACT_PATH/$BESLAB_SBOM_TOOL" && flag=true
 
     if [[ $flag == true ]] 
     then
@@ -48,8 +45,8 @@ function __besman_init_sbom()
         return 1
     
     else
-        export SBOM_PATH="$ASSESSMENT_DATASTORE/$OSSP_NAME/$OSSP_VERSION/sbom/"
-        export DETAILED_REPORT_PATH="$SBOM_PATH/$OSSP_NAME-$OSSP_VERSION-sbom.$REPORT_FORMAT"
+        export SBOM_PATH="$BESLAB_ASSESSMENT_DATASTORE_DIR/$BESMAN_OSSP_NAME/$BESMAN_OSSP_VERSION/sbom"
+        export DETAILED_REPORT_PATH="$SBOM_PATH/$BESMAN_OSSP_NAME-$BESMAN_OSSP_VERSION-sbom.$BESLAB_REPORT_FORMAT"
         mkdir -p "$SBOM_PATH"
         return 0
     
@@ -57,11 +54,12 @@ function __besman_init_sbom()
 
 }
 
-function __besman_launch_sbom()
+function __besman_launch()
 {
 
-    cd "$ARTIFACT_PATH" || return 1
-    ./besman-sbom-0.0.1-steps.sh
+    echo "Launching steps file"
+
+    source besman-sbom-0.0.1-steps.sh
     if [[ $? == 0 ]] 
     then
         
@@ -74,53 +72,60 @@ function __besman_launch_sbom()
     
 }
 
-function __besman_prepare_sbom()
+function __besman_prepare()
 {
+
     mv "$SBOM_PATH"/bom-*.json "$DETAILED_REPORT_PATH"
     
 }
 
-function __besman_publish_sbom()
+function __besman_publish()
+{
+    # push code to remote datastore
+    echo "1"
+    
+}
+
+function __besman_cleanup()
 {
     echo "1"
     
 }
 
-function __besman_cleanup_sbom()
-{
-    echo "1"
-    
-}
-
-function __besman_execute_sbom()
+function __besman_execute()
 {
     local flag=1
     
-    __besman_init_sbom
+    __besman_init
     flag=$?
-    
+    echo "flag=$flag"
     if [[ $flag == 0 ]] 
     then
     
-    __besman_launch_sbom
+    __besman_launch
     flag=$?
     
     else
 
-    __besman_cleanup_sbom
-
+    __besman_cleanup
+    return
     fi
 
     if [[ $flag == 0 ]] 
     then
     
-    __besman_prepare_sbom
-    __besman_publish_sbom
+    __besman_prepare
+    __besman_publish
+    __besman_cleanup
     
     else
 
-    __besman_cleanup_sbom
+    __besman_cleanup
+    return
+
 
     fi
 }
+
+
 
