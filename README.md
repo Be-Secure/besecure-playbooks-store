@@ -4,29 +4,36 @@ A playbook in Be-Secure ecosystem refers to a set of instructions for completing
 
 This repository stores all the playbooks crafted by members of the Be-Secure community.
 
-### Playbook Types
+## Playbook Types
 Broadly Be-Secure playbooks classified into two types.
 
-1. Playbook for a specific OSS project. Few instances listed below.
-	- Playbook that automates the exploit test case for a known vulnerability (CVE) of this project. There could be 10 playbooks for 10 known CVE exploit cases for the project.
-	- Playbook to exploit a weakness (CWE) of a project
-	- Playbook to introduce an integrity violation, CIA tirad. application level playbook (may not be applicable for libraries
-	like fastjson. Rather it may be applicable to applications like Drupal etc. Applicable for threat models
-	like STRIDE). This may call the functional apis of the applicaiton.
-	- Playbook to patch a vulnerabilitiy (the vulnerabilitiy may have been patched manually the first time by a blue teamer. You are making it repeatbale for the other version of the project where the patch is not applied. 
-	This playbook will be created by the blue teamer who first patches it. This playbook is maintained till the community catches up with the same patch or till the organization decides to maintain the forked version of that project)
-2. Playbook applicable for multiple projects. For instance vulnerabilities, some security operations that is tied to a tool etc. Detailed list below.
-  - Playbook that automates the exploit test case for a known vulnerability (CVE) that is affecting multiple projects
-  - Playbook that automates an assessment tool execution. Ex: Sonarqube playbook, oss-fuzz playbook, Fossology playbook, CodeQL playbook, OpenSSF Scorecard and Criticality Score playbook)
-  - Playbook for OSS Groking. This is to assess an OSS project in all angle including sbom, SLSA maturity, License compliance, execution for CLO monitor, VEX, STIX and TAXI etc. More information about the open sour cepojrect ncluding the build best practices)
-  - Playbook for Sigstore/DICE ID generation and JSON report submission.
+### 1. Playbook for a specific OSS project
+- Playbook that automates the exploit test case for a known vulnerability (CVE) of this project. There could be 10 playbooks for 10 known CVE exploit cases for the project.
+- Playbook to exploit a weakness (CWE) of a project
+- Playbook to introduce an integrity violation, CIA tirad. application level playbook (may not be applicable for libraries like fastjson. Rather it may be applicable to applications like Drupal etc. Applicable for threat models like STRIDE). This may call the functional apis of the applicaiton.
+- Playbook to patch a vulnerabilitiy (the vulnerabilitiy may have been patched manually the first time by a blue teamer. You are making it repeatbale for the other version of the project where the patch is not applied. This playbook will be created by the blue teamer who first patches it. This playbook is maintained till the community catches up with the same patch or till the organization decides to maintain the forked version of that project)
+
+### 2. Playbook applicable for multiple projects
+
+- Playbook that automates the exploit test case for a known vulnerability (CVE) that is affecting multiple projects
+- Playbook that automates an assessment tool execution. Ex: Sonarqube playbook, oss-fuzz playbook, Fossology playbook, CodeQL playbook, OpenSSF Scorecard and Criticality Score playbook)
+- Playbook for OSS Groking. This is to assess an OSS project in all angle including sbom, SLSA maturity, License compliance, execution for CLO monitor, VEX, STIX and TAXI etc. More information about the open sour cepojrect ncluding the build best practices)
+- Playbook for Sigstore/DICE ID generation and JSON report submission.
 
 
-### Playbook Lifecycle Functions
-A typical BeS playbook comprises the following skeleton code:
+## Playbook Lifecycle Functions
+A typical BeS playbook comprises the following lifecycle methods
+
+- __besman_init()
+- __besman_prep()
+- __besman_execute()
+- __besman_publish()
+- __besman_cleanup()
+
+Refer the playbook skeletal code below.
 
     function __besman_init {
-    # This function initializes everything necessary for executing the playbook as well as for publishing the reports.
+        # This function initializes everything necessary for executing the playbook as well as for publishing the reports.
     }
     
     function __besman_launch {
