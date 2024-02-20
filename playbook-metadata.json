@@ -1,0 +1,27 @@
+{
+  "schema_version": "STRING",
+  "playbooks": [
+    {
+      "name": "STRING",
+      "version": "STRING",
+      "type": "STRING",
+      "author": {
+        "name": "STRING",
+        "type": "STRING"
+      },
+      "date_of_creation": "STRING",
+      "last_update_date": "STRING",
+      "last_execution": {
+        "name": "STRING",
+        "type": "STRING",
+        "status": "STRING",
+        "timestamp": "STRING",
+        "environment": "Which environment"
+      },
+      "detailed_report_path": "STRING",
+      "compatible_envs": [
+        "List of envrionment names where this playbook can be executed "
+      ]
+    }
+  ]
+}
