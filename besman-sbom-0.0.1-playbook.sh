@@ -1,5 +1,48 @@
 #!/bin/bash
 
+# The data for this json should be made available by prep function
+
+# {
+#     "schema_version": "0.1.0",
+# Asset info can come from environment scripts. 
+#     "asset": {
+#         "type": string, - BESMAN_OSS_TYPE
+#         "name": string, - BESMAN_OSSP_NAME
+#         "version": string, - BESMAN_OSSP_VERSION
+#         "url": string, - BESMAN_OSSP_URL
+#         "environment": string - BESMAN_ENV_NAME
+#     },
+#     "assessments": [
+#         {
+    # Tool info can come from playbook
+#             "tool": {
+#                 "name": string, - BESLAB_ASSESSMENT_TOOL
+#                 "type": string, - BESLAB_ASSESSMENT_TYPE
+#                 "version": string, - BESLAB_TOOL_VERSION
+#                 "playbook": string - BESMAN_PLAYBOOK_NAME
+#             },
+    # Execution info can come from both beslab and playbook
+#             "execution": {
+#                 "type": string, -  BESLAB_OWNER_TYPE
+#                 "id": string, - BESLAB_OWNER_ID
+#                 "status": string, - BESMAN_PLAYBOOK_STATUS
+#                 "timestamp": timestamp, can come from besman 
+#                 "duration": string, can come from besman
+#                 "output_path": string BESLAB_ASSESSMENT_DATASTORE_URL
+#             },
+# The results data should be fetched from the detailed report. 
+#             "results": [
+#                 {
+#                     "feature": string,
+#                     "aspect": string,
+#                     "attribute": string,
+#                     "value": number
+#                 }
+#             ]
+#         }
+#     ]
+# }
+
 function __besman_init()
 {
     # All the required environment variables should be set by BeSman environment scripts or BeSLab.
@@ -82,7 +125,6 @@ function __besman_prepare()
 function __besman_publish()
 {
     # push code to remote datastore
-    echo "1"
     
 }
 

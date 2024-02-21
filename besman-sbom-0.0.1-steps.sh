@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "SBOM_TOOL=$BESLAB_SBOM_TOOL"
+
 if [[ $BESLAB_SBOM_TOOL == "spdx-sbom-generator" ]] 
 then
     echo "Running $BESLAB_SBOM_TOOL"
