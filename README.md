@@ -1,6 +1,6 @@
 # BeS Playbooks
 
-A playbook in Be-Secure ecosystem refers to a set of instructions for completing a routine task. Not to be confused with an Ansible playbook. There can be  automated(.sh) , interactive (.ipynb) & manual(*.md) playbooks. It helps the security analyst who works in a BeSLab instance to carry out routine tasks in a consistent way. These playbooks are automated and are executed using the [BeSman](https://github.com/Be-Secure/BeSman) utility.
+A playbook in Be-Secure ecosystem refers to a set of instructions for completing a routine task. Not to be confused with an Ansible playbook. There can be automated(.sh), interactive(.ipynb) & manual(*.md) playbooks. It helps the security analyst who works in a BeSLab instance to carry out routine tasks in a consistent way. These playbooks are automated and are executed using the [BeSman](https://github.com/Be-Secure/BeSman) utility.
 
 This repository stores all the playbooks crafted by members of the Be-Secure community.
 
@@ -20,9 +20,14 @@ Broadly Be-Secure playbooks classified into two types.
 - Playbook for OSS Groking. This is to assess an OSS project in all angle including sbom, SLSA maturity, License compliance, execution for CLO monitor, VEX, STIX and TAXI etc. More information about the open sour cepojrect ncluding the build best practices)
 - Playbook for Sigstore/DICE ID generation and JSON report submission.
 
+## Playbook Lifecycle
+A typical BeS playbook consists of two files - the playbook lifecycle file and the steps file. Both files go into the "playbooks" directory in this repository. 
 
-## Playbook Lifecycle Functions
-A typical BeS playbook comprises the following lifecycle methods
+### Naming Conventions
+Lifecycle File => besman-<purpose>-<version>-playbook.sh
+Steps File     => besman-<purpose>-<version>-steps.sh/md/ipynb (The file extension depends on the execution type as automated(.sh), interactive(.ipynb) & manual(*.md))
+
+### Lifecycle File Methods
 
 - __besman_init()
 - __besman_prep()
@@ -30,7 +35,7 @@ A typical BeS playbook comprises the following lifecycle methods
 - __besman_publish()
 - __besman_cleanup()
 
-Refer the playbook skeletal code below.
+### Lifecycle File Skeletal Code
 
     function __besman_init {
         # This function initializes everything necessary for executing the playbook as well as for publishing the reports.
