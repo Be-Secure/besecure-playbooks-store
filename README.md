@@ -30,10 +30,11 @@ A typical BeS playbook consists of two files - the playbook lifecycle file and t
 ### Lifecycle File Methods
 
 - __besman_init()
-- __besman_prepare()
 - __besman_execute()
+- __besman_prepare()
 - __besman_publish()
 - __besman_cleanup()
+- __besman_launch()
 
 ### Lifecycle File Skeletal Code
 
@@ -41,7 +42,7 @@ A typical BeS playbook consists of two files - the playbook lifecycle file and t
         # This function initializes everything necessary for executing the playbook as well as for publishing the reports.
     }
     
-    function __besman_launch {
+    function __besman_execute {
         # This function executes the steps file which contains the instructions for the activity. The steps file can be in various formats such as 'sh', '.ipynb', or '.md'.
     }
     
@@ -57,10 +58,11 @@ A typical BeS playbook consists of two files - the playbook lifecycle file and t
         # Handles the cleanup tasks.
     }
     
-    function __besman_execute {
-        # This function triggers all the other functions within this playbook.
+    function __besman_launch {
+        # Playbook launch function that gets called by BeSman utility. This function triggers the lifecycle methods of a playbook.
         __besman_init
-        __besman_launch
+        __besman_execute
+        __besman_prepare
         __besman_publish
         __besman_cleanup
     }
