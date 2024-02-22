@@ -24,13 +24,13 @@ Broadly Be-Secure playbooks classified into two types.
 A typical BeS playbook consists of two files - the playbook lifecycle file and the steps file. Both files go into the "playbooks" directory in this repository. 
 
 ### Naming Conventions
-Lifecycle File => besman-<purpose>-<version>-playbook.sh
-Steps File     => besman-<purpose>-<version>-steps.sh/md/ipynb (The file extension depends on the execution type as automated(.sh), interactive(.ipynb) & manual(*.md))
+- Lifecycle File => besman-\<purpose\>-\<version\>-playbook.sh
+- Steps File     => besman-\<purpose\>-\<version\>-steps.sh/md/ipynb (The file extension depends on the execution type as automated(.sh), interactive(.ipynb) & manual(*.md))
 
 ### Lifecycle File Methods
 
 - __besman_init()
-- __besman_prep()
+- __besman_prepare()
 - __besman_execute()
 - __besman_publish()
 - __besman_cleanup()
@@ -45,7 +45,7 @@ Steps File     => besman-<purpose>-<version>-steps.sh/md/ipynb (The file extensi
         # This function executes the steps file which contains the instructions for the activity. The steps file can be in various formats such as 'sh', '.ipynb', or '.md'.
     }
     
-    function __besman_prep {
+    function __besman_prepare {
         # Filters the data from the report to prepare for publishing.
     }
     
