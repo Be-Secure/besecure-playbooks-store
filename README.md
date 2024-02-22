@@ -14,11 +14,13 @@ Broadly Be-Secure playbooks classified into two types.
 - Playbook to patch a vulnerabilitiy (the vulnerabilitiy may have been patched manually the first time by a blue teamer. You are making it repeatbale for the other version of the project where the patch is not applied. This playbook will be created by the blue teamer who first patches it. This playbook is maintained till the community catches up with the same patch or till the organization decides to maintain the forked version of that project)
 
 ### 2. Playbook applicable for multiple projects
-
 - Playbook that automates the exploit test case for a known vulnerability (CVE) that is affecting multiple projects
 - Playbook that automates an assessment tool execution. Ex: Sonarqube playbook, oss-fuzz playbook, Fossology playbook, CodeQL playbook, OpenSSF Scorecard and Criticality Score playbook)
 - Playbook for OSS Groking. This is to assess an OSS project in all angle including sbom, SLSA maturity, License compliance, execution for CLO monitor, VEX, STIX and TAXI etc. More information about the open sour cepojrect ncluding the build best practices)
 - Playbook for Sigstore/DICE ID generation and JSON report submission.
+
+### 3. Playbook for using an open source security tool
+- Playbook to assist a security analyst in the operations of an open source security tool (ex: Playbook for OpenCTI for threat intelligence)
 
 ## Playbook Lifecycle
 A typical BeS playbook consists of two files - the playbook lifecycle file and the steps file. Both files go into the "playbooks" directory in this repository. 
