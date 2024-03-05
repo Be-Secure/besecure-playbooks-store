@@ -2,7 +2,7 @@
 # Author: Samir Ranjan Parhi
 # License: Same as Repository Licence
 # Usage : Beta-Release
-# Date : 1/03/2024
+# Date : 2/03/2024
 
 set -e
 RED=$(tput setaf 1)
@@ -25,6 +25,9 @@ function __besman_init {
    # Check Prerequsite for this CLI to run
    echo -e "\n${BLUE}🛫 Lets do a Quick check if you are running Any container runtime .${RESET}"
 
+    PWD=$(pwd)
+    PROJECT_NAME="$1"
+
     # Check if Docker is installed
     if ! command -v docker &> /dev/null; then
         echo -e "\n${BLUE}❌ Docker is not installed. Please install Docker before running this script.${RESET}"
@@ -46,8 +49,7 @@ function __besman_init {
 function __besman_execute {
 
     # Define variables
-    PWD=$(pwd)
-    PROJECT_NAME="$1"
+
     FOSSOLOGY_HOST_URL_WITH_PORT_NO="$2"
     FOSSOLOGY_TOKEN="$3"
 
