@@ -1,53 +1,14 @@
 #!/bin/bash
 
-# The data for this json should be made available by prep function
-
-# {
-#     "schema_version": "0.1.0",
-#     "asset": {
-#         "type": "$BESMAN_ASSET_TYPE",
-#         "name": "$BESMAN_ASSET_NAME",
-#         "version": "$BESMAN_ASSET_VERSION", 
-#         "url": "$BESMAN_ASSET_URL", 
-#         "environment": "$BESMAN_ENV_NAME"
-#     },
-#     "assessments": [
-#         {
-#             "tool": {
-#                 "name": "$ASSESSMENT_TOOL_NAME",
-#                 "type": "$ASSESSMENT_TOOL_TYPE", 
-#                 "version": "$ASSESSMENT_TOOL_VERSION",
-#                 "playbook": "$ASSESSMENT_TOOL_PLAYBOOK" 
-#             },
-#             "execution": {
-#                 "type": "$BESLAB_OWNER_TYPE",
-#                 "id": "$BESLAB_OWNER_NAME", 
-#                 "status": "$PLAYBOOK_EXECUTION_STATUS", 
-#                 "timestamp": "$EXECUTION_TIMESTAMP",
-#                 "duration": "$EXECUTION_DURATION", 
-#                 "output_path": "$DETAILED_REPORT_PATH"
-#             },
-#             "results": [
-#                 {
-#                     "feature": "",
-#                     "aspect": "",
-#                     "attribute": "",
-#                     "value": 
-#                 }
-#             ]
-#         }
-
-#     ]
-# }
-
 function __besman_init()
 {
+    local steps_file_name="besman-sbom-0.0.1-steps.sh"
     export ASSESSMENT_TOOL_NAME="$BESLAB_SBOM"
     export ASSESSMENT_TOOL_TYPE="sbom"
     export ASSESSMENT_TOOL_VERSION="$BESLAB_SBOM_VERSION"
     export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_TYPE-$ASSESSMENT_TOOL_VERSION-playbook.sh"
-
-    local var_array=("BESMAN_ASSET_TYPE" "BESMAN_ASSET_NAME" "BESMAN_ASSET_VERSION" "BESMAN_ASSET_URL" "BESMAN_ENV_NAME" "BESMAN_ASSET_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESLAB_ASSESSMENT_DATASTORE_DIR" "BESLAB_ARTIFACT_PATH" "BESLAB_REPORT_FORMAT" "BESLAB_ASSESSMENT_DATASTORE_URL" "OSAR_PATH")
+    
+    local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESLAB_ASSESSMENT_DATASTORE_DIR" "BESLAB_ARTIFACT_PATH" "BESLAB_REPORT_FORMAT" "BESLAB_ASSESSMENT_DATASTORE_URL" "OSAR_PATH")
 
 
 
@@ -57,14 +18,14 @@ function __besman_init()
         if [[ ! -v $var ]] 
         then
 
-            echo "$var is not set"
+            __besman_echo_red "$var is not set"
             flag=true 
         fi
 
     done
     
 
-    local dir_array=("BESLAB_ASSESSMENT_DATASTORE_DIR" "BESLAB_ASSESSMENT_SUMMARY_DATASTORE_DIR")
+    local dir_array=("BESLAB_ASSESSMENT_DATASTORE_DIR")
 
     for dir in "${dir_array[@]}";
     do
@@ -74,7 +35,7 @@ function __besman_init()
         if [[ ! -d $dir_path ]] 
         then
     
-            echo "Could not find $dir_path"
+            __besman_echo_red "Could not find $dir_path"
     
             flag=true
     
@@ -82,7 +43,7 @@ function __besman_init()
     
     done
 
-    [[ ! -f $BESLAB_ARTIFACT_PATH/$BESLAB_SBOM_TOOL ]] && echo "Could not find artifact @ $BESLAB_ARTIFACT_PATH/$BESLAB_SBOM_TOOL" && flag=true
+    [[ ! -f $BESLAB_ARTIFACT_PATH/$BESLAB_SBOM_TOOL ]] && __besman_echo_red "Could not find artifact @ $BESLAB_ARTIFACT_PATH/$BESLAB_SBOM_TOOL" && flag=true
 
     if [[ $flag == true ]] 
     then
@@ -90,11 +51,11 @@ function __besman_init()
         return 1
     
     else
-        export SBOM_PATH="$BESLAB_ASSESSMENT_DATASTORE_DIR/$BESMAN_ASSET_NAME/$BESMAN_ASSET_VERSION/sbom"
-        export DETAILED_REPORT_PATH="$SBOM_PATH/$BESMAN_ASSET_NAME-$BESMAN_ASSET_VERSION-sbom.$BESLAB_REPORT_FORMAT"
+        export SBOM_PATH="$BESLAB_ASSESSMENT_DATASTORE_DIR/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_VERSION/sbom"
+        export DETAILED_REPORT_PATH="$SBOM_PATH/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-sbom.$BESLAB_REPORT_FORMAT"
         mkdir -p "$SBOM_PATH"
-        export OSAR_PATH="$BESLAB_ASSESSMENT_DATASTORE_DIR/$BESMAN_ASSET_NAME/$BESMAN_ASSET_VERSION/$BESMAN_ASSET_NAME-$BESMAN_ASSET_VERSION-OSAR.json"
-
+        export OSAR_PATH="$BESLAB_ASSESSMENT_DATASTORE_DIR/osar/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-OSAR.json"
+        __besman_fetch_steps_file "$steps_file_name" || return 1
         return 0
     
     fi
@@ -104,7 +65,7 @@ function __besman_init()
 function __besman_execute()
 {
     local duration
-    echo "Launching steps file"
+    __besman_echo_yellow "Launching steps file"
 
     SECONDS=0
     source besman-sbom-0.0.1-steps.sh
@@ -114,8 +75,8 @@ function __besman_execute()
     if [[ $? == 0 ]] 
     then
         
-        return 0
         export PLAYBOOK_EXECUTION_STATUS=success
+        return 0
     
     else
         export PLAYBOOK_EXECUTION_STATUS=failure
@@ -127,16 +88,21 @@ function __besman_execute()
 function __besman_prepare()
 {
 
-    export EXECUTION_TIMESTAMP=$(date)
+    EXECUTION_TIMESTAMP=$(date)
+    export EXECUTION_TIMESTAMP
 
     mv "$SBOM_PATH"/bom-*.json "$DETAILED_REPORT_PATH"
+
+    # The below function is yet to be implemented.
+    # __besman_prepare_osar 
 
 }
 
 function __besman_publish()
 {
+    __besman_echo_yellow "Pushing to datastores"
     # push code to remote datastore
-    echo "1"
+    # TBD
 }
 
 function __besman_cleanup()
@@ -147,7 +113,7 @@ function __besman_cleanup()
     do
         if [[ -v $var ]] 
         then
-            unset $var
+            unset "$var"
         fi
 
     done
@@ -155,6 +121,7 @@ function __besman_cleanup()
 
 function __besman_launch()
 {
+    __besman_echo_yellow "Starting playbook"
     local flag=1
     
     __besman_init
@@ -188,3 +155,16 @@ function __besman_launch()
     fi
 }
 
+function __besman_fetch_steps_file()
+{
+    local steps_file_name=$1
+    local steps_file_url="$BESMAN_NAMESPACE/$BESMAN_PLAYBOOK_REPO/playbooks/$steps_file_name"
+
+    __besman_check_url_valid "$steps_file_url" || return 1
+
+    touch "$BESMAN_PLAYBOOK_DIR/$steps_file_name"
+
+    __besman_secure_curl "$steps_file_url" >> "$BESMAN_PLAYBOOK_DIR/$steps_file_name"
+
+    [[ "$?" != "0" ]] && __besman_echo_red "Failed to fetch from $steps_file_url" && return 1
+}
