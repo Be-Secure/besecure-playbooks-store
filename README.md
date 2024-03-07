@@ -14,26 +14,29 @@ Broadly Be-Secure playbooks classified into two types.
 - Playbook to patch a vulnerabilitiy (the vulnerabilitiy may have been patched manually the first time by a blue teamer. You are making it repeatbale for the other version of the project where the patch is not applied. This playbook will be created by the blue teamer who first patches it. This playbook is maintained till the community catches up with the same patch or till the organization decides to maintain the forked version of that project)
 
 ### 2. Playbook applicable for multiple projects
-
 - Playbook that automates the exploit test case for a known vulnerability (CVE) that is affecting multiple projects
 - Playbook that automates an assessment tool execution. Ex: Sonarqube playbook, oss-fuzz playbook, Fossology playbook, CodeQL playbook, OpenSSF Scorecard and Criticality Score playbook)
 - Playbook for OSS Groking. This is to assess an OSS project in all angle including sbom, SLSA maturity, License compliance, execution for CLO monitor, VEX, STIX and TAXI etc. More information about the open sour cepojrect ncluding the build best practices)
 - Playbook for Sigstore/DICE ID generation and JSON report submission.
 
+### 3. Playbook for using an open source security tool
+- Playbook to assist a security analyst in the operations of an open source security tool (ex: Playbook for OpenCTI for threat intelligence)
+
 ## Playbook Lifecycle
 A typical BeS playbook consists of two files - the playbook lifecycle file and the steps file. Both files go into the "playbooks" directory in this repository. 
 
 ### Naming Conventions
-Lifecycle File => besman-<purpose>-<version>-playbook.sh
-Steps File     => besman-<purpose>-<version>-steps.sh/md/ipynb (The file extension depends on the execution type as automated(.sh), interactive(.ipynb) & manual(*.md))
+- Lifecycle File => besman-\<purpose\>-\<version\>-playbook.sh
+- Steps File     => besman-\<purpose\>-\<version\>-steps.sh/md/ipynb (The file extension depends on the execution type as automated(.sh), interactive(.ipynb) & manual(*.md))
 
 ### Lifecycle File Methods
 
 - __besman_init()
-- __besman_prep()
 - __besman_execute()
+- __besman_prepare()
 - __besman_publish()
 - __besman_cleanup()
+- __besman_launch()
 
 ### Lifecycle File Skeletal Code
 
@@ -41,11 +44,11 @@ Steps File     => besman-<purpose>-<version>-steps.sh/md/ipynb (The file extensi
         # This function initializes everything necessary for executing the playbook as well as for publishing the reports.
     }
     
-    function __besman_launch {
+    function __besman_execute {
         # This function executes the steps file which contains the instructions for the activity. The steps file can be in various formats such as 'sh', '.ipynb', or '.md'.
     }
     
-    function __besman_prep {
+    function __besman_prepare {
         # Filters the data from the report to prepare for publishing.
     }
     
@@ -57,10 +60,11 @@ Steps File     => besman-<purpose>-<version>-steps.sh/md/ipynb (The file extensi
         # Handles the cleanup tasks.
     }
     
-    function __besman_execute {
-        # This function triggers all the other functions within this playbook.
+    function __besman_launch {
+        # Playbook launch function that gets called by BeSman utility. This function triggers the lifecycle methods of a playbook.
         __besman_init
-        __besman_launch
+        __besman_execute
+        __besman_prepare
         __besman_publish
         __besman_cleanup
     }
