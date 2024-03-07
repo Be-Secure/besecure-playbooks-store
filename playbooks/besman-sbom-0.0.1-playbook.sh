@@ -13,7 +13,8 @@ function __besman_init() {
     for var in "${var_array[@]}"; do
         if [[ ! -v $var ]]; then
 
-            __besman_echo_red "$var is not set"
+            __besman_echo_yellow "$var is not set"
+            __besman_echo_no_color ""
             flag=true
         fi
 
@@ -109,7 +110,6 @@ function __besman_launch() {
 
     __besman_init
     flag=$?
-    echo "flag=$flag"
     if [[ $flag == 0 ]]; then
 
         __besman_execute
