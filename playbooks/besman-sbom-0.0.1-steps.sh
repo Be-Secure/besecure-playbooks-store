@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [[ $BESLAB_SBOM_TOOL == "spdx-sbom-generator" ]] 
+if [[ $ASSESSMENT_TOOL_NAME == "spdx-sbom-generator" ]] 
 then
-    echo "Running $BESLAB_SBOM_TOOL"
+    echo "Running $ASSESSMENT_TOOL_NAME"
     cd "$BESLAB_ARTIFACT_PATH" || return 1
     if ! ./spdx-sbom-generator -p "$BESMAN_OSSP_DIR" -o "$SBOM_PATH" -f JSON
     then
