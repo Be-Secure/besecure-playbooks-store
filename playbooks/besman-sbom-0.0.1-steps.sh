@@ -4,11 +4,12 @@ if [[ $ASSESSMENT_TOOL_NAME == "spdx-sbom-generator" ]]
 then
     echo "Running $ASSESSMENT_TOOL_NAME"
     cd "$BESLAB_ARTIFACT_PATH" || return 1
-    if ! ./spdx-sbom-generator -p "$BESMAN_OSSP_DIR" -o "$SBOM_PATH" -f JSON
+    ./spdx-sbom-generator -p "$BESMAN_ARTIFACT_DIR" -o "$SBOM_PATH" -f JSON
+    if [[ "$?" != "0" ]] 
     then
-        return 1
+        export SBOM_RESULT=1
     else
-        return 0
-    fi
-
+        export SBOM_RESULT=0
+    fi 
+    
 fi
