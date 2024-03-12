@@ -94,7 +94,7 @@ function __besman_prepare() {
     EXECUTION_TIMESTAMP=$(date)
     export EXECUTION_TIMESTAMP
     ls "$SBOM_PATH"
-    mv "$SBOM_PATH"/bom-*.json "$DETAILED_REPORT_PATH" || return 1
+    mv "$SBOM_PATH"/bom-*.json "$DETAILED_REPORT_PATH"
 
     # The below function is yet to be implemented.
     # __besman_prepare_osar
@@ -110,7 +110,7 @@ function __besman_publish() {
     git commit -m "Added osar and detailed report"
     git push origin main
     # Fix code
-    gh pr create --title "Added reports" --body "Added osar and detailed reports"
+    # gh pr create --title "Added reports" --body "Added osar and detailed reports"
 
 }
 
