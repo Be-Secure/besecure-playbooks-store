@@ -10,17 +10,17 @@ function __besman_init() {
     export OSAR_PATH="/home/arun/besecure-assessment-datastore/osar"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
-    local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESLAB_ASSESSMENT_DATASTORE_DIR" "BESLAB_ARTIFACT_PATH" "BESLAB_REPORT_FORMAT" "BESLAB_ASSESSMENT_DATASTORE_URL" "OSAR_PATH")
+    local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESLAB_ASSESSMENT_DATASTORE_DIR" "BESLAB_TOOL_PATH" "BESLAB_REPORT_FORMAT" "BESLAB_ASSESSMENT_DATASTORE_URL" "OSAR_PATH" "BESLAB_OWNER_TYPE" "BESLAB_OWNER_NAME")
 
     local flag=false
     for var in "${var_array[@]}"; do
         if [[ ! -v $var ]]; then
 
-            read -rp "Enter value for $var:" value #remove
-            export "$var"="$value" #remove
-            # __besman_echo_yellow "$var is not set" #uncomment
-            # __besman_echo_no_colour "" #uncomment
-            # flag=true #uncomment
+            # read -rp "Enter value for $var:" value #remove
+            # export "$var"="$value" #remove
+            __besman_echo_yellow "$var is not set" #uncomment
+            __besman_echo_no_colour "" #uncomment
+            flag=true #uncomment
         fi
 
     done
@@ -47,7 +47,7 @@ function __besman_init() {
         flag=true
     fi
 
-    [[ ! -f $BESLAB_ARTIFACT_PATH/$ASSESSMENT_TOOL_NAME ]] && __besman_echo_red "Could not find artifact @ $BESLAB_ARTIFACT_PATH/$ASSESSMENT_TOOL_NAME" && flag=true
+    [[ ! -f $BESLAB_TOOL_PATH/$ASSESSMENT_TOOL_NAME ]] && __besman_echo_red "Could not find artifact @ $BESLAB_TOOL_PATH/$ASSESSMENT_TOOL_NAME" && flag=true
 
     if [[ $flag == true ]]; then
 
@@ -97,7 +97,7 @@ function __besman_prepare() {
     mv "$SBOM_PATH"/bom-*.json "$DETAILED_REPORT_PATH"
 
     # The below function is yet to be implemented.
-    # __besman_prepare_osar
+    __besman_generate_osar
 
 }
 
