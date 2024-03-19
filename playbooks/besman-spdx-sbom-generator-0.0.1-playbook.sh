@@ -2,7 +2,6 @@
 
 function __besman_init() {
     echo "initialising"
-    local steps_file_name="besman-sbom-0.0.1-steps.sh"
     export ASSESSMENT_TOOL_NAME="spdx-sbom-generator"
     export ASSESSMENT_TOOL_TYPE="sbom"
     export ASSESSMENT_TOOL_VERSION="v0.0.15"
@@ -10,6 +9,7 @@ function __besman_init() {
     export OSAR_PATH="/home/arun/besecure-assessment-datastore/osar"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
+    local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-0.0.1-steps.sh"
     local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "OSAR_PATH" "BESMAN_LAB_OWNER_TYPE" "BESMAN_LAB_OWNER_NAME")
 
     local flag=false
