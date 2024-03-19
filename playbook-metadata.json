@@ -21,7 +21,7 @@
       "detailed_report_path": "STRING"
     },
     {
-      "name": "sbom",
+      "name": "spdx-sbom-generator",
       "version": "0.0.1",
       "type": "tool",
       "author": {
