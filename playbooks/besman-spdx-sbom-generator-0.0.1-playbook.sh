@@ -10,7 +10,7 @@ function __besman_init() {
     export OSAR_PATH="/home/arun/besecure-assessment-datastore/osar"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
-    local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESLAB_ASSESSMENT_DATASTORE_DIR" "BESLAB_TOOL_PATH" "BESLAB_REPORT_FORMAT" "BESLAB_ASSESSMENT_DATASTORE_URL" "OSAR_PATH" "BESLAB_OWNER_TYPE" "BESLAB_OWNER_NAME")
+    local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "OSAR_PATH" "BESMAN_LAB_OWNER_TYPE" "BESMAN_LAB_OWNER_NAME")
 
     local flag=false
     for var in "${var_array[@]}"; do
@@ -25,7 +25,7 @@ function __besman_init() {
 
     done
 
-    local dir_array=("BESLAB_ASSESSMENT_DATASTORE_DIR")
+    local dir_array=("BESMAN_ASSESSMENT_DATASTORE_DIR")
 
     for dir in "${dir_array[@]}"; do
         # Get the value of the variable with the name stored in $dir
@@ -47,18 +47,18 @@ function __besman_init() {
         flag=true
     fi
 
-    [[ ! -f $BESLAB_TOOL_PATH/$ASSESSMENT_TOOL_NAME ]] && __besman_echo_red "Could not find artifact @ $BESLAB_TOOL_PATH/$ASSESSMENT_TOOL_NAME" && flag=true
+    [[ ! -f $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME ]] && __besman_echo_red "Could not find artifact @ $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME" && flag=true
 
     if [[ $flag == true ]]; then
 
         return 1
 
     else
-        export SBOM_PATH="$BESLAB_ASSESSMENT_DATASTORE_DIR/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_VERSION/sbom"
-        export DETAILED_REPORT_PATH="$SBOM_PATH/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-sbom-report.$BESLAB_REPORT_FORMAT"
+        export SBOM_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_VERSION/sbom"
+        export DETAILED_REPORT_PATH="$SBOM_PATH/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-sbom-report.json"
         mkdir -p "$SBOM_PATH"
-        ls $BESLAB_ASSESSMENT_DATASTORE_DIR/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_VERSION
-        export OSAR_PATH="$BESLAB_ASSESSMENT_DATASTORE_DIR/osar/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-OSAR.json"
+        ls $BESMAN_ASSESSMENT_DATASTORE_DIR/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_VERSION
+        export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/osar/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-OSAR.json"
         __besman_fetch_steps_file "$steps_file_name" || return 1
         return 0
 
@@ -104,7 +104,7 @@ function __besman_prepare() {
 function __besman_publish() {
     __besman_echo_yellow "Pushing to datastores"
     # push code to remote datastore
-    cd "$BESLAB_ASSESSMENT_DATASTORE_DIR"
+    cd "$BESMAN_ASSESSMENT_DATASTORE_DIR"
 
     git add .
     git commit -m "Added osar and detailed report"
