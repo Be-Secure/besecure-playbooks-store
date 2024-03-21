@@ -1,0 +1,41 @@
+
+
+# Ignore any editor-specific files
+*.sublime-project
+*.sublime-workspace
+*.idea/
+.vscode/
+.vscode
+
+# Rust language integration
+.rust*
+
+# Sonar scan reports language integration
+**/.scannerwork
+
+# Node.js / npm
+node_modules/
+npm-debug.log
+
+# TypeScript
+*.tsbuildinfo
+
+# Build artifacts
+/dist/
+/out/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Rust build artifacts
+/target/
+
+# Ignore any local environment files
+.env
+
+# Logs and databases
+*.log
+*.sqlite
