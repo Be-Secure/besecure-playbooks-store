@@ -2,15 +2,15 @@
 
 function __besman_init() {
     __besman_echo_white "initialising"
-    export ASSESSMENT_TOOL_NAME="spdx-sbom-generator"
-    export ASSESSMENT_TOOL_TYPE="sbom"
-    export ASSESSMENT_TOOL_VERSION="v0.0.15"
+    export ASSESSMENT_TOOL_NAME="sonar-scanner"
+    export ASSESSMENT_TOOL_TYPE="sonar-scanner"
+    export ASSESSMENT_TOOL_VERSION="v0.0.1"
     export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_TYPE-$ASSESSMENT_TOOL_VERSION-playbook.sh"
     
-    local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-0.0.1-steps.sh"
+    local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_VERSION-steps.sh"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
-    local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_OWNER_TYPE" "BESMAN_LAB_OWNER_NAME")
+    local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_OWNER_TYPE" "BESMAN_LAB_OWNER_NAME" "SONAR_HOST_URL" "SONAR_LOGIN_TOKEN")
 
     local flag=false
     for var in "${var_array[@]}"; do
@@ -48,9 +48,9 @@ function __besman_init() {
         return 1
 
     else
-        export SBOM_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_VERSION/sbom"
-        export DETAILED_REPORT_PATH="$SBOM_PATH/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-sbom-report.json"
-        mkdir -p "$SBOM_PATH"
+        export SONAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_VERSION/sonar"
+        export DETAILED_REPORT_PATH="$SONAR_PATH/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-$ASSESSMENT_TOOL_NAME-report.json"
+        mkdir -p "$SONAR_PATH"
         export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/osar/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-OSAR.json"
         __besman_fetch_steps_file "$steps_file_name" || return 1
         return 0
@@ -68,7 +68,7 @@ function __besman_execute() {
     duration=$SECONDS
 
     export EXECUTION_DURATION=$duration
-    if [[ $SBOM_RESULT == 1 ]]; then
+    if [[  ==$SONAR_RESULT 1 ]]; then
 
         export PLAYBOOK_EXECUTION_STATUS=failure
         return 1
@@ -85,7 +85,7 @@ function __besman_prepare() {
     __besman_echo_white "preparing data"
     EXECUTION_TIMESTAMP=$(date)
     export EXECUTION_TIMESTAMP
-    mv "$SBOM_PATH"/bom-*.json "$DETAILED_REPORT_PATH"
+    mv "$SONAR_PATH"/sonar-*.json "$DETAILED_REPORT_PATH"
 
     __besman_generate_osar
 
@@ -95,7 +95,6 @@ function __besman_publish() {
     __besman_echo_yellow "Pushing to datastores"
     # push code to remote datastore
     cd "$BESMAN_ASSESSMENT_DATASTORE_DIR"
-
     git add "$DETAILED_REPORT_PATH" "$OSAR_PATH"
     git commit -m "Added osar and detailed report"
     git push origin main
@@ -105,7 +104,7 @@ function __besman_publish() {
 }
 
 function __besman_cleanup() {
-    local var_array=("ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_PLAYBOOK" "ASSESSMENT_TOOL_VERSION" "OSAR_PATH" "SBOM_PATH" "DETAILED_REPORT_PATH")
+    local var_array=("ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_PLAYBOOK" "ASSESSMENT_TOOL_VERSION" "OSAR_PATH" "SONAR_PATH" "DETAILED_REPORT_PATH")
 
     for var in "${var_array[@]}"; do
         if [[ -v $var ]]; then
