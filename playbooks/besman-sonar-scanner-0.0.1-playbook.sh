@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Author: Samir Ranjan Parhi
+# License: Same as Repository Licence
+# Usage : Beta-Release
+# Date : 12/02/2024
+
 function __besman_init() {
     __besman_echo_white "initialising"
     export ASSESSMENT_TOOL_NAME="sonar-scanner"

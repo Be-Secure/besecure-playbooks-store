@@ -1,4 +1,8 @@
 #!/bin/bash
+# Author: Samir Ranjan Parhi
+# License: Same as Repository Licence
+# Usage : Beta-Release
+# Date : 12/02/2024
 
     echo "Running $ASSESSMENT_TOOL_NAME"
      cd "$BESMAN_TOOL_PATH" || return 1
