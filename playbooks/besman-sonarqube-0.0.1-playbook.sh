@@ -72,7 +72,7 @@ function __besman_execute() {
     duration=$SECONDS
 
     export EXECUTION_DURATION=$duration
-    if [[ -f $DETAILED_REPORT_PATH ]]; then
+    if [[ ! -f $DETAILED_REPORT_PATH ]]; then
 
         export PLAYBOOK_EXECUTION_STATUS=failure
         return 1
