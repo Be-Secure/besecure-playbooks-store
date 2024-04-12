@@ -63,7 +63,7 @@ function __besman_execute() {
     duration=$SECONDS
 
     export EXECUTION_DURATION=$duration
-    if [[ $SBOM_RESULT == 1 ]]; then
+    if [[ $CRITICALITY_SCORE_RESULT == 1 ]]; then
 
         export PLAYBOOK_EXECUTION_STATUS=failure
         return 1
@@ -97,12 +97,13 @@ function __besman_publish() {
 function __besman_cleanup() {
     local var_array=("ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_PLAYBOOK" "ASSESSMENT_TOOL_VERSION" "OSAR_PATH" "CRITICALITY_SCORE_PATH" "DETAILED_REPORT_PATH")
 
-    for var in "${var_array[@]}"; do
+    :'for var in "${var_array[@]}"; do
         if [[ -v $var ]]; then
             unset "$var"
         fi
 
     done
+    :'
 }
 
 # function launch
