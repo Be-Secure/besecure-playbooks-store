@@ -14,7 +14,7 @@ you can get the Container info if it is running else hit the below command:
 >This command will pull the SonarQube Docker image and run it as a container named "sonarqube" on port 9000.
 
 3. Now Create a Token for further use:
-    ###### From the UI:
+- ###### From the UI:
     - Launch/Login to SonarQube
     - Open your web browser and navigate to http://localhost:9000. You can login with the default credentials:
     Username: admin
@@ -23,7 +23,7 @@ you can get the Container info if it is running else hit the below command:
     - Click on "Generate Tokens".
     - Provide a name for your token and click "Generate".
     - Copy the generated token. Make sure to save it securely as you won't be able to see it again.
-###### Using Curl :
+- ###### Using Curl :
     ```
     export SONARQUBE_URL="http://localhost:9000" && \
     export USERNAME="admin" && \
@@ -59,13 +59,13 @@ sonar-scanner \
 
 7. Downloading the Report to a Specific Folder in Your PC:
 
-    ###### From UI
+- ###### From UI
     - In SonarQube, navigate to the project for which you want to download the report.
     - Click on "Measures" or "Quality Gate" to view the analysis results.
     - You may find options to export or download the report. Typically, there will be an option to download the report as a PDF or CSV.
     - Choose the desired format and save the report to a specific folder on your PC.
     
-    ###### Using curl:
+- ###### Using curl:
 
     ``` 
     API_ENDPOINT="http://localhost:9000/api/measures/component"
@@ -77,6 +77,6 @@ sonar-scanner \
 
     export PARAMS="component=${PROJECT_KEY}&metricKeys=coverage,bugs,vulnerabilities"
 
-    curl -u "${TOKEN}": ${API_ENDPOINT}?${PARAMS} --output "$$OSAR_PATH/sonarqube_report.json" 
+    curl -u "${TOKEN}": ${API_ENDPOINT}?${PARAMS} --output "provide the Path to Data store directory as mentioned in the below" 
     ```
 

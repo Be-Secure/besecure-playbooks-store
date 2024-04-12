@@ -3,32 +3,18 @@
 # Author: Samir Ranjan Parhi
 # License: Same as Repository Licence
 # Usage : Beta-Release
-# Date : 12/02/2024
+# Date : 12/04/2024
 
 function __besman_init() {
     __besman_echo_white "initialising"
-    export ASSESSMENT_TOOL_NAME="sonar-scanner"
-    export ASSESSMENT_TOOL_TYPE="sonar-scanner"
-    export ASSESSMENT_TOOL_VERSION="v0.0.1"
-    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_TYPE-$ASSESSMENT_TOOL_VERSION-playbook.sh"
+    export ASSESSMENT_TOOL_NAME="sonarqube"
+    export ASSESSMENT_TOOL_TYPE="SAST"
+    export ASSESSMENT_TOOL_VERSION="9.9.4"
+    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_TYPE-$ASSESSMENT_TOOL_NAME-playbook.sh"
     
-    local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_VERSION-steps.sh"
+    export steps_file_name="besman-$ASSESSMENT_TOOL_TYPE-$ASSESSMENT_TOOL_NAME-steps.md"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
-    local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_OWNER_TYPE" "BESMAN_LAB_OWNER_NAME" "SONAR_HOST_URL" "SONAR_LOGIN_TOKEN")
-
-    local flag=false
-    for var in "${var_array[@]}"; do
-        if [[ ! -v $var ]]; then
-
-            # read -rp "Enter value for $var:" value #remove
-            # export "$var"="$value" #remove
-            __besman_echo_yellow "$var is not set" #uncomment
-            __besman_echo_no_colour "" #uncomment
-            flag=true #uncomment
-        fi
-
-    done
 
     local dir_array=("BESMAN_ASSESSMENT_DATASTORE_DIR")
 
@@ -53,8 +39,8 @@ function __besman_init() {
         return 1
 
     else
-        export SONAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_VERSION/sonar"
-        export DETAILED_REPORT_PATH="$SONAR_PATH/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-$ASSESSMENT_TOOL_NAME-report.json"
+        export SONAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_VERSION/$ASSESSMENT_TOOL_TYPE/$ASSESSMENT_TOOL_NAME"
+        export DETAILED_REPORT_PATH="$SONAR_PATH/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-$ASSESSMENT_TOOL_TYPE-$ASSESSMENT_TOOL_NAME-report.json"
         mkdir -p "$SONAR_PATH"
         export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/osar/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-OSAR.json"
         __besman_fetch_steps_file "$steps_file_name" || return 1
@@ -65,23 +51,13 @@ function __besman_init() {
 }
 
 function __besman_execute() {
-    local duration
+    
     __besman_echo_yellow "Launching steps file"
-
-    SECONDS=0
-    . "$BESMAN_STEPS_FILE_PATH"
-    duration=$SECONDS
-
-    export EXECUTION_DURATION=$duration
-    if [[  ==$SONAR_RESULT 1 ]]; then
-
-        export PLAYBOOK_EXECUTION_STATUS=failure
-        return 1
-
-    else
-        export PLAYBOOK_EXECUTION_STATUS=success
-        return 0
-    fi
+    echo -e " ### ⚠️ important !!! You Should Store this Scan report to $DETAILED_REPORT_PATH " >> $BESMAN_STEPS_FILE_PATH
+    code BESMAN_STEPS_FILE_PATH
+    while pgrep -x "Visual Studio Code" > /dev/null; do
+    sleep 1
+    done
 
 }
 
@@ -90,14 +66,12 @@ function __besman_prepare() {
     __besman_echo_white "preparing data"
     EXECUTION_TIMESTAMP=$(date)
     export EXECUTION_TIMESTAMP
-    mv "$SONAR_PATH"/sonar-*.json "$DETAILED_REPORT_PATH"
-
     __besman_generate_osar
 
 }
 
 function __besman_publish() {
-    __besman_echo_yellow "Pushing to datastores"
+    __besman_echo_yellow "Pushing Sonar Report to Local datastore directories"
     # push code to remote datastore
     cd "$BESMAN_ASSESSMENT_DATASTORE_DIR"
     git add "$DETAILED_REPORT_PATH" "$OSAR_PATH"
