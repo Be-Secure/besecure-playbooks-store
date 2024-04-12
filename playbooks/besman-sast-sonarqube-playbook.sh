@@ -54,10 +54,18 @@ function __besman_execute() {
     
     __besman_echo_yellow "Launching steps file"
     echo -e " ### ⚠️ important !!! You Should Store this Scan report to $DETAILED_REPORT_PATH " >> $BESMAN_STEPS_FILE_PATH
-    code BESMAN_STEPS_FILE_PATH
-    while pgrep -x "Visual Studio Code" > /dev/null; do
+    # code BESMAN_STEPS_FILE_PATH
+
+    xdg-open https://github.com/Be-Secure/besecure-playbooks-store/blob/main/playbooks/besman-sonarqube_scanning-steps.md
+
+    # Wait until browser window is closed
+    while pgrep -f "$(xdg-mime query default text/html)" > /dev/null; do
     sleep 1
     done
+    #Wait till VS code is closed
+    # while pgrep -x "Visual Studio Code" > /dev/null; do
+    # sleep 1
+    # done
 
 }
 
@@ -71,12 +79,14 @@ function __besman_prepare() {
 }
 
 function __besman_publish() {
-    __besman_echo_yellow "Pushing Sonar Report to Local datastore directories"
+    __besman_echo_yellow "Uploading Sonar Report to Local datastore directories"
+    
     # push code to remote datastore
     cd "$BESMAN_ASSESSMENT_DATASTORE_DIR"
     git add "$DETAILED_REPORT_PATH" "$OSAR_PATH"
     git commit -m "Added osar and detailed report"
     git push origin main
+
     # Fix code
     # gh pr create --title "Added reports" --body "Added osar and detailed reports"
 
