@@ -3,10 +3,10 @@ function __besman_init() {
     __besman_echo_white "initialising"
     export ASSESSMENT_TOOL_NAME="criticality_score"
     export ASSESSMENT_TOOL_TYPE="criticality_score"
-    export ASSESSMENT_TOOL_VERSION="0.0.1"
+    export ASSESSMENT_TOOL_VERSION="2.0.3"
     export BESLAB_OWNER_TYPE="Organization"
     export BESLAB_OWNER_NAME="Be-Secure"
-    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_TYPE-$ASSESSMENT_TOOL_VERSION-playbook.sh"
+    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_TYPE-0.0.1-playbook.sh"
 
     local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-0.0.1-steps.sh"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
