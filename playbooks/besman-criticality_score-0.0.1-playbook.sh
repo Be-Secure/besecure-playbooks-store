@@ -4,14 +4,14 @@ function __besman_init() {
     export ASSESSMENT_TOOL_NAME="criticality_score"
     export ASSESSMENT_TOOL_TYPE="criticality_score"
     export ASSESSMENT_TOOL_VERSION="2.0.3"
-    export BESLAB_OWNER_TYPE="Organization"
-    export BESLAB_OWNER_NAME="Be-Secure"
+    #export BESLAB_OWNER_TYPE="Organization"
+    #export BESLAB_OWNER_NAME="Be-Secure"
     export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_TYPE-0.0.1-playbook.sh"
 
     local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-0.0.1-steps.sh"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
-    local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESLAB_OWNER_TYPE" "BESLAB_OWNER_NAME")
+    local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME")
 
     local flag=false
     for var in "${var_array[@]}"; do
@@ -38,7 +38,7 @@ function __besman_init() {
 
     done
 
-   # [[ ! -f $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME ]] && __besman_echo_red "Could not find artifact @ $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME" && flag=true
+    # [[ ! -f $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME ]] && __besman_echo_red "Could not find artifact @ $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME" && flag=true
 
     if [[ $flag == true ]]; then
         return 1
@@ -97,13 +97,13 @@ function __besman_publish() {
 function __besman_cleanup() {
     local var_array=("ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_PLAYBOOK" "ASSESSMENT_TOOL_VERSION" "OSAR_PATH" "CRITICALITY_SCORE_PATH" "DETAILED_REPORT_PATH")
 
-    :'for var in "${var_array[@]}"; do
+    for var in "${var_array[@]}"; do
         if [[ -v $var ]]; then
             unset "$var"
         fi
 
     done
-    :'
+
 }
 
 # function launch
