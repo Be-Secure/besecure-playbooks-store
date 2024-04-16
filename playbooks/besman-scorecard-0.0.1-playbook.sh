@@ -83,9 +83,12 @@ function __besman_execute() {
 function __besman_prepare() {
 
     __besman_echo_white "preparing data"
+    curl -X 'GET' \
+    "https://api.securityscorecards.dev/projects/github.com/Be-Secure/$github_repo_name" \
+    -H "accept: application/json" >> $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard.json
     EXECUTION_TIMESTAMP=$(date)
     export EXECUTION_TIMESTAMP
-    mv "$SCORECARD_PATH"/bom-*.json "$DETAILED_REPORT_PATH"
+    mv "$SCORECARD_PATH".json "$DETAILED_REPORT_PATH"
 
     __besman_generate_osar
 

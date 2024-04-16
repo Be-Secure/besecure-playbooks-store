@@ -1,10 +1,6 @@
 #!/bin/bash
 
     echo "Running $ASSESSMENT_TOOL_NAME"
-    
-    curl -X 'GET' \
-    "https://api.securityscorecards.dev/projects/github.com/Be-Secure/$github_repo_name" \
-    -H "accept: application/json" >> $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard.json
 
     if [[ "$?" != "0" ]] 
     then
