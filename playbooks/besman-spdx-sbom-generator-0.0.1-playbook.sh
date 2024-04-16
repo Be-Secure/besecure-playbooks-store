@@ -5,7 +5,7 @@ function __besman_init() {
     export ASSESSMENT_TOOL_NAME="spdx-sbom-generator"
     export ASSESSMENT_TOOL_TYPE="sbom"
     export ASSESSMENT_TOOL_VERSION="v0.0.15"
-    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_TYPE-$ASSESSMENT_TOOL_VERSION-playbook.sh"
+    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_TYPE-0.0.1-playbook.sh"
     
     local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-0.0.1-steps.sh"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
