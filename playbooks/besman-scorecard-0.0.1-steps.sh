@@ -1,7 +1,6 @@
 #!/bin/bash
 
     echo "Running $ASSESSMENT_TOOL_NAME"
-    cd "$BESMAN_TOOL_PATH" || return 1
     
     curl -X 'GET' \
     "https://api.securityscorecards.dev/projects/github.com/Be-Secure/$github_repo_name" \
