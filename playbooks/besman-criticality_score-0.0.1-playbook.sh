@@ -39,6 +39,8 @@ function __besman_init() {
     done
 
     # [[ ! -f $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME ]] && __besman_echo_red "Could not find artifact @ $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME" && flag=true
+    if ! [ -x "$(command -v criticality_score)" ]; then
+    __besman_echo_red "required tool - criticality_score is not installed. Please check the installed Bes env"
 
     if [[ $flag == true ]]; then
         return 1
