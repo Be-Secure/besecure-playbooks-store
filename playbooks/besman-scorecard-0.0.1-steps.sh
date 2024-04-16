@@ -6,8 +6,6 @@
     curl -X 'GET' \
     "https://api.securityscorecards.dev/projects/github.com/Be-Secure/$github_repo_name" \
     -H "accept: application/json" >> $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard.json
-    #formatting scorecard report
-    python3 -m json.tool $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard.json > $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard.json
 
     if [[ "$?" != "0" ]] 
     then
