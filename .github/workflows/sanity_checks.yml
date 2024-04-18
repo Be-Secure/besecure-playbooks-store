@@ -18,4 +18,4 @@ jobs:
           # Install dependencies or setup environment if required
 
           # Run the function check script
-          bash .github/scripts/function-check.sh
+          bash .github/scripts/sanity_checks.sh
