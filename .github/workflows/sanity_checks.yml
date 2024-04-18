@@ -12,10 +12,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
       - name: Run sanity checks
         run: |
           # Install dependencies or setup environment if required
 
           # Run the function check script
           bash .github/scripts/sanity_checks.sh
+

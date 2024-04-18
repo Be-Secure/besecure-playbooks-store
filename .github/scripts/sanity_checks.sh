@@ -3,8 +3,11 @@
 # Define the required functions
 required_functions=$(cat ~/.github/scripts/playbook_functions.txt)
 
+echo "CHANGE_BRANCH: $CHANGE_BRANCH"
+branch_name=$CHANGE_BRANCH
+
 # Get the list of modified or added files in the pull request
-modified_files=$( git diff --name-only FETCH_HEAD...dev)
+modified_files=$( git diff --name-only dev..branch_name | grep -e "playbook.sh")
 
 # Flag to track if all required functions are present
 all_functions_present=true
