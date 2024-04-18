@@ -12,10 +12,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Echo change_branch
+        run: echo {{ env.CHANGE_BRANCH }}
       - name: Run sanity checks
         run: |
           # Install dependencies or setup environment if required
-
+          export CHANGE_BRANCH="${{ env.CHANGE_BRANCH }}"
           # Run the function check script
           bash .github/scripts/sanity_checks.sh
 
