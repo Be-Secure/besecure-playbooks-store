@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the required functions
-required_functions=$(cat ~/.github/scripts/playbook_functions.txt)
+required_functions=(init execute prepare publish cleanup launch)
 
 echo "CHANGE_BRANCH: $CHANGE_BRANCH"
 branch_name=$CHANGE_BRANCH
