@@ -13,13 +13,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set branch name
+        run: |
+          branch_name=$(echo "${{ github.ref }}" | awk -F'/' '{print $3}')
+          echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
+          echo "Branch name: $BRANCH_NAME"
+
       - name: Run sanity checks
         run: |
           # Install dependencies or setup environment if required
-          branch_name=$(echo "${{ github.ref }}" | awk -F'/' '{print $3}')
-          # Set the BRANCH_NAME environment variable
-          echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
-          echo $BRANCH_NAME
-          # Run the function check script
-          bash .github/scripts/sanity_checks.sh
-
+          source .github/scripts/sanity_checks.sh
