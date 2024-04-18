@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Define the required functions
-required_functions=$(cat playbook_functions.txt)
+required_functions=$(cat ~/.github/scripts/playbook_functions.txt)
 
 # Get the list of modified or added files in the pull request
-modified_files=$(git diff --name-only origin/dev...HEAD)
+modified_files=$( git diff --name-only FETCH_HEAD...dev)
 
 # Flag to track if all required functions are present
 all_functions_present=true
