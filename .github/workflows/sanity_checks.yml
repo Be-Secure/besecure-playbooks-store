@@ -17,7 +17,9 @@ jobs:
       - name: Run sanity checks
         run: |
           # Install dependencies or setup environment if required
-          export CHANGE_BRANCH="${{ env.CHANGE_BRANCH }}"
+          branch_name=$(echo "${{ github.ref }}" | awk -F'/' '{print $3}')
+          # Set the BRANCH_NAME environment variable
+          echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
           # Run the function check script
           bash .github/scripts/sanity_checks.sh
 

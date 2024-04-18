@@ -3,8 +3,7 @@
 # Define the required functions
 required_functions=(init execute prepare publish cleanup launch)
 
-echo "CHANGE_BRANCH: $CHANGE_BRANCH"
-branch_name=$CHANGE_BRANCH
+branch_name=$BRANCH_NAME
 
 # Get the list of modified or added files in the pull request
 modified_files=$( git diff --name-only dev..$branch_name | grep -e "playbook.sh")
