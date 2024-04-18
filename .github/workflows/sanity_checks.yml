@@ -1,0 +1,21 @@
+name: Sanity Check
+
+on:
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  sanity-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run sanity checks
+        run: |
+          # Install dependencies or setup environment if required
+
+          # Run the function check script
+          bash .github/scripts/function-check.sh
