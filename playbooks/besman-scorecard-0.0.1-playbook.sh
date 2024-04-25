@@ -7,8 +7,8 @@ function __besman_init() {
     export ASSESSMENT_TOOL_VERSION="v4.13.1"
     export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_TYPE-0.0.1-playbook.sh"
     
-    local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-0.0.1-steps.sh"
-    export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
+    #local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-0.0.1-steps.sh"
+    #export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
     local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME")
 
@@ -52,7 +52,7 @@ function __besman_init() {
         export DETAILED_REPORT_PATH="$SCORECARD_PATH/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard-report.json"
         mkdir -p "$SCORECARD_PATH"
         export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/osar/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-OSAR.json"
-        __besman_fetch_steps_file "$steps_file_name" || return 1
+        #__besman_fetch_steps_file "$steps_file_name" || return 1
         return 0
 
     fi
@@ -64,7 +64,7 @@ function __besman_execute() {
     __besman_echo_yellow "Launching steps file"
 
     SECONDS=0
-    . "$BESMAN_STEPS_FILE_PATH"
+    #. "$BESMAN_STEPS_FILE_PATH"
     duration=$SECONDS
 
     export EXECUTION_DURATION=$duration
@@ -149,18 +149,18 @@ function __besman_launch() {
     fi
 }
 
-function __besman_fetch_steps_file() {
-    __besman_echo_white "fetching steps file"
-    local steps_file_name=$1
-    local steps_file_url="https://raw.githubusercontent.com/$BESMAN_NAMESPACE/$BESMAN_PLAYBOOK_REPO/main/playbooks/$steps_file_name"
-    __besman_check_url_valid "$steps_file_url" || return 1
+#function __besman_fetch_steps_file() {
+#    __besman_echo_white "fetching steps file"
+#    local steps_file_name=$1
+#    local steps_file_url="https://raw.githubusercontent.com/$BESMAN_NAMESPACE/$BESMAN_PLAYBOOK_REPO/main/playbooks/$steps_file_name"
+#    __besman_check_url_valid "$steps_file_url" || return 1
 
-    if [[ ! -f "$BESMAN_STEPS_FILE_PATH" ]]; then
+#    if [[ ! -f "$BESMAN_STEPS_FILE_PATH" ]]; then
     
-        touch "$BESMAN_STEPS_FILE_PATH"
+#        touch "$BESMAN_STEPS_FILE_PATH"
 
-        __besman_secure_curl "$steps_file_url" >>"$BESMAN_STEPS_FILE_PATH"
-    [[ "$?" != "0" ]] && __besman_echo_red "Failed to fetch from $steps_file_url" && return 1
-    fi
-    __besman_echo_white "done fetching"
-}
+#        __besman_secure_curl "$steps_file_url" >>"$BESMAN_STEPS_FILE_PATH"
+#    [[ "$?" != "0" ]] && __besman_echo_red "Failed to fetch from $steps_file_url" && return 1
+#    fi
+#    __besman_echo_white "done fetching"
+#}
