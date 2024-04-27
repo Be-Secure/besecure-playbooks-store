@@ -43,9 +43,9 @@ jobs:
       
       - name: Get the list of assessment tools
         run: |
-          tools=$(cat .github/scripts/assessment_tools.txt)
+          tools=$(cat .github/scripts/assessment_tools.txt | tr '\n' '|')
           tools=${tools%|}
-          echo "ASSESSMENT_TOOLS=$(echo "$tools" | tr '\n' '|')" >> $GITHUB_ENV
+          echo "ASSESSMENT_TOOLS=$(echo "$tools")" >> $GITHUB_ENV
 
       - name: Print the list of required functions
         run: echo "Required functions= ${{ env.PLAYBOOK_FUNCTIONS }}"
