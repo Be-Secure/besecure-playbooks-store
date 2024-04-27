@@ -20,6 +20,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y grep
       
+      - name: perform fetch
+        run: git fetch
+
       - name: branch name
         run: git branch | grep "*"
 
