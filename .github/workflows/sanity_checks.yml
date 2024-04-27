@@ -6,7 +6,7 @@ on:
 
 jobs:
   check_files:
-    name: Check Modified Files
+    name: Check function name 
     runs-on: ubuntu-latest
 
     steps:
@@ -38,7 +38,11 @@ jobs:
         id: get_functions
         run: |
           functions=$(cat .github/scripts/playbook_functions.txt)
-          echo "PLAYBOOK_FUNCTIONS=$functions" >> $GITHUB_ENV
+          echo "PLAYBOOK_FUNCTIONS=$(echo "$functions" | tr '\n' ' ')" >> $GITHUB_ENV
+
+      
+      - name: Get the list of assessment tools
+        run: echo "ASSESSMENT_TOOLS=spdx-sbom-generator sonarqube criticality_score scorecard codeql snyk"
 
       - name: Print the list of required functions
         run: echo "Required functions= ${{ env.PLAYBOOK_FUNCTIONS }}"
