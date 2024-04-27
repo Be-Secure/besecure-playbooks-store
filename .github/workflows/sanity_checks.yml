@@ -19,6 +19,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y grep
+      
+      - name: branch name
+        run: git branch | grep "*"
 
       - name: Get list of modified files
         id: get_files
