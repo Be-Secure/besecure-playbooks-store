@@ -15,16 +15,16 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}  # Checkout the code from the source branch of the pull request
 
-      - name: Install required packages
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y grep
+      # - name: Install required packages
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y grep
       
       # - name: perform fetch
       #   run: git fetch
 
-      # - name: branch name
-      #   run: git branch | grep "*"
+      - name: branch name
+        run: git branch | grep "*"
 
       # - name: Get list of modified files
       #   id: get_files
@@ -33,14 +33,12 @@ jobs:
 
       - name: Check for required functions
         run: |
-          for file in ${ls}; do
+          for file in $(git ls-files | grep '\-playbook\.sh$'); do
             # Check if the file ends with "-playbook.sh"
-            if echo "$file" | grep -q '\-playbook\.sh$'; then
-              if grep -qE "function (__besman_init|__besman_execute|__besman_prepare|__besman_publish|__besman_cleanup)" "$file"; then
-                echo "All required functions found in $file"
-              else
-                echo "One or more required functions not found in $file"
-                exit 1
-              fi
+            if grep -qE "function (__besman_init|__besman_execute|__besman_prepare|__besman_publish|__besman_cleanup)" "$file"; then
+              echo "All required functions found in $file"
+            else
+              echo "One or more required functions not found in $file"
+              exit 1
             fi
           done
