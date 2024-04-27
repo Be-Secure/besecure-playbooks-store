@@ -35,7 +35,13 @@ jobs:
       #     echo "::set-output name=files::$(git diff --name-only ${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.ref }})"
       
       - name: Get the list of required functions
-        run: cat .github/scripts/playbook_functions.txt
+        id: get_functions
+        run: |
+          functions=$(cat .github/scripts/playbook_functions.txt)
+          echo "::set-env name=PLAYBOOK_FUNCTIONS::$functions"
+
+      - name: Print the list of required functions
+        run: echo "Required functions= ${{ env.PLAYBOOK_FUNCTIONS }}"
 
       # - name: Check for required functions
       #   run: |
