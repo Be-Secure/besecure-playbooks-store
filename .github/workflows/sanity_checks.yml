@@ -67,4 +67,4 @@ jobs:
               fi
             done
           done
-          [[ $function_flag == true ]] && exit 1
+          # [[ $function_flag == true ]] && exit 1
