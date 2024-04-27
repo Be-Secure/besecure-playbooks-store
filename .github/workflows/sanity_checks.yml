@@ -27,7 +27,7 @@ jobs:
         run: git branch | grep "*"
 
       - name: get list
-        run: ls
+        run: ls -R .github
 
       # - name: Get list of modified files
       #   id: get_files
