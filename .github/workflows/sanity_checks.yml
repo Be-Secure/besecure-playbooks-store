@@ -71,7 +71,7 @@ jobs:
             done
           done
           echo function_flag=$function_flag
-          if[[ $function_flag == true ]] 
+          if [[ $function_flag == true ]] 
           then
             exit 1
           fi
