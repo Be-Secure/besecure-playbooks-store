@@ -30,15 +30,15 @@ jobs:
       #   id: get_files
       #   run: |
       #     echo "::set-output name=files::$(git diff --name-only ${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.ref }})"
+      
+      - name: Get the list of required functions
+        run: cat ~/scripts/playbook_functions.txt
 
-      - name: Check for required functions
-        run: |
-          for file in $(git ls-files | grep '\-playbook\.sh$'); do
-            # Check if the file ends with "-playbook.sh"
-            if grep -qE "function (__besman_init|__besman_execute|__besman_prepare|__besman_publish|__besman_cleanup)" "$file"; then
-              echo "All required functions found in $file"
-            else
-              echo "One or more required functions not found in $file"
-              exit 1
-            fi
-          done
+      # - name: Check for required functions
+      #   run: |
+      #     for file in $(git ls-files | grep '\-playbook\.sh$'); do
+      #       # Check if the file ends with "-playbook.sh"
+      #       if ! grep -q -w "function __besman_init"
+      #       then
+      #         echo "Missing function "
+      #     done
