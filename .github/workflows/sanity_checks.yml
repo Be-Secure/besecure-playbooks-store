@@ -26,6 +26,9 @@ jobs:
       - name: branch name
         run: git branch | grep "*"
 
+      - name: get list
+        run: ls
+
       # - name: Get list of modified files
       #   id: get_files
       #   run: |
