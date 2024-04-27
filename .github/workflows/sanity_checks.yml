@@ -60,11 +60,13 @@ jobs:
             echo $file
             # Check if the file ends with "-playbook.sh"
             for f in ${{ env.PLAYBOOK_FUNCTIONS }}; do
+              echo function=$f
               if ! grep -q -w "function $f" $file
               then
+                echo "inside if"
                 echo "Missing function $f in $file"
                 function_flag=true
               fi
             done
           done
-          # [[ $function_flag == true ]] && exit 1
+          [[ $function_flag == true ]] && exit 1
