@@ -4,3 +4,4 @@ scorecard
 codeql
 snyk
 fossology
+sonarqube
