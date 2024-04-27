@@ -1,25 +1,25 @@
-name: Sanity Check
+name: Pull Request Checks
 
 on:
   pull_request:
-    branches:
-      - dev
+    types: [opened, synchronize, reopened]
 
 jobs:
-  sanity-check:
+  build:
+    name: Check Pull Request
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set branch name
+        uses: actions/checkout@v2
+        
+      - name: Check for required functions
         run: |
-          branch_name=$(echo "${{ github.ref }}" | awk -F'/' '{print $3}')
-          echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
-          echo "Branch name: $BRANCH_NAME"
-
-      - name: Run sanity checks
-        run: |
-          # Install dependencies or setup environment if required
-          source .github/scripts/sanity_checks.sh
+          for file in $(git diff --name-only origin/main...$GITHUB_SHA); do
+            if grep -qE "function (__besman_init|__besman_execute|__besman_prepare|__besman_publish|__besman_cleanup)" "$file"; then
+              echo "All required functions found in $file"
+            else
+              echo "One or more required functions not found in $file"
+              exit 1
+            fi
+          done
