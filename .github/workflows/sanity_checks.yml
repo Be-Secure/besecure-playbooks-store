@@ -56,7 +56,7 @@ jobs:
       - name: Check for required functions
         run: |
           function_flag=false
-          for file in $(git ls-files | grep -E ${{ env.ASSESSMENT_TOOLS }} | grep '\-playbook\.sh$'); do
+          for file in $(git ls-files | grep -E "${{ env.ASSESSMENT_TOOLS }}" | grep '\-playbook\.sh$'); do
             # Check if the file ends with "-playbook.sh"
             for f in ${{ env.PLAYBOOK_FUNCTIONS }}; do
               if ! grep -q -w "function $f" $file
