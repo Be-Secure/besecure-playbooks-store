@@ -45,12 +45,15 @@ jobs:
 
       - name: Check for required functions
         run: |
+          function_flag=false
           for file in $(git ls-files | grep '\-playbook\.sh$'); do
             # Check if the file ends with "-playbook.sh"
             for f in ${{ env.PLAYBOOK_FUNCTIONS }}; do
-              if ! grep -q -w "function $f"
+              if ! grep -q -w "function $f" $file
               then
                 echo "Missing function $f in $file"
+                function_flag=true
               fi
             done
           done
+          [[ $function_flag == true ]] && exit 1
