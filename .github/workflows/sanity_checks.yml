@@ -61,7 +61,7 @@ jobs:
             # Check if the file ends with "-playbook.sh"
             for f in ${{ env.PLAYBOOK_FUNCTIONS }}; do
               echo function=$f
-              echo flag=$flag
+              echo function_flag=$function_flag
               if ! grep -q -w "function $f" $file
               then
                 echo "inside if"
@@ -70,5 +70,5 @@ jobs:
               fi
             done
           done
-          echo flag=$flag
+          echo function_flag=$function_flag
           [[ $function_flag == true ]] && exit 1
