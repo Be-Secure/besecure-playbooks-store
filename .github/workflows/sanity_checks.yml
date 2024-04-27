@@ -38,7 +38,7 @@ jobs:
         id: get_functions
         run: |
           functions=$(cat .github/scripts/playbook_functions.txt)
-          echo "::set-env name=PLAYBOOK_FUNCTIONS::$functions"
+          echo "PLAYBOOK_FUNCTIONS=$functions" >> $GITHUB_ENV
 
       - name: Print the list of required functions
         run: echo "Required functions= ${{ env.PLAYBOOK_FUNCTIONS }}"
