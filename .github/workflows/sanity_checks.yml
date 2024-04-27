@@ -17,6 +17,15 @@ jobs:
         run: git diff --name-only HEAD
         shell: bash
 
+      - name: Debug - List files in the directory
+        run: ls -al
+
+      - name: Debug - Show current directory
+        run: pwd
+
+      - name: Debug - Show Git status
+        run: git status
+
         
       - name: Check for required functions
         run: |
