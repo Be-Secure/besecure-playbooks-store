@@ -57,6 +57,7 @@ jobs:
         run: |
           function_flag=false
           for file in $(git ls-files | grep -E "${{ env.ASSESSMENT_TOOLS }}" | grep '\-playbook\.sh$'); do
+            echo $file
             # Check if the file ends with "-playbook.sh"
             for f in ${{ env.PLAYBOOK_FUNCTIONS }}; do
               if ! grep -q -w "function $f" $file
