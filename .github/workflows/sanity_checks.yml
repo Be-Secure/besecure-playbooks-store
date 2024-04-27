@@ -42,15 +42,20 @@ jobs:
 
       
       - name: Get the list of assessment tools
-        run: echo "ASSESSMENT_TOOLS=spdx-sbom-generator sonarqube criticality_score scorecard codeql snyk"
+        run: |
+          tools=$(cat .github/scripts/assessment_tools.txt)
+          echo "ASSESSMENT_TOOLS=$(echo "$tools" | tr '\n' '|')" >> $GITHUB_ENV
 
       - name: Print the list of required functions
         run: echo "Required functions= ${{ env.PLAYBOOK_FUNCTIONS }}"
 
+      - name: Print the list of required tools
+        run: echo "Required functions= ${{ env.ASSESSMENT_TOOLS }}"
+
       - name: Check for required functions
         run: |
           function_flag=false
-          for file in $(git ls-files | grep '\-playbook\.sh$'); do
+          for file in $(git ls-files | grep -E ${{ env.ASSESSMENT_TOOLS }} | grep '\-playbook\.sh$'); do
             # Check if the file ends with "-playbook.sh"
             for f in ${{ env.PLAYBOOK_FUNCTIONS }}; do
               if ! grep -q -w "function $f" $file
