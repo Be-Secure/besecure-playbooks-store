@@ -12,6 +12,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      
+      - name: run git diff
+        run: git diff --name-only HEAD
         
       - name: Check for required functions
         run: |
