@@ -15,26 +15,14 @@ jobs:
       
       - name: run git diff
         run: git diff --name-only HEAD
-        shell: bash
 
-      - name: Debug - List files in the directory
-        run: ls -al
-
-      - name: Debug - Show current directory
-        run: pwd
-
-      - name: Debug - Show Git status
-        run: git status
-
-        
       - name: Check for required functions
         run: |
-          for file in $(git diff --name-only HEAD); do
-            if grep -qE "function (__besman_init|__besman_execute|__besman_prepare|__besman_publish|__besman_cleanup)" "$file"; then
-              echo "All required functions found in $file"
-            else
-              echo "One or more required functions not found in $file"
-              exit 1
-            fi
+          for file in $(git diff --name-only HEAD | grep '\-playbook\.sh$'); do
+              if grep -qE "function (__besman_init|__besman_execute|__besman_prepare|__besman_publish|__besman_cleanup)" "$file"; then
+                  echo "All required functions found in $file"
+              else
+                  echo "One or more required functions not found in $file"
+                  exit 1
+              fi
           done
-        shell: bash
