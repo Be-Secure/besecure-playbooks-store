@@ -43,11 +43,14 @@ jobs:
       - name: Print the list of required functions
         run: echo "Required functions= ${{ env.PLAYBOOK_FUNCTIONS }}"
 
-      # - name: Check for required functions
-      #   run: |
-      #     for file in $(git ls-files | grep '\-playbook\.sh$'); do
-      #       # Check if the file ends with "-playbook.sh"
-      #       if ! grep -q -w "function __besman_init"
-      #       then
-      #         echo "Missing function "
-      #     done
+      - name: Check for required functions
+        run: |
+          for file in $(git ls-files | grep '\-playbook\.sh$'); do
+            # Check if the file ends with "-playbook.sh"
+            for f in "${{ env.PLAYBOOK_FUNCTIONS }}"; do
+              if ! grep -q -w "function $f"
+              then
+                echo "Missing function $f in $file"
+              fi
+            don
+          done
