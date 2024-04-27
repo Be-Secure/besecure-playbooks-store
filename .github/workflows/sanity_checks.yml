@@ -52,5 +52,5 @@ jobs:
               then
                 echo "Missing function $f in $file"
               fi
-            don
+            done
           done
