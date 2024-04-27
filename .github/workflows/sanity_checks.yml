@@ -15,7 +15,7 @@ jobs:
         
       - name: Check for required functions
         run: |
-          for file in $(git diff --name-only origin/main...$GITHUB_SHA); do
+          for file in $(git diff --name-only HEAD); do
             if grep -qE "function (__besman_init|__besman_execute|__besman_prepare|__besman_publish|__besman_cleanup)" "$file"; then
               echo "All required functions found in $file"
             else
