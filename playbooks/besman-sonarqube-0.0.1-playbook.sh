@@ -96,17 +96,7 @@ function __besman_publish() {
     git push origin main
 }
 
-function __besman_cleanup() {
-    local var_array=("ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_PLAYBOOK" "ASSESSMENT_TOOL_VERSION" "OSAR_PATH" "CRITICALITY_SCORE_PATH" "DETAILED_REPORT_PATH")
 
-    for var in "${var_array[@]}"; do
-        if [[ -v $var ]]; then
-            unset "$var"
-        fi
-
-    done
-
-}
 
 # function launch
 function __besman_launch() {
