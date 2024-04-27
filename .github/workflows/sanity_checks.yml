@@ -47,7 +47,7 @@ jobs:
         run: |
           for file in $(git ls-files | grep '\-playbook\.sh$'); do
             # Check if the file ends with "-playbook.sh"
-            for f in "${{ env.PLAYBOOK_FUNCTIONS }}"; do
+            for f in ${{ env.PLAYBOOK_FUNCTIONS }}; do
               if ! grep -q -w "function $f"
               then
                 echo "Missing function $f in $file"
