@@ -88,7 +88,7 @@ function __besman_prepare() {
     -H "accept: application/json" >> $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard.json
     EXECUTION_TIMESTAMP=$(date)
     export EXECUTION_TIMESTAMP
-    mv "$SCORECARD_PATH".json "$DETAILED_REPORT_PATH"
+    mv $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard.json "$DETAILED_REPORT_PATH"
 
     __besman_generate_osar
 
