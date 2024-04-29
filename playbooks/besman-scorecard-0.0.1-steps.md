@@ -10,3 +10,5 @@
 3. Check the status of scorecard actions
     - Click on the actions tab and select Scorecard supply-chain security from the workflows list
     - If the status of the workflow run is successful, run the playbook to download the scorecard report
+
+4. Close the file to continue with the rest of the script
