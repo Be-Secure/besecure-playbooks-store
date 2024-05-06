@@ -59,7 +59,6 @@ jobs:
   File_Name_Standard:
     name: Check for file naming convention
     runs-on: ubuntu-latest
-    needs: Required_files
 
     steps:
       - name: Checkout code
@@ -109,8 +108,7 @@ jobs:
   Check_if_metadata_update:
     name: Checking for playbook in metadata
     runs-on: ubuntu-latest
-    needs: 
-      - Required_files
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -175,9 +173,6 @@ jobs:
   Required_functions:
     name: Checking for required functions
     runs-on: ubuntu-latest
-    needs:
-      - Required_files
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
