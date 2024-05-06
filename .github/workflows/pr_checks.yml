@@ -91,11 +91,11 @@ jobs:
       - name: Check playbook naming convention
         run: |
           file_flag=false
-          for file in $(echo "${{env.MODIFIED_FILES}}"); do
+          for file in ${{env.MODIFIED_FILES}}; do
             if [[ $file =~ playbooks\/(.*)-(.*)-(.*)-((playbook\.sh)|(steps\.(sh|md|ipynb)))$ ]]; then
               file_name=$(echo $file | cut -d "/" -f 2)
               if ! [[ $file_name =~ ^besman-(${{ env.ASSESSMENT_TOOLS }})-[0-9]+\.[0-9]+\.[0-9]+-((playbook\.sh)|(steps\.(sh|md|ipynb)))$ ]]; then
-                echo "The file $file_name does not match standard naming convention."
+                echo -e "\e[31mThe file \e[33m$file_name \e[31m does not match standard naming convention.\e[0m"
                 file_flag=true
               fi
             fi
@@ -215,19 +215,21 @@ jobs:
       - name: Check for required functions
         run: |
           function_flag=false
-          for file in $(echo "${{ env.MODIFIED_FILES }}" | grep -E "${{ env.ASSESSMENT_TOOLS }}" | grep *playbook.sh); do
-            # Check if the file ends with "-playbook.sh"
-            for f in ${{ env.PLAYBOOK_FUNCTIONS }}; do
+          for file in ${{ env.MODIFIED_FILES }};do
+              # Check if the file ends with "-playbook.sh"
+            if [[ $file =~ playbooks\/(.*)-(.*)-(.*)-playbook\.sh ]]; then
+              for f in ${{ env.PLAYBOOK_FUNCTIONS }}; do
 
-              if ! grep -q -w "function $f" $file
+                if ! grep -q -w "function $f" $file
+                then
+                  echo -e "\e[31mMissing function \e[33m$f\e[31m in \e[33m$file\e[0m"
+                  function_flag=true
+                fi
+              done
+              if [[ $function_flag == true ]] 
               then
-                echo -e "\e[31mMissing function \e[33m$f\e[31m in \e[33m$file\e[0m"
-                function_flag=true
+                exit 1
               fi
-            done
-            if [[ $function_flag == true ]] 
-            then
-              exit 1
             fi
           done
 
