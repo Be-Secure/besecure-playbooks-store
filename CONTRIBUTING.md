@@ -149,3 +149,15 @@ Here we discuss the branching and release strategy for our projects. It ensures 
 
     - Discuss major changes or architectural decisions with the community.
     - Communicate any delays or blockers promptly.
+
+## Requirements for Submitting a New Playbook
+
+When submitting a new playbook, the following requirements must be met:
+
+1. Both the lifecycle file and steps file of the playbook are necessary. For more information, refer to the [playbook lifecycle](https://github.com/Be-Secure/besecure-playbooks-store?tab=readme-ov-file#playbook-lifecycle).
+2. Only a complete lifecycle file will be considered for review or acceptance. This means it must contain all the required [lifecycle methods](https://github.com/Be-Secure/besecure-playbooks-store?tab=readme-ov-file#lifecycle-file-methods).
+3. The lifecycle and steps file should adhere to our standard [naming convention](https://github.com/Be-Secure/besecure-playbooks-store?tab=readme-ov-file#naming-conventions).
+4. The initial version of every playbook (lifecycle and steps file) should be `0.0.1`.
+5. Any changes in the lifecycle file or the steps file should result in a new file with its version incremented.
+6. Both the lifecycle file and the steps file will always have the same version.
+7. When submitting, the playbook information should be added to the [playbook-metadata.json](./playbook-metadata.json) file.
