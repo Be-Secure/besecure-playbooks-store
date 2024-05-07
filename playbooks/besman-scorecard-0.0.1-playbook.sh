@@ -83,11 +83,29 @@ function __besman_execute() {
 function __besman_prepare() {
 
     __besman_echo_white "preparing data"
+    
+    # Check if the CodeQL GitHub Action is configured 
+    export workflow_id=$(curl -s -H "Authorization: token $BESMAN_GH_TOKEN" \
+    -H "Accept: application/vnd.github.v3+json" \
+    "https://api.github.com/repos/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME/actions/workflows" | jq -r '.workflows[] | select(.name == "Scorecard supply-chain security") | .id')
+    #echo $workflow_id
+    if [ -z "$workflow_id" ]; then
+        echo "Scorecard github actions is not configured"  
+        cat $BESMAN_STEPS_FILE_PATH
+        echo -e "\nPress enter if the above steps are completed."
+        read enter_key
+    else
+        echo "Scorecard GitHub Action is configured"
+    fi
+
+    #downloading scorecard report
     curl -X 'GET' \
-    "https://api.securityscorecards.dev/projects/github.com/Be-Secure/$github_repo_name" \
-    -H "accept: application/json" >> $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard.json
+    "https://api.securityscorecards.dev/projects/github.com/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME" \
+    -H "accept: application/json" >> $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard-temp.json
     EXECUTION_TIMESTAMP=$(date)
     export EXECUTION_TIMESTAMP
+    python3 -m json.tool $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard-temp.json > $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard.json
+    rm $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard-temp.json
     mv $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard.json "$DETAILED_REPORT_PATH"
 
     __besman_generate_osar
