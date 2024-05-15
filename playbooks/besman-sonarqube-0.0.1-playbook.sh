@@ -80,7 +80,7 @@ function __besman_execute() {
     __besman_echo_yellow "Launching steps file"
     cp "$BESMAN_STEPS_FILE_PATH" "$BESMAN_DIR/tmp/steps"
     SECONDS=0
-    jupter notebook "$BESMAN_DIR/tmp/steps"
+    jupyter notebook "$BESMAN_DIR/tmp/steps"
     duration=$SECONDS
 
     export EXECUTION_DURATION=$duration
