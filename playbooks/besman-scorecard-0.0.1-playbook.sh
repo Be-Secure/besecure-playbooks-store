@@ -184,5 +184,5 @@ function __besman_fetch_steps_file() {
    fi
     # nano $BESMAN_STEPS_FILE_PATH
     # wait
-    __besman_echo_white "Generating the scorecard report"
+    # __besman_echo_white "Generating the scorecard report"
 }
