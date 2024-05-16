@@ -84,16 +84,16 @@ function __besman_execute() {
     duration=$SECONDS
 
     export EXECUTION_DURATION=$duration
-    # if [[ ! -f $DETAILED_REPORT_PATH ]]; then
+    if [[ ! -f $DETAILED_REPORT_PATH ]]; then
 
-    #     __besman_echo_red "Could not find detailed report @ $DETAILED_REPORT_PATH"
-    #     export PLAYBOOK_EXECUTION_STATUS=failure
-    #     return 1
+        __besman_echo_red "Could not find detailed report @ $DETAILED_REPORT_PATH"
+        export PLAYBOOK_EXECUTION_STATUS=failure
+        return 1
 
-    # else
-    #     export PLAYBOOK_EXECUTION_STATUS=success
-    #     return 0
-    # fi
+    else
+        export PLAYBOOK_EXECUTION_STATUS=success
+        return 0
+    fi
     rm -rf "$BESMAN_DIR/tmp/steps"
 
 }
