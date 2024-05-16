@@ -3,9 +3,9 @@
 function __besman_init() {
     __besman_echo_white "initialising"
     export ASSESSMENT_TOOL_NAME="scorecard"
-    export ASSESSMENT_TOOL_TYPE="scorecard"
+    export ASSESSMENT_TOOL_TYPE="ossf scorecard"
     export ASSESSMENT_TOOL_VERSION="v4.13.1"
-    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_TYPE-0.0.1-playbook.sh"
+    export ASSESSMENT_TOOL_PLAYBOOK="besman-scorecard-0.0.1-playbook.sh"
     
     local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-0.0.1-steps.sh"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
