@@ -182,7 +182,7 @@ function __besman_fetch_steps_file() {
        __besman_secure_curl "$steps_file_url" >>"$BESMAN_STEPS_FILE_PATH"
    [[ "$?" != "0" ]] && __besman_echo_red "Failed to fetch from $steps_file_url" && return 1
    fi
-    nano $BESMAN_STEPS_FILE_PATH
-    wait
+    # nano $BESMAN_STEPS_FILE_PATH
+    # wait
     __besman_echo_white "Generating the scorecard report"
 }
