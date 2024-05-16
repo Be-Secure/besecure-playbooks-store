@@ -7,7 +7,7 @@ function __besman_init() {
     export ASSESSMENT_TOOL_VERSION="9.9.4"
     export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_NAME-0.0.1-playbook.sh"
     
-    local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-0.0.1-steps.md"
+    local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-0.0.1-steps.ipynb"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
     local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME")
@@ -54,11 +54,20 @@ function __besman_init() {
         return 1
 
     else
-        export SBOM_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_VERSION/sbom"
-        export DETAILED_REPORT_PATH="$SBOM_PATH/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-sbom-report.json"
-        mkdir -p "$SBOM_PATH"
+        export SONARQUBE_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_VERSION/$ASSESSMENT_TOOL_TYPE"
+        export DETAILED_REPORT_PATH="$SONARQUBE_PATH/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-sonarqube-report.json"
+        mkdir -p "$SONARQUBE_PATH"
         export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/osar/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-OSAR.json"
         __besman_fetch_steps_file "$steps_file_name" || return 1
+        if ! grep -q "export DETAILED_REPORT_PATH=" ~/.bashrc; then
+            echo "export DETAILED_REPORT_PATH=$DETAILED_REPORT_PATH"
+            source ~/.bashrc
+        fi
+
+        if ! grep -q "export BESMAN_ARTIFACT_DIR=" ~/.bashrc; then
+            echo "export BESMAN_ARTIFACT_DIR=$BESMAN_ARTIFACT_DIR"
+            source ~/.bashrc
+        fi
         return 0
 
     fi
@@ -67,10 +76,11 @@ function __besman_init() {
 
 function __besman_execute() {
     local duration
+    mkdir -p "$BESMAN_DIR/tmp/steps"
     __besman_echo_yellow "Launching steps file"
-
+    cp "$BESMAN_STEPS_FILE_PATH" "$BESMAN_DIR/tmp/steps"
     SECONDS=0
-    gedit "$BESMAN_STEPS_FILE_PATH"
+    jupyter notebook "$BESMAN_DIR/tmp/steps"
     duration=$SECONDS
 
     export EXECUTION_DURATION=$duration
@@ -84,6 +94,7 @@ function __besman_execute() {
         export PLAYBOOK_EXECUTION_STATUS=success
         return 0
     fi
+    rm -rf "$BESMAN_DIR/tmp/steps"
 
 }
 
@@ -111,7 +122,7 @@ function __besman_publish() {
 }
 
 function __besman_cleanup() {
-    local var_array=("ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_PLAYBOOK" "ASSESSMENT_TOOL_VERSION" "OSAR_PATH" "SBOM_PATH" "DETAILED_REPORT_PATH")
+    local var_array=("ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_PLAYBOOK" "ASSESSMENT_TOOL_VERSION" "OSAR_PATH" "SONARQUBE_PATH" "DETAILED_REPORT_PATH")
 
     for var in "${var_array[@]}"; do
         if [[ -v $var ]]; then
