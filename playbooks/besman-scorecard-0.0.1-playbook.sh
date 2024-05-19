@@ -2,12 +2,12 @@
 
 function __besman_init() {
     __besman_echo_white "initialising"
-    export ASSESSMENT_TOOL_NAME="scorecard"
+    export ASSESSMENT_TOOL_NAME="ossf scorecard"
     export ASSESSMENT_TOOL_TYPE="scorecard"
     export ASSESSMENT_TOOL_VERSION="v4.13.1"
-    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_TYPE-0.0.1-playbook.sh"
+    export ASSESSMENT_TOOL_PLAYBOOK="besman-scorecard-0.0.1-playbook.sh"
     
-    local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-0.0.1-steps.md"
+    local steps_file_name="besman-scorecard-0.0.1-steps.sh"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
     local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME")
@@ -41,6 +41,17 @@ function __besman_init() {
 
     done
 
+    if [[ -z $BESMAN_GH_TOKEN ]] 
+    then
+        __besman_echo_red "GitHub Auth token not found"
+        __besman_echo_white ""
+        __besman_echo_white "Run the below command to set it"
+        __besman_echo_white ""
+        __besman_echo_yellow "$ export BESMAN_GH_TOKEN=<token>"
+        __besman_echo_white ""
+        flag=true
+    fi
+
     # [[ ! -f $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME ]] && __besman_echo_red "Could not find artifact @ $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME" && flag=true
 
     if [[ $flag == true ]]; then
@@ -64,49 +75,41 @@ function __besman_execute() {
     __besman_echo_yellow "Launching steps file"
 
     SECONDS=0
-    #. "$BESMAN_STEPS_FILE_PATH"
+    . "$BESMAN_STEPS_FILE_PATH"
     duration=$SECONDS
-
     export EXECUTION_DURATION=$duration
-    if [[ $SCORECARD_RESULT == 1 ]]; then
-
-        export PLAYBOOK_EXECUTION_STATUS=failure
-        return 1
-
-    else
-        export PLAYBOOK_EXECUTION_STATUS=success
-        return 0
-    fi
 
 }
 
 function __besman_prepare() {
 
+    EXECUTION_TIMESTAMP=$(date)
+    export EXECUTION_TIMESTAMP
     __besman_echo_white "preparing data"
     
     # Check if the CodeQL GitHub Action is configured 
-    export workflow_id=$(curl -s -H "Authorization: token $BESMAN_GH_TOKEN" \
-    -H "Accept: application/vnd.github.v3+json" \
-    "https://api.github.com/repos/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME/actions/workflows" | jq -r '.workflows[] | select(.name == "Scorecard supply-chain security") | .id')
-    #echo $workflow_id
-    if [ -z "$workflow_id" ]; then
-        echo "Scorecard github actions is not configured"  
-        cat $BESMAN_STEPS_FILE_PATH
-        echo -e "\nPress enter if the above steps are completed."
-        read enter_key
-    else
-        echo "Scorecard GitHub Action is configured"
-    fi
+    # export workflow_id=$(curl -s -H "Authorization: token $BESMAN_GH_TOKEN" \
+    # -H "Accept: application/vnd.github.v3+json" \
+    # "https://api.github.com/repos/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME/actions/workflows" | jq -r '.workflows[] | select(.name == "Scorecard supply-chain security") | .id')
+    # #echo $workflow_id
+    # if [ -z "$workflow_id" ]; then
+    #     echo "Scorecard github actions is not configured"  
+    #     cat $BESMAN_STEPS_FILE_PATH
+    #     echo -e "\nPress enter if the above steps are completed."
+    #     read enter_key
+    # else
+    #     echo "Scorecard GitHub Action is configured"
+    # fi
 
-    #downloading scorecard report
-    curl -X 'GET' \
-    "https://api.securityscorecards.dev/projects/github.com/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME" \
-    -H "accept: application/json" >> $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard-temp.json
-    EXECUTION_TIMESTAMP=$(date)
-    export EXECUTION_TIMESTAMP
-    python3 -m json.tool $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard-temp.json > $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard.json
-    rm $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard-temp.json
-    mv $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard.json "$DETAILED_REPORT_PATH"
+    # #downloading scorecard report
+    # curl -X 'GET' \
+    # "https://api.securityscorecards.dev/projects/github.com/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME" \
+    # -H "accept: application/json" >> $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard-temp.json
+    # EXECUTION_TIMESTAMP=$(date)
+    # export EXECUTION_TIMESTAMP
+    # python3 -m json.tool $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard-temp.json > $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard.json
+    # rm $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard-temp.json
+    # mv $BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard.json "$DETAILED_REPORT_PATH"
 
     __besman_generate_osar
 
@@ -170,7 +173,7 @@ function __besman_launch() {
 function __besman_fetch_steps_file() {
    __besman_echo_white "fetching steps file"
    local steps_file_name=$1
-   local steps_file_url="https://raw.githubusercontent.com/$BESMAN_NAMESPACE/$BESMAN_PLAYBOOK_REPO/main/playbooks/$steps_file_name"
+   local steps_file_url="https://raw.githubusercontent.com/$BESMAN_PLAYBOOK_REPO/$BESMAN_PLAYBOOK_REPO_BRANCH/playbooks/$steps_file_name"
    __besman_check_url_valid "$steps_file_url" || return 1
 
    if [[ ! -f "$BESMAN_STEPS_FILE_PATH" ]]; then
@@ -180,7 +183,7 @@ function __besman_fetch_steps_file() {
        __besman_secure_curl "$steps_file_url" >>"$BESMAN_STEPS_FILE_PATH"
    [[ "$?" != "0" ]] && __besman_echo_red "Failed to fetch from $steps_file_url" && return 1
    fi
-    nano $BESMAN_STEPS_FILE_PATH
-    wait
-    __besman_echo_white "Generating the scorecard report"
+    # nano $BESMAN_STEPS_FILE_PATH
+    # wait
+    # __besman_echo_white "Generating the scorecard report"
 }
