@@ -69,6 +69,38 @@ A typical BeS playbook consists of two files - the playbook lifecycle file and t
         __besman_cleanup
     }
 
+## Usage
+
+### 1. Install BeSman
+
+Install BeSman by following the instructions [here](https://github.com/Be-Secure/BeSman?tab=readme-ov-file#installation).
+
+### 2. Install an environment
+
+Installing an environments make sure you have the necessary tools installed to run the playbook as well as the source code and assessment datastore is made available in the user's machine
+
+Get the list of environments by using
+
+`$ bes list -env`
+
+Install the environment by using
+
+`$ bes install -env <enviornment name> -V <version>`
+
+### 3. List the available playbooks
+
+Run the below command to ge the list of available playbooks
+
+`$ bes list -P`
+
+If you wish to list/run playbooks from a different branch/tag,
+
+`$ bes set BESMAN_PLAYBOOK_REPO_BRANCH <branch name/tag>`
+
+### 4. Run the playbook
+
+`$ bes run -P <playbook name> -V <version>`
+
 ## Report Issue
 This project uses GitHub's integrated issue tracking system to record bugs and feature requests. If you want to raise an issue, please follow the recommendations below:
 
