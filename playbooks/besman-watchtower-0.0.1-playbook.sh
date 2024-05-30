@@ -14,11 +14,11 @@ function __besman_init() {
     local var_array=("BESMAN_REPO_TYPE" "BESMAN_REPO_URL" "BESMAN_BRANCH_NAME" "BESMAN_DEPTH_VAL" "BESMAN_ARTIFACT_NAME")
 
     # Set values for testing (remove in production)
-    export BESMAN_REPO_TYPE="huggingface"         # Example value
-    export BESMAN_REPO_URL="https://huggingface.co/vendorabc/modeltest"  # Example value
+    export BESMAN_REPO_TYPE="github"         # Example value
+    export BESMAN_REPO_URL="https://huggingface.co/microsoft/resnet-18"  # Example value
     export BESMAN_BRANCH_NAME="main"          # Example value
     export BESMAN_DEPTH_VAL="1"              # Example value
-    export BESMAN_ARTIFACT_NAME="modeltest"  # Example value
+    export BESMAN_ARTIFACT_NAME="resnet-18"  # Example value
 
     local flag=false
     for var in "${var_array[@]}"; do
@@ -56,22 +56,22 @@ function __besman_execute() {
 }
 
 function __besman_prepare() {
-    __besman_echo_white "preparing data"
+    echo "preparing data"
     EXECUTION_TIMESTAMP=$(date)
     export EXECUTION_TIMESTAMP
 
-    local report_id_dir=$(grep -oP '(?<=scanned_reports/)[0-9]+' <<< "$SCAN_OUTPUT")
+    # Extract the report ID from the specific line
+    local report_id_dir=$(echo "$SCAN_OUTPUT" | grep -oP '(?<=scanned_reports/)[0-9]+(?=/summary_reports_)')
     local summary_report="$HOME/scanned_reports/$report_id_dir/summary_reports_$report_id_dir.json"
     local detailed_report="$HOME/scanned_reports/$report_id_dir/detailed_reports_$report_id_dir.json"
-
-    cat "summary report path: $summary_report"
-    cat "detailed_report path: $detailed_report"
+    
     local target_dir="$HOME/besecure-ml-assessment-datastore/models/$BESMAN_ARTIFACT_NAME/sast"
     mkdir -p "$target_dir"
 
     cp "$summary_report" "$target_dir/$BESMAN_ARTIFACT_NAME-sast-summary-report.json"
     cp "$detailed_report" "$target_dir/$BESMAN_ARTIFACT_NAME-sast-detailed-report.json"
 }
+
 
 function __besman_publish() {
     __besman_echo_yellow "Pushing to datastore"
@@ -90,6 +90,8 @@ function __besman_cleanup() {
             unset "$var"
         fi
     done
+    rm -rf $HOME/scanned_reports
+    deactivate
 }
 
 function __besman_launch() {
