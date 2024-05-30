@@ -10,8 +10,7 @@ function __besman_init() {
     local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_VERSION-steps.sh"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
-    # List of environment variables
-    local var_array=("BESMAN_REPO_TYPE" "BESMAN_REPO_URL" "BESMAN_BRANCH_NAME" "BESMAN_DEPTH_VAL" "BESMAN_ARTIFACT_NAME")
+    local var_array=("BESMAN_REPO_TYPE" "BESMAN_REPO_URL" "BESMAN_BRANCH_NAME" "BESMAN_DEPTH_VAL" "BESMAN_ARTIFACT_NAME" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_WATCHTOWER_PATH")
 
     # Set values for testing (remove in production)
     export BESMAN_REPO_TYPE="github"         # Example value
@@ -19,6 +18,8 @@ function __besman_init() {
     export BESMAN_BRANCH_NAME="main"          # Example value
     export BESMAN_DEPTH_VAL="1"              # Example value
     export BESMAN_ARTIFACT_NAME="resnet-18"  # Example value
+    export BESMAN_ASSESSMENT_DATASTORE_DIR="$HOME/besecure-ml-assessment-datastore"
+    export BESMAN_WATCHTOWER_PATH="$HOME/watchtower"
 
     local flag=false
     for var in "${var_array[@]}"; do
@@ -62,10 +63,10 @@ function __besman_prepare() {
 
     # Extract the report ID from the specific line
     local report_id_dir=$(echo "$SCAN_OUTPUT" | grep -oP '(?<=scanned_reports/)[0-9]+(?=/summary_reports_)')
-    local summary_report="$HOME/scanned_reports/$report_id_dir/summary_reports_$report_id_dir.json"
-    local detailed_report="$HOME/scanned_reports/$report_id_dir/detailed_reports_$report_id_dir.json"
+    local summary_report="$BESMAN_WATCHTOWER_PATH/src/scanned_reports/$report_id_dir/summary_reports_$report_id_dir.json"
+    local detailed_report="$BESMAN_WATCHTOWER_PATH/src/scanned_reports/$report_id_dir/detailed_reports_$report_id_dir.json"
     
-    local target_dir="$HOME/besecure-ml-assessment-datastore/models/$BESMAN_ARTIFACT_NAME/sast"
+    local target_dir="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/sast"
     mkdir -p "$target_dir"
 
     cp "$summary_report" "$target_dir/$BESMAN_ARTIFACT_NAME-sast-summary-report.json"
@@ -75,7 +76,7 @@ function __besman_prepare() {
 
 function __besman_publish() {
     __besman_echo_yellow "Pushing to datastore"
-    cd "$HOME/besecure-ml-assessment-datastore"
+    cd "$BESMAN_ASSESSMENT_DATASTORE_DIR"
 
     git add models/"$BESMAN_ARTIFACT_NAME"/sast/*.json
     git commit -m "Added SAST reports for $BESMAN_ARTIFACT_NAME"
@@ -83,14 +84,14 @@ function __besman_publish() {
 }
 
 function __besman_cleanup() {
-    local var_array=("BESMAN_REPO_TYPE" "BESMAN_REPO_URL" "BESMAN_BRANCH_NAME" "BESMAN_DEPTH_VAL" "BESMAN_ARTIFACT_NAME")
+    local var_array=("BESMAN_REPO_TYPE" "BESMAN_REPO_URL" "BESMAN_BRANCH_NAME" "BESMAN_DEPTH_VAL" "BESMAN_ARTIFACT_NAME" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_WATCHTOWER_PATH")
 
     for var in "${var_array[@]}"; do
         if [[ -v $var ]]; then
             unset "$var"
         fi
     done
-    rm -rf $HOME/scanned_reports
+
     deactivate
 }
 
