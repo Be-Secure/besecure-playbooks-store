@@ -63,8 +63,8 @@ function __besman_prepare() {
 
     # Extract the report ID from the specific line
     local report_id_dir=$(echo "$SCAN_OUTPUT" | grep -oP '(?<=scanned_reports/)[0-9]+(?=/summary_reports_)')
-    local summary_report="$BESMAN_WATCHTOWER_PATH/src/scanned_reports/$report_id_dir/summary_reports_$report_id_dir.json"
-    local detailed_report="$BESMAN_WATCHTOWER_PATH/src/scanned_reports/$report_id_dir/detailed_reports_$report_id_dir.json"
+    local summary_report="./scanned_reports/$report_id_dir/summary_reports_$report_id_dir.json"
+    local detailed_report="./scanned_reports/$report_id_dir/detailed_reports_$report_id_dir.json"
     
     local target_dir="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/sast"
     mkdir -p "$target_dir"
