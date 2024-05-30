@@ -117,10 +117,13 @@ function __besman_launch() {
 function __besman_fetch_steps_file() {
     echo "Fetching steps file"
     local steps_file_name=$1
+    local steps_file_url="https://raw.githubusercontent.com/$BESMAN_PLAYBOOK_REPO/$BESMAN_PLAYBOOK_REPO_BRANCH/playbooks/$steps_file_name"
+    __besman_check_url_valid "$steps_file_url" || return 1
 
     if [[ ! -f "$BESMAN_STEPS_FILE_PATH" ]]; then
-        echo "Steps file not found: $BESMAN_STEPS_FILE_PATH"
-        return 1
+        touch "$BESMAN_STEPS_FILE_PATH"
+        __besman_secure_curl "$steps_file_url" >>"$BESMAN_STEPS_FILE_PATH"
+        [[ "$?" != "0" ]] && echo "Failed to fetch from $steps_file_url" && return 1
     fi
-    echo "Steps file found: $BESMAN_STEPS_FILE_PATH"
+    echo "Done fetching"
 }
