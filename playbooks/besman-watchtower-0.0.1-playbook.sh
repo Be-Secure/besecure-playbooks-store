@@ -64,6 +64,8 @@ function __besman_prepare() {
     local summary_report="$HOME/scanned_reports/$report_id_dir/summary_reports_$report_id_dir.json"
     local detailed_report="$HOME/scanned_reports/$report_id_dir/detailed_reports_$report_id_dir.json"
 
+    cat "summary report path: $summary_report"
+    cat "detailed_report path: $detailed_report"
     local target_dir="$HOME/besecure-ml-assessment-datastore/models/$BESMAN_ARTIFACT_NAME/sast"
     mkdir -p "$target_dir"
 
