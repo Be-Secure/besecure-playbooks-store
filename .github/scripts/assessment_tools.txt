@@ -5,3 +5,5 @@ codeql
 snyk
 fossology
 sonarqube
+watchtower
+counterfit

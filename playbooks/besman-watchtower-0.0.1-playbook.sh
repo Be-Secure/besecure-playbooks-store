@@ -13,13 +13,13 @@ function __besman_init() {
     local var_array=("BESMAN_REPO_TYPE" "BESMAN_REPO_URL" "BESMAN_BRANCH_NAME" "BESMAN_DEPTH_VAL" "BESMAN_ARTIFACT_NAME" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_WATCHTOWER_PATH")
 
     # Set values for testing (remove in production)
-    export BESMAN_REPO_TYPE="github"         # Example value
-    export BESMAN_REPO_URL="https://github.com/asa1997/bes-image-classification"  # Example value
-    export BESMAN_BRANCH_NAME="main"          # Example value
-    export BESMAN_DEPTH_VAL="1"              # Example value
-    export BESMAN_ARTIFACT_NAME="bes-image-classification"  # Example value
-    export BESMAN_ASSESSMENT_DATASTORE_DIR="$HOME/besecure-ml-assessment-datastore"
-    export BESMAN_WATCHTOWER_PATH="$HOME/watchtower"
+   # export BESMAN_REPO_TYPE="github"         # Example value
+   # export BESMAN_REPO_URL="https://github.com/asa1997/bes-image-classification"  # Example value
+    #export BESMAN_BRANCH_NAME="main"          # Example value
+    #export BESMAN_DEPTH_VAL="1"              # Example value
+    #export BESMAN_ARTIFACT_NAME="bes-image-classification"  # Example value
+    #export BESMAN_ASSESSMENT_DATASTORE_DIR="$HOME/besecure-ml-assessment-datastore"
+    #export BESMAN_WATCHTOWER_PATH="$HOME/watchtower"
 
     local flag=false
     for var in "${var_array[@]}"; do
