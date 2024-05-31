@@ -12,15 +12,6 @@ function __besman_init() {
 
     local var_array=("BESMAN_REPO_TYPE" "BESMAN_REPO_URL" "BESMAN_BRANCH_NAME" "BESMAN_DEPTH_VAL" "BESMAN_ARTIFACT_NAME" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_WATCHTOWER_PATH")
 
-    # Set values for testing (remove in production)
-   # export BESMAN_REPO_TYPE="github"         # Example value
-   # export BESMAN_REPO_URL="https://github.com/asa1997/bes-image-classification"  # Example value
-    #export BESMAN_BRANCH_NAME="main"          # Example value
-    #export BESMAN_DEPTH_VAL="1"              # Example value
-    #export BESMAN_ARTIFACT_NAME="bes-image-classification"  # Example value
-    #export BESMAN_ASSESSMENT_DATASTORE_DIR="$HOME/besecure-ml-assessment-datastore"
-    #export BESMAN_WATCHTOWER_PATH="$HOME/watchtower"
-
     local flag=false
     for var in "${var_array[@]}"; do
         if [[ ! -v $var ]]; then
@@ -61,7 +52,6 @@ function __besman_prepare() {
     EXECUTION_TIMESTAMP=$(date)
     export EXECUTION_TIMESTAMP
 
-    # Extract the report ID from the specific line
     local report_id_dir=$(echo "$SCAN_OUTPUT" | grep -oP '(?<=scanned_reports/)[0-9]+(?=/summary_reports_)')
     local summary_report="./scanned_reports/$report_id_dir/summary_reports_$report_id_dir.json"
     local detailed_report="./scanned_reports/$report_id_dir/detailed_reports_$report_id_dir.json"

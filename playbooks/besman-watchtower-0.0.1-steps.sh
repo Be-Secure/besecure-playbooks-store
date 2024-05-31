@@ -14,7 +14,6 @@ else
 fi
 
 SCAN_OUTPUT=$($SCAN_CMD)
-#echo "$SCAN_OUTPUT"
 
 if [[ $? -ne 0 ]]; then
     export SCAN_RESULT=1
