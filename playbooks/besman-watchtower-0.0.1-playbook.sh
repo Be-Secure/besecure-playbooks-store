@@ -24,6 +24,8 @@ function __besman_init() {
     if [[ $flag == true ]]; then
         return 1
     else
+        export DETAILED_REPORT_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/sast/$BESMAN_ARTIFACT_NAME-sast-summary-report.json"
+        export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME-osar.json"
         __besman_fetch_steps_file "$steps_file_name" || return 1
         return 0
     fi
