@@ -3,7 +3,7 @@
 function __besman_init() {
     __besman_echo_white "initializing"
     export ASSESSMENT_TOOL_NAME="watchtower"
-    export ASSESSMENT_TOOL_TYPE="ml-model-scanner"
+    export ASSESSMENT_TOOL_TYPE="sast"
     export ASSESSMENT_TOOL_VERSION="0.0.1"
     export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_VERSION-playbook.sh"
     
@@ -65,6 +65,7 @@ function __besman_prepare() {
     cp "$detailed_report" "$target_dir/$BESMAN_ARTIFACT_NAME-sast-detailed-report.json"
 
     rm -rf "./scanned_reports"
+    __besman_generate_osar
 }
 
 
