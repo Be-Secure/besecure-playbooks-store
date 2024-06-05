@@ -2,7 +2,7 @@
 
 function __besman_init() {
     __besman_echo_white "initialising"
-    export ASSESSMENT_TOOL_NAME="ossf scorecard"
+    export ASSESSMENT_TOOL_NAME="scorecard"
     export ASSESSMENT_TOOL_TYPE="scorecard"
     export ASSESSMENT_TOOL_VERSION="v4.13.1"
     export ASSESSMENT_TOOL_PLAYBOOK="besman-scorecard-0.0.1-playbook.sh"
