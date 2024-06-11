@@ -73,7 +73,7 @@ function __besman_publish() {
     __besman_echo_yellow "Pushing to datastore"
     cd "$BESMAN_ASSESSMENT_DATASTORE_DIR"
 
-    git add models/*.json
+    git add models/$BESMAN_ARTIFACT_NAME/*.json
     git commit -m "Added SAST and OSAR reports for $BESMAN_ARTIFACT_NAME"
     git push origin main
 }
