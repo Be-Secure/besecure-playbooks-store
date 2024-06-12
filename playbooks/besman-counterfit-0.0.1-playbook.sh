@@ -83,8 +83,7 @@ function __besman_prepare() {
 
     cp -f $BESMAN_COUNTERFIT_LOCAL_PATH/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json $DETAILED_REPORT_PATH
 
-    #TODO
-    # Move the report from counterfit folder to $DETAILED_REPORT_PATH
+
 
     [[ ! -f $DETAILED_REPORT_PATH ]] && __besman_echo_red "Could not find report @ $DETAILED_REPORT_PATH" && return 1
 
