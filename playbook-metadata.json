@@ -95,6 +95,25 @@
         "environment": "ML-RT-env"
       },
       "detailed_report_path": "STRING"
+    },
+    {
+      "name": "counterfit",
+      "version": "0.0.1",
+      "type": "tool",
+      "author": {
+        "name": "Be-Secure",
+        "type": "Organization"
+      },
+      "date_of_creation": "2024-06-12T16:07:47",
+      "last_update_date": "2024-06-12T16:07:47",
+      "last_execution": {
+        "name": "Be-Secure",
+        "type": "Organization",
+        "status": "Success",
+        "timestamp": "2024-06-12T16:07:47",
+        "environment": "ML-RT-env"
+      },
+      "detailed_report_path": "STRING"
     }
   ]
 }
