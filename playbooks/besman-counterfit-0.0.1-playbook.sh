@@ -64,7 +64,7 @@ function __besman_execute() {
     duration=$SECONDS
 
     export EXECUTION_DURATION=$duration
-    if [[ $SCAN_RESULT == 1 ]]; then
+    if [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json ]]; then
         export PLAYBOOK_EXECUTION_STATUS=failure
         return 1
     else
