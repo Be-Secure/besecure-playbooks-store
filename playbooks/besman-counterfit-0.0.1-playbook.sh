@@ -47,19 +47,20 @@ function __besman_execute() {
 
      read -p "Running playbook on cloud? (y/n):" clinput
     if [ xx"$clinput" == xx"y" ];then
-        jupyter notebook --generatge-config 2>1>/dev/null
-        sed -i "s/c.ServerApp.ip = 'localhost'/c.ServerApp.ip = '0.0.0.0'/g" $HOME/.jupyter/jupyter_notebook_config.py
+        jupyter notebook --generate-config 2>&1>/dev/null
+        sed -i "s/# c.ServerApp.ip = 'localhost'/c.ServerApp.ip = '0.0.0.0'/g" $HOME/.jupyter/jupyter_notebook_config.py
         sed -i "s/# c.ServerApp.open_browser = False/c.ServerApp.open_browser = False/g" $HOME/.jupyter/jupyter_notebook_config.py
 
         __besman_echo_cyan "Since playbook is executing on cloud so please follow below steps to execute the steps playbook."
-        __besman_echo_cyan "   1. Stop and start the jupyter notebook again on the jupyter server."
-        __besman_echo_cyan "   2. Capture the jupter notebook token from the screen."
-        __besman_echo_cyan "   3. Enable the jupyter notebook port (usaually port 8888) on security group /firewall settings of cloud provider."
-        __besman_echo_cyan "   4. Make sure the instance firewall also allowing port of jupter notebook (usually 8888) is allowed."
-        __besman_echo_cyan "   5. Open the jupyter notebook ui on the browser using the instance public IP and port number used (usually 8888)."
-        __besman_echo_cyan "   6. Enter the token copied above into the UI and connect."
-        __besman_echo_cyan "   7. Upload the steps playbook i.e $BESMAN_DIR/tmp/steps to the jupyter notebook ui"
-        __besman_echo_cyan "   8. Follow the notebook steps in playbook and press \"y\" for below prompt after executing all playbook steps sucessfully."
+	__besman_echo_cyan "   1. Open a separate terminal using ssh to the cloud instance."
+        __besman_echo_cyan "   2. Stop and start the jupyter notebook again on the jupyter server."
+        __besman_echo_cyan "   3. Capture the jupter notebook token from the screen."
+        __besman_echo_cyan "   4. Enable the jupyter notebook port (usaually port 8888) on security group /firewall settings of cloud provider."
+        __besman_echo_cyan "   5. Make sure the instance firewall also allowing port of jupter notebook (usually 8888) is allowed."
+        __besman_echo_cyan "   6. Open the jupyter notebook ui on the browser using the instance public IP and port number used (usually 8888)."
+        __besman_echo_cyan "   7. Enter the token copied above into the UI and connect."
+        __besman_echo_cyan "   8. Upload the steps playbook i.e $BESMAN_DIR/tmp/steps to the jupyter notebook ui"
+        __besman_echo_cyan "   9. Follow the notebook steps in playbook and press \"y\" for below prompt after executing all playbook steps sucessfully."
         sleep 60
     else
             jupyter notebook "$BESMAN_DIR/tmp/steps"
