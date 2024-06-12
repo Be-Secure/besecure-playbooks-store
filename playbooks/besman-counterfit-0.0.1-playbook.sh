@@ -82,7 +82,7 @@ function __besman_execute() {
     duration=$SECONDS
 
     export EXECUTION_DURATION=$duration
-    if [[ $SCAN_RESULT == 1 ]]; then
+    if [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json ]]; then
         export PLAYBOOK_EXECUTION_STATUS=failure
         return 1
     else
@@ -99,6 +99,7 @@ function __besman_prepare() {
     EXECUTION_TIMESTAMP=$(date)
     export EXECUTION_TIMESTAMP
 
+    source ~/.bashrc
     cp -f $BESMAN_COUNTERFIT_LOCAL_PATH/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json $DETAILED_REPORT_PATH
 
 
@@ -126,7 +127,7 @@ function __besman_cleanup() {
             unset "$var"
         fi
     done
-
+    sed -i "/export COUNTERFIT_ATTACKID=/d" ~/.bashrc
     deactivate
 }
 
