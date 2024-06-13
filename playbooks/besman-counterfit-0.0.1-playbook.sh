@@ -27,8 +27,8 @@ function __besman_init() {
        __besman_echo_red "Create the model repository on github/gitlab and try again."
        __besman_echo_red "Make the the following files available in repository."
        __besman_echo_red "   1. $BESMAN_ARTIFACT_NAME.h5"
-       __besman_echo_red "   2. counterfit/$BESMAN_ARTIFACT_NAME.npz"
-       __besman_echo_red "   3. counterfit/$BESMAN_ARTIFACT_NAME.py"
+       __besman_echo_red "   2. $BESMAN_ARTIFACT_NAME.npz"
+       __besman_echo_red "   3. $BESMAN_ARTIFACT_NAME.py"
        return 1
     fi
     [[ ! -d $BESMAN_COUNTERFIT_LOCAL_PATH ]] && __besman_echo_red "counterfit not found at $BESMAN_COUNTERFIT_LOCAL_PATH" && flag="true"
@@ -85,9 +85,9 @@ function __besman_execute() {
     done
 
     [[ -z $COUNTERFIT_ATTACKID ]] && __besman_echo_red "Attack Id is not set. Required. Please set it and try again." && return 1
-    [[ ! -f counterfit/targets/$BESMAN_ARTIFACT_NAME.py ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.py not copied to targets folder." && return 1
-    [[ ! -f counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.npz ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.npz not copied to targets folder." && return 1
-    [[ ! -f counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.h5 ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.h5 not copied to targets folder." && return 1
+    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME.py ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.py not copied to targets folder." && return 1
+    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.npz ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.npz not copied to targets folder." && return 1
+    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.h5 ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.h5 not copied to targets folder." && return 1
 
     [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json ]] && __besman_echo_red "Counterfit result file not found. Execute the playbook to generate the results first." && flag="true"
 
