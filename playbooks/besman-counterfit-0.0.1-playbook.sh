@@ -139,8 +139,8 @@ function __besman_cleanup() {
             unset "$var"
         fi
     done
+    [[ -f $BESMAN_DIR/tmp/attack_id ]] && rm "$BESMAN_DIR/tmp/attack_id"
     sed -i "/export COUNTERFIT_ATTACKID=/d" ~/.bashrc
-    # source ~/.bashrc
 }
 
 function __besman_launch() {
