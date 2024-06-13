@@ -47,19 +47,20 @@ function __besman_execute() {
 
      read -p "Running playbook on cloud? (y/n):" clinput
     if [ xx"$clinput" == xx"y" ];then
-        jupyter notebook --generatge-config 2>1>/dev/null
-        sed -i "s/c.ServerApp.ip = 'localhost'/c.ServerApp.ip = '0.0.0.0'/g" $HOME/.jupyter/jupyter_notebook_config.py
+        jupyter notebook --generate-config 2>&1>/dev/null
+        sed -i "s/# c.ServerApp.ip = 'localhost'/c.ServerApp.ip = '0.0.0.0'/g" $HOME/.jupyter/jupyter_notebook_config.py
         sed -i "s/# c.ServerApp.open_browser = False/c.ServerApp.open_browser = False/g" $HOME/.jupyter/jupyter_notebook_config.py
 
         __besman_echo_cyan "Since playbook is executing on cloud so please follow below steps to execute the steps playbook."
-        __besman_echo_cyan "   1. Stop and start the jupyter notebook again on the jupyter server."
-        __besman_echo_cyan "   2. Capture the jupter notebook token from the screen."
-        __besman_echo_cyan "   3. Enable the jupyter notebook port (usaually port 8888) on security group /firewall settings of cloud provider."
-        __besman_echo_cyan "   4. Make sure the instance firewall also allowing port of jupter notebook (usually 8888) is allowed."
-        __besman_echo_cyan "   5. Open the jupyter notebook ui on the browser using the instance public IP and port number used (usually 8888)."
-        __besman_echo_cyan "   6. Enter the token copied above into the UI and connect."
-        __besman_echo_cyan "   7. Upload the steps playbook i.e $BESMAN_DIR/tmp/steps to the jupyter notebook ui"
-        __besman_echo_cyan "   8. Follow the notebook steps in playbook and press \"y\" for below prompt after executing all playbook steps sucessfully."
+	__besman_echo_cyan "   1. Open a separate terminal using ssh to the cloud instance."
+        __besman_echo_cyan "   2. Stop and start the jupyter notebook again on the jupyter server."
+        __besman_echo_cyan "   3. Capture the jupter notebook token from the screen."
+        __besman_echo_cyan "   4. Enable the jupyter notebook port (usaually port 8888) on security group /firewall settings of cloud provider."
+        __besman_echo_cyan "   5. Make sure the instance firewall also allowing port of jupter notebook (usually 8888) is allowed."
+        __besman_echo_cyan "   6. Open the jupyter notebook ui on the browser using the instance public IP and port number used (usually 8888)."
+        __besman_echo_cyan "   7. Enter the token copied above into the UI and connect."
+        __besman_echo_cyan "   8. Upload the steps playbook i.e $BESMAN_DIR/tmp/steps to the jupyter notebook ui"
+        __besman_echo_cyan "   9. Follow the notebook steps in playbook and press \"y\" for below prompt after executing all playbook steps sucessfully."
         sleep 60
     else
             jupyter notebook "$BESMAN_DIR/tmp/steps"
@@ -71,18 +72,29 @@ function __besman_execute() {
 	if [ xx"$userinput" == xx"y" ];then
            break;
 	else
-	  echo "Steps playbook need to be completed before proceed."
+	  __besman_echo_red "Steps playbook need to be completed before proceed."
 	fi
     done
 
-    [[ -z $COUNTERFIT_ATTACKID ]] && __besman_echo_red "Attack Id is not set. Required. Please set it and try again." && return 1
+    [[ ! -f $BESMAN_DIR/tmp/attack_id ]] && __besman_echo_red "Could not find attack_id, please complete the assessment steps of counterfit" && return 1
 
-    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json ]] && __besman_echo_red "Counterfit result file not found. Execute the playbook to generate the results first." && flag="true"
+    local attack_id=$(cat $BESMAN_DIR/tmp/attack_id)
+
+    [[ -z $attack_id ]] && __besman_echo_red "Could not find attack_id, please complete the assessment steps of counterfit" && return 1
+
+    export COUNTERFIT_ATTACKID=$attack_id
+
+    # echo "attack id = $COUNTERFIT_ATTACKID"
+    # source ~/.bashrc
+
+    # [[ -z $COUNTERFIT_ATTACKID ]] && __besman_echo_red "Attack Id is not set. Required. Please set it and try again." && return 1
+
+    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json ]] && __besman_echo_red "Counterfit result file not found. Execute the playbook to generate the results first." && flag="true"
 
     duration=$SECONDS
 
     export EXECUTION_DURATION=$duration
-    if [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json ]]; then
+    if [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json ]]; then
         export PLAYBOOK_EXECUTION_STATUS=failure
         return 1
     else
@@ -95,12 +107,12 @@ function __besman_execute() {
 }
 
 function __besman_prepare() {
-    echo "preparing data"
+    __besman_echo_yellow "preparing data"
     EXECUTION_TIMESTAMP=$(date)
     export EXECUTION_TIMESTAMP
 
-    source ~/.bashrc
-    cp -f $BESMAN_COUNTERFIT_LOCAL_PATH/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json $DETAILED_REPORT_PATH
+    mkdir -p "$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/dast"
+    cp -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json $DETAILED_REPORT_PATH
 
 
 
@@ -128,7 +140,7 @@ function __besman_cleanup() {
         fi
     done
     sed -i "/export COUNTERFIT_ATTACKID=/d" ~/.bashrc
-    deactivate
+    # source ~/.bashrc
 }
 
 function __besman_launch() {
