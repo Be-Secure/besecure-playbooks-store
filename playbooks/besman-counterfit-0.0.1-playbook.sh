@@ -20,7 +20,17 @@ function __besman_init() {
             flag=true
         fi
     done
-
+    
+    local status_code=$(curl -o /dev/null -s -w "%{http_code}\n" $BESMAN_ARTIFACT_URL)
+    if [ "$status_code" -ne 200 ]; then
+       __besman_echo_red "The $BESMAN_ARTIFACT_URL is not found."
+       __besman_echo_red "Create the model repository on github/gitlab and try again."
+       __besman_echo_red "Make the the following files available in repository."
+       __besman_echo_red "   1. $BESMAN_ARTIFACT_NAME.h5"
+       __besman_echo_red "   2. $BESMAN_ARTIFACT_NAME.npz"
+       __besman_echo_red "   3. $BESMAN_ARTIFACT_NAME.py"
+       return 1
+    fi
     [[ ! -d $BESMAN_COUNTERFIT_LOCAL_PATH ]] && __besman_echo_red "counterfit not found at $BESMAN_COUNTERFIT_LOCAL_PATH" && flag="true"
 
     if [[ $flag == true ]]; then
@@ -29,11 +39,9 @@ function __besman_init() {
         export DETAILED_REPORT_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/dast/$BESMAN_ARTIFACT_NAME-dast-summary-report.json"
         export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME-osar.json"
         __besman_fetch_steps_file "$steps_file_name" || return 1
+	__besman_fetch_source || return 1
         return 0
     fi
-
-  
-
 }
 
 function __besman_execute() {
@@ -76,7 +84,10 @@ function __besman_execute() {
 	fi
     done
 
-    [[ ! -f $BESMAN_DIR/tmp/attack_id ]] && __besman_echo_red "Could not find attack_id, please complete the assessment steps of counterfit" && return 1
+    [[ -z $COUNTERFIT_ATTACKID ]] && __besman_echo_red "Attack Id is not set. Required. Please set it and try again." && return 1
+    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME.py ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.py not copied to targets folder." && return 1
+    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.npz ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.npz not copied to targets folder." && return 1
+    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.h5 ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.h5 not copied to targets folder." && return 1
 
     local attack_id=$(cat $BESMAN_DIR/tmp/attack_id)
 
@@ -110,11 +121,9 @@ function __besman_prepare() {
     __besman_echo_yellow "preparing data"
     EXECUTION_TIMESTAMP=$(date)
     export EXECUTION_TIMESTAMP
-
-    mkdir -p "$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/dast"
-    cp -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json $DETAILED_REPORT_PATH
-
-
+    
+    source ~/.bashrc
+    cp -f $BESMAN_COUNTERFIT_LOCAL_PATH/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json $DETAILED_REPORT_PATH
 
     [[ ! -f $DETAILED_REPORT_PATH ]] && __besman_echo_red "Could not find report @ $DETAILED_REPORT_PATH" && return 1
 
@@ -178,5 +187,27 @@ function __besman_fetch_steps_file() {
         __besman_secure_curl "$steps_file_url" >>"$BESMAN_STEPS_FILE_PATH"
         [[ "$?" != "0" ]] && echo "Failed to fetch from $steps_file_url" && return 1
     fi
+    echo "Done fetching"
+}
+
+function __besman_fetch_source() {
+    echo "Fetching source file"
+
+    __besman_check_url_valid "$BESMAN_ARTIFACT_URL" && __besman_echo_red "Not a valid url $BESMAN_ARTIFACT_URL." && return 1
+
+    git clone $BESMAN_ARTIFACT_URL
+    [[ ! -d $BESMAN_ARTIFACT_NAME ]] && __besman_echo_red "Not able to download the model repository." && return 1
+
+    #cp $BESMAN_ARTIFACT_NAME/counterfit/$BESMAN_ARTIFACT_NAME.py counterfit/targets/$BESMAN_ARTIFACT_NAME.py
+    #mkdir -p counterfit/targets/$BESMAN_ARTIFACT_NAME
+    #cp $BESMAN_ARTIFACT_NAME/counterfit/$BESMAN_ARTIFACT_NAME.npz counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.npz
+    #cp $BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.h5 counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.h5
+
+    #[[ ! -f counterfit/targets/$BESMAN_ARTIFACT_NAME.py ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.py not copied to targets folder." && return 1
+    #[[ ! -f counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.npz ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.npz not copied to targets folder." && return 1
+    #[[ ! -f counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.h5 ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.h5 not copied to targets folder." && return 1
+
+    rm -rf $BESMAN_ARTIFACT_NAME
+
     echo "Done fetching"
 }
