@@ -72,18 +72,29 @@ function __besman_execute() {
 	if [ xx"$userinput" == xx"y" ];then
            break;
 	else
-	  echo "Steps playbook need to be completed before proceed."
+	  __besman_echo_red "Steps playbook need to be completed before proceed."
 	fi
     done
 
-    [[ -z $COUNTERFIT_ATTACKID ]] && __besman_echo_red "Attack Id is not set. Required. Please set it and try again." && return 1
+    [[ ! -f $BESMAN_DIR/tmp/attack_id ]] && __besman_echo_red "Could not find attack_id, please complete the assessment steps of counterfit" && return 1
 
-    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json ]] && __besman_echo_red "Counterfit result file not found. Execute the playbook to generate the results first." && flag="true"
+    local attack_id=$(cat $BESMAN_DIR/tmp/attack_id)
+
+    [[ -z $attack_id ]] && __besman_echo_red "Could not find attack_id, please complete the assessment steps of counterfit" && return 1
+
+    export COUNTERFIT_ATTACKID=$attack_id
+
+    # echo "attack id = $COUNTERFIT_ATTACKID"
+    # source ~/.bashrc
+
+    # [[ -z $COUNTERFIT_ATTACKID ]] && __besman_echo_red "Attack Id is not set. Required. Please set it and try again." && return 1
+
+    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json ]] && __besman_echo_red "Counterfit result file not found. Execute the playbook to generate the results first." && flag="true"
 
     duration=$SECONDS
 
     export EXECUTION_DURATION=$duration
-    if [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json ]]; then
+    if [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json ]]; then
         export PLAYBOOK_EXECUTION_STATUS=failure
         return 1
     else
@@ -96,12 +107,12 @@ function __besman_execute() {
 }
 
 function __besman_prepare() {
-    echo "preparing data"
+    __besman_echo_yellow "preparing data"
     EXECUTION_TIMESTAMP=$(date)
     export EXECUTION_TIMESTAMP
 
-    source ~/.bashrc
-    cp -f $BESMAN_COUNTERFIT_LOCAL_PATH/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json $DETAILED_REPORT_PATH
+    mkdir -p "$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/dast"
+    cp -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json $DETAILED_REPORT_PATH
 
 
 
@@ -128,8 +139,8 @@ function __besman_cleanup() {
             unset "$var"
         fi
     done
+    [[ -f $BESMAN_DIR/tmp/attack_id ]] && rm "$BESMAN_DIR/tmp/attack_id"
     sed -i "/export COUNTERFIT_ATTACKID=/d" ~/.bashrc
-    deactivate
 }
 
 function __besman_launch() {
