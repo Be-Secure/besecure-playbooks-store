@@ -21,7 +21,7 @@ function __besman_init() {
         fi
     done
     
-    local status_code=$(curl -o /dev/null -s -w "%{http_code}\n" $BESMAN_ARTIFACT_URL)
+    local status_code=$(curl -o /dev/null -s -k -w "%{http_code}\n" $BESMAN_ARTIFACT_URL)
     if [ "$status_code" -ne 200 ]; then
        __besman_echo_red "The $BESMAN_ARTIFACT_URL is not found."
        __besman_echo_red "Create the model repository on github/gitlab and try again."
