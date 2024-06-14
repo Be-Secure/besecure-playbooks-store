@@ -31,7 +31,7 @@ function __besman_init() {
        __besman_echo_red "   3. $BESMAN_ARTIFACT_NAME.py"
        return 1
     fi
-    [[ ! -d $BESMAN_COUNTERFIT_LOCAL_PATH ]] && __besman_echo_red "counterfit not found at $BESMAN_COUNTERFIT_LOCAL_PATH" && flag="true"
+    [[ ! -d $BESMAN_COUNTERFIT_LOCAL_PATH ]] && __besman_echo_red "counterfit not found at $BESMAN_COUNTERFIT_LOCAL_PATH" && flag=true
 
     if [[ $flag == true ]]; then
         return 1
@@ -39,7 +39,7 @@ function __besman_init() {
         export DETAILED_REPORT_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/dast/$BESMAN_ARTIFACT_NAME-dast-summary-report.json"
         export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME-osar.json"
         __besman_fetch_steps_file "$steps_file_name" || return 1
-	__besman_fetch_source || return 1
+	__besman_fetch_source && return 1
         return 0
     fi
 }
@@ -53,8 +53,9 @@ function __besman_execute() {
     cp "$BESMAN_STEPS_FILE_PATH" "$BESMAN_DIR/tmp/steps"
     SECONDS=0
 
-     read -p "Running playbook on cloud? (y/n):" clinput
-    if [ xx"$clinput" == xx"y" ];then
+    while true; do
+      read -p "Running playbook on cloud? (y/n):" clinput
+      if [ xx"$clinput" == xx"y" ];then
         jupyter notebook --generate-config 2>&1>/dev/null
         sed -i "s/# c.ServerApp.ip = 'localhost'/c.ServerApp.ip = '0.0.0.0'/g" $HOME/.jupyter/jupyter_notebook_config.py
         sed -i "s/# c.ServerApp.open_browser = False/c.ServerApp.open_browser = False/g" $HOME/.jupyter/jupyter_notebook_config.py
@@ -69,11 +70,14 @@ function __besman_execute() {
         __besman_echo_cyan "   7. Enter the token copied above into the UI and connect."
         __besman_echo_cyan "   8. Upload the steps playbook i.e $BESMAN_DIR/tmp/steps to the jupyter notebook ui"
         __besman_echo_cyan "   9. Follow the notebook steps in playbook and press \"y\" for below prompt after executing all playbook steps sucessfully."
-        sleep 60
-    else
-            jupyter notebook "$BESMAN_DIR/tmp/steps"
-    fi
-    
+	break;
+      elif [ xx"$clinput" == xx"n" ];then
+         jupyter notebook "$BESMAN_DIR/tmp/steps"
+         break;
+      else
+         __besman_echo_yellow "No a valid input. Please press \"y\" or \"n\" only."
+      fi
+    done 
     while true; do
         read -p "Playbook execution completed? (y/n):" userinput
 
@@ -84,10 +88,9 @@ function __besman_execute() {
 	fi
     done
 
-    [[ -z $COUNTERFIT_ATTACKID ]] && __besman_echo_red "Attack Id is not set. Required. Please set it and try again." && return 1
-    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME.py ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.py not copied to targets folder." && return 1
-    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.npz ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.npz not copied to targets folder." && return 1
-    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.h5 ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.h5 not copied to targets folder." && return 1
+    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME.py ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.py is required. Please follow the steps in jupyter playbook closely and copy the file to $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/ folder from the model repository." && return 1
+    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.npz ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.npz is required. Please follow the steps in jupyter playbook and copy file to $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/ folder from the model repository." && return 1
+    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.h5 ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.h5 is required. please follow steps in jupyter notebook closely  and copy the file to  $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/ folder from the model repository." && return 1
 
     local attack_id=$(cat $BESMAN_DIR/tmp/attack_id)
 
@@ -114,7 +117,6 @@ function __besman_execute() {
     fi
 
     rm -rf "$BESMAN_DIR/tmp/steps"
-
 }
 
 function __besman_prepare() {
@@ -124,7 +126,6 @@ function __besman_prepare() {
     
     source ~/.bashrc
     cp -f $BESMAN_COUNTERFIT_LOCAL_PATH/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json $DETAILED_REPORT_PATH
-
     [[ ! -f $DETAILED_REPORT_PATH ]] && __besman_echo_red "Could not find report @ $DETAILED_REPORT_PATH" && return 1
 
     __besman_generate_osar
@@ -138,6 +139,8 @@ function __besman_publish() {
     git add models/$BESMAN_ARTIFACT_NAME/*
     git commit -m "Added DAST and OSAR reports for $BESMAN_ARTIFACT_NAME"
     git push origin main
+
+    [[ -d $BESMAN_ARTIFACT_NAME ]] && rm -rf $BESMAN_ARTIFACT_NAME
 }
 
 function __besman_cleanup() {
@@ -150,6 +153,9 @@ function __besman_cleanup() {
     done
     [[ -f $BESMAN_DIR/tmp/attack_id ]] && rm "$BESMAN_DIR/tmp/attack_id"
     sed -i "/export COUNTERFIT_ATTACKID=/d" ~/.bashrc
+
+    [[ -v $COUNTERFIT_ATTACKID ]] && unset $COUNTERFIT_ATTACKID
+    [[ -d $BESMAN_ARTIFACT_NAME ]] && rm -rf $BESMAN_ARTIFACT_NAME
 }
 
 function __besman_launch() {
@@ -158,6 +164,7 @@ function __besman_launch() {
 
     __besman_init
     flag=$?
+
     if [[ $flag == 0 ]]; then
         __besman_execute
         flag=$?
@@ -191,23 +198,9 @@ function __besman_fetch_steps_file() {
 }
 
 function __besman_fetch_source() {
-    echo "Fetching source file"
+    __besman_echo_no_colour "Fetching model files"
 
-    __besman_check_url_valid "$BESMAN_ARTIFACT_URL" && __besman_echo_red "Not a valid url $BESMAN_ARTIFACT_URL." && return 1
-
-    git clone $BESMAN_ARTIFACT_URL
+    git clone --quiet $BESMAN_ARTIFACT_URL
     [[ ! -d $BESMAN_ARTIFACT_NAME ]] && __besman_echo_red "Not able to download the model repository." && return 1
-
-    #cp $BESMAN_ARTIFACT_NAME/counterfit/$BESMAN_ARTIFACT_NAME.py counterfit/targets/$BESMAN_ARTIFACT_NAME.py
-    #mkdir -p counterfit/targets/$BESMAN_ARTIFACT_NAME
-    #cp $BESMAN_ARTIFACT_NAME/counterfit/$BESMAN_ARTIFACT_NAME.npz counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.npz
-    #cp $BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.h5 counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.h5
-
-    #[[ ! -f counterfit/targets/$BESMAN_ARTIFACT_NAME.py ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.py not copied to targets folder." && return 1
-    #[[ ! -f counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.npz ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.npz not copied to targets folder." && return 1
-    #[[ ! -f counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.h5 ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.h5 not copied to targets folder." && return 1
-
-    rm -rf $BESMAN_ARTIFACT_NAME
-
-    echo "Done fetching"
+    #rm -rf $BESMAN_ARTIFACT_NAME
 }
