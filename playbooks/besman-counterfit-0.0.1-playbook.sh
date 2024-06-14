@@ -31,7 +31,7 @@ function __besman_init() {
        __besman_echo_red "   3. $BESMAN_ARTIFACT_NAME.py"
        return 1
     fi
-    [[ ! -d $BESMAN_COUNTERFIT_LOCAL_PATH ]] && __besman_echo_red "counterfit not found at $BESMAN_COUNTERFIT_LOCAL_PATH" && flag="true"
+    [[ ! -d $BESMAN_COUNTERFIT_LOCAL_PATH ]] && __besman_echo_red "counterfit not found at $BESMAN_COUNTERFIT_LOCAL_PATH" && flag=true
 
     if [[ $flag == true ]]; then
         return 1
@@ -39,7 +39,7 @@ function __besman_init() {
         export DETAILED_REPORT_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/dast/$BESMAN_ARTIFACT_NAME-dast-summary-report.json"
         export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME-osar.json"
         __besman_fetch_steps_file "$steps_file_name" || return 1
-	__besman_fetch_source || return 1
+	__besman_fetch_source && return 1
         return 0
     fi
 }
@@ -70,7 +70,6 @@ function __besman_execute() {
         __besman_echo_cyan "   7. Enter the token copied above into the UI and connect."
         __besman_echo_cyan "   8. Upload the steps playbook i.e $BESMAN_DIR/tmp/steps to the jupyter notebook ui"
         __besman_echo_cyan "   9. Follow the notebook steps in playbook and press \"y\" for below prompt after executing all playbook steps sucessfully."
-        sleep 60
 	break;
       elif [ xx"$clinput" == xx"n" ];then
          jupyter notebook "$BESMAN_DIR/tmp/steps"
@@ -89,9 +88,9 @@ function __besman_execute() {
 	fi
     done
 
-    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME.py ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.py is required. Please follow the steps in playbook and copy the file to $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/ folder from the model repository." && return 1
-    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.npz ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.npz is required. Please follow the steps in playboo and copy file to $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/ folder from the model repository." && return 1
-    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.h5 ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.h5 is required. please copy the file to  $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/ folder from the model repository." && return 1
+    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME.py ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.py is required. Please follow the steps in jupyter playbook closely and copy the file to $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/ folder from the model repository." && return 1
+    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.npz ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.npz is required. Please follow the steps in jupyter playbook and copy file to $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/ folder from the model repository." && return 1
+    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.h5 ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.h5 is required. please follow steps in jupyter notebook closely  and copy the file to  $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/ folder from the model repository." && return 1
 
     local attack_id=$(cat $BESMAN_DIR/tmp/attack_id)
 
@@ -165,6 +164,7 @@ function __besman_launch() {
 
     __besman_init
     flag=$?
+
     if [[ $flag == 0 ]]; then
         __besman_execute
         flag=$?
@@ -198,9 +198,9 @@ function __besman_fetch_steps_file() {
 }
 
 function __besman_fetch_source() {
-    __besman_echo_no_color "Fetching model files"
+    __besman_echo_no_colour "Fetching model files"
 
-    git clone $BESMAN_ARTIFACT_URL
+    git clone --quiet $BESMAN_ARTIFACT_URL
     [[ ! -d $BESMAN_ARTIFACT_NAME ]] && __besman_echo_red "Not able to download the model repository." && return 1
     #rm -rf $BESMAN_ARTIFACT_NAME
 }
