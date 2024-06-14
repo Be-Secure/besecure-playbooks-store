@@ -21,9 +21,8 @@ function __besman_init() {
         fi
     done
     
-    local status_code=$(curl -o /dev/null -s -k -w "%{http_code}\n" $BESMAN_ARTIFACT_URL)
-    if [ "$status_code" -ne 200 ]; then
-       __besman_echo_red "The $BESMAN_ARTIFACT_URL is not found."
+    __besman_check_url_valid $BESMAN_ARTIFACT_URL
+    if [ xx"$?" != xx"0" ]; then
        __besman_echo_red "Create the model repository on github/gitlab and try again."
        __besman_echo_red "Make the the following files available in repository."
        __besman_echo_red "   1. $BESMAN_ARTIFACT_NAME.h5"
@@ -31,6 +30,7 @@ function __besman_init() {
        __besman_echo_red "   3. $BESMAN_ARTIFACT_NAME.py"
        return 1
     fi
+
     [[ ! -d $BESMAN_COUNTERFIT_LOCAL_PATH ]] && __besman_echo_red "counterfit not found at $BESMAN_COUNTERFIT_LOCAL_PATH" && flag=true
 
     if [[ $flag == true ]]; then
