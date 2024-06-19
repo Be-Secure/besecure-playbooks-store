@@ -56,10 +56,11 @@ function __besman_execute() {
     while true; do
       read -p "Running playbook on cloud? (y/n):" clinput
       if [ xx"$clinput" == xx"y" ];then
-        jupyter notebook --generate-config 2>&1>/dev/null
-        sed -i "s/# c.ServerApp.ip = 'localhost'/c.ServerApp.ip = '0.0.0.0'/g" $HOME/.jupyter/jupyter_notebook_config.py
-        sed -i "s/# c.ServerApp.open_browser = False/c.ServerApp.open_browser = False/g" $HOME/.jupyter/jupyter_notebook_config.py
-
+        if [[ ! -z $(command -v jupyter) ]];then
+          [[ ! -f  $HOME/.jupyter/jupyter_notebook_config.py ]] && jupyter notebook --generate-config 2>&1>/dev/null
+          [[ -f  $HOME/.jupyter/jupyter_notebook_config.py ]] && sed -i "s/# c.ServerApp.ip = 'localhost'/c.ServerApp.ip = '0.0.0.0'/g" $HOME/.jupyter/jupyter_notebook_config.py
+          [[ -f  $HOME/.jupyter/jupyter_notebook_config.py ]] && sed -i "s/# c.ServerApp.open_browser = False/c.ServerApp.open_browser = False/g" $HOME/.jupyter/jupyter_notebook_config.py
+        fi
         __besman_echo_cyan "Since playbook is executing on cloud so please follow below steps to execute the steps playbook."
 	__besman_echo_cyan "   1. Open a separate terminal using ssh to the cloud instance."
         __besman_echo_cyan "   2. Stop and start the jupyter notebook again on the jupyter server."
