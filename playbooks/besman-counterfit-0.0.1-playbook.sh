@@ -4,10 +4,10 @@ function __besman_init() {
     __besman_echo_white "initializing"
     export ASSESSMENT_TOOL_NAME="counterfit"
     export ASSESSMENT_TOOL_TYPE="dast"
-    export ASSESSMENT_TOOL_VERSION="0.1.1"
-    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_NAME-0.0.1-playbook.sh"
+    export ASSESSMENT_TOOL_VERSION="0.0.1"
+    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_VERSION-playbook.sh"
     
-    local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-0.0.1-steps.ipynb"
+    local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_VERSION-steps.ipynb"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
     local var_array=("BESMAN_COUNTERFIT_LOCAL_PATH" "BESMAN_COUNTERFIT_BRANCH" "BESMAN_COUNTERFIT_URL" "BESMAN_ARTIFACT_NAME" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME" "BESMAN_ASSESSMENT_DATASTORE_URL")
@@ -36,8 +36,9 @@ function __besman_init() {
     if [[ $flag == true ]]; then
         return 1
     else
-        export DETAILED_REPORT_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/dast/$BESMAN_ARTIFACT_NAME-dast-summary-report.json"
-        export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME-osar.json"
+        export DETAILED_REPORT_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/$ASSESSMENT_TOOL_TYPE/$BESMAN_ARTIFACT_NAME-$ASSESSMENT_TOOL_VERSION-$ASSESSMENT_TOOL_TYPE-detailed-report.json"
+        export SUMMARY_REPORT_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/$ASSESSMENT_TOOL_TYPE/$BESMAN_ARTIFACT_NAME-$ASSESSMENT_TOOL_VERSION-$ASSESSMENT_TOOL_TYPE-summary-report.json"
+	export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME-osar.json"
         __besman_fetch_steps_file "$steps_file_name" || return 1
 	__besman_fetch_source && return 1
         return 0
@@ -69,7 +70,7 @@ function __besman_execute() {
         __besman_echo_cyan "   5. Make sure the instance firewall also allowing port of jupter notebook (usually 8888) is allowed."
         __besman_echo_cyan "   6. Open the jupyter notebook ui on the browser using the instance public IP and port number used (usually 8888)."
         __besman_echo_cyan "   7. Enter the token copied above into the UI and connect."
-        __besman_echo_cyan "   8. Upload the steps playbook i.e $BESMAN_DIR/tmp/steps to the jupyter notebook ui"
+        __besman_echo_cyan "   8. Upload the steps playbook i.e $BESMAN_DIR/tmp/steps/ to the jupyter notebook ui"
         __besman_echo_cyan "   9. Follow the notebook steps in playbook and press \"y\" for below prompt after executing all playbook steps sucessfully."
 	break;
       elif [ xx"$clinput" == xx"n" ];then
@@ -126,8 +127,9 @@ function __besman_prepare() {
     export EXECUTION_TIMESTAMP
     
     source ~/.bashrc
-    cp -f $BESMAN_COUNTERFIT_LOCAL_PATH/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json $DETAILED_REPORT_PATH
-    [[ ! -f $DETAILED_REPORT_PATH ]] && __besman_echo_red "Could not find report @ $DETAILED_REPORT_PATH" && return 1
+    [[ ! -d $BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/dast ]] && mkdir -p $BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/dast
+    cp -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json $SUMMARY_REPORT_PATH
+    [[ ! -f $SUMMARY_REPORT_PATH ]] && __besman_echo_red "Could not find report @ $SUMMARY_REPORT_PATH" && return 1
 
     __besman_generate_osar
 }
@@ -138,7 +140,7 @@ function __besman_publish() {
     cd "$BESMAN_ASSESSMENT_DATASTORE_DIR"
 
     git add models/$BESMAN_ARTIFACT_NAME/*
-    git commit -m "Added DAST and OSAR reports for $BESMAN_ARTIFACT_NAME"
+    git commit -m "Added SAST and OSAR reports for $BESMAN_ARTIFACT_NAME"
     git push origin main
 
     [[ -d $BESMAN_ARTIFACT_NAME ]] && rm -rf $BESMAN_ARTIFACT_NAME
