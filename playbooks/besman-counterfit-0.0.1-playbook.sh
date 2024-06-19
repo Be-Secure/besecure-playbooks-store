@@ -70,7 +70,7 @@ function __besman_execute() {
         __besman_echo_cyan "   5. Make sure the instance firewall also allowing port of jupter notebook (usually 8888) is allowed."
         __besman_echo_cyan "   6. Open the jupyter notebook ui on the browser using the instance public IP and port number used (usually 8888)."
         __besman_echo_cyan "   7. Enter the token copied above into the UI and connect."
-        __besman_echo_cyan "   8. Upload the steps playbook i.e $BESMAN_DIR/tmp/steps/ to the jupyter notebook ui"
+        __besman_echo_cyan "   8. Upload the steps playbook i.e $BESMAN_DIR/tmp/steps/besman-<model name>-<version>-steps.ipynb to the jupyter notebook ui"
         __besman_echo_cyan "   9. Follow the notebook steps in playbook and press \"y\" for below prompt after executing all playbook steps sucessfully."
 	break;
       elif [ xx"$clinput" == xx"n" ];then
@@ -140,7 +140,7 @@ function __besman_publish() {
     cd "$BESMAN_ASSESSMENT_DATASTORE_DIR"
 
     git add models/$BESMAN_ARTIFACT_NAME/*
-    git commit -m "Added SAST and OSAR reports for $BESMAN_ARTIFACT_NAME"
+    git commit -m "Added DAST and OSAR reports for $BESMAN_ARTIFACT_NAME"
     git push origin main
 
     [[ -d $BESMAN_ARTIFACT_NAME ]] && rm -rf $BESMAN_ARTIFACT_NAME
