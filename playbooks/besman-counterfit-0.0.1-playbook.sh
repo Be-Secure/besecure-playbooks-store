@@ -4,10 +4,13 @@ function __besman_init() {
     __besman_echo_white "initializing"
     export ASSESSMENT_TOOL_NAME="counterfit"
     export ASSESSMENT_TOOL_TYPE="dast"
-    export ASSESSMENT_TOOL_VERSION="0.0.1"
-    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_VERSION-playbook.sh"
-    
-    local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_VERSION-steps.ipynb"
+    export ASSESSMENT_TOOL_VERSION="0.1.0"
+    export ASSESSMENT_PLAYBOOK_VERSION=$(basename "$0" | cut -d "-" -f 3)
+    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_NAME-$ASSESSMENT_PLAYBOOK_VERSION-playbook.sh"
+    export COUNTERFIT_TARGETS_PATH="$BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets"
+    export COUNTERFIT_RESULTS_PATH="$COUNTERFIT_TARGETS_PATH/results"
+
+    local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-$ASSESSMENT_PLAYBOOK_VERSION-steps.ipynb"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
     local var_array=("BESMAN_COUNTERFIT_LOCAL_PATH" "BESMAN_COUNTERFIT_BRANCH" "BESMAN_COUNTERFIT_URL" "BESMAN_ARTIFACT_NAME" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME" "BESMAN_ASSESSMENT_DATASTORE_URL")
@@ -21,6 +24,8 @@ function __besman_init() {
         fi
     done
     
+    export ASSESSMENT_MODELS_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models"
+
     __besman_check_url_valid $BESMAN_ARTIFACT_URL
     if [ xx"$?" != xx"0" ]; then
        __besman_echo_red "Create the model repository on github/gitlab and try again."
@@ -36,9 +41,9 @@ function __besman_init() {
     if [[ $flag == true ]]; then
         return 1
     else
-        export DETAILED_REPORT_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/$ASSESSMENT_TOOL_TYPE/$BESMAN_ARTIFACT_NAME-$ASSESSMENT_TOOL_VERSION-$ASSESSMENT_TOOL_TYPE-detailed-report.json"
-        export SUMMARY_REPORT_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/$ASSESSMENT_TOOL_TYPE/$BESMAN_ARTIFACT_NAME-$ASSESSMENT_TOOL_VERSION-$ASSESSMENT_TOOL_TYPE-summary-report.json"
-	export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME-osar.json"
+        export DETAILED_REPORT_PATH="$ASSESSMENT_MODELS_PATH/$BESMAN_ARTIFACT_NAME/$ASSESSMENT_TOOL_TYPE/$BESMAN_ARTIFACT_NAME-$ASSESSMENT_TOOL_VERSION-$ASSESSMENT_TOOL_TYPE-detailed-report.json"
+        export SUMMARY_REPORT_PATH="$ASSESSMENT_MODELS_PATH/$BESMAN_ARTIFACT_NAME/$ASSESSMENT_TOOL_TYPE/$BESMAN_ARTIFACT_NAME-$ASSESSMENT_TOOL_VERSION-$ASSESSMENT_TOOL_TYPE-summary-report.json"
+	export OSAR_PATH="$ASSESSMENT_MODELS_PATH/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME-osar.json"
         __besman_fetch_steps_file "$steps_file_name" || return 1
 	__besman_fetch_source && return 1
         return 0
@@ -90,9 +95,9 @@ function __besman_execute() {
 	fi
     done
 
-    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME.py ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.py is required. Please follow the steps in jupyter playbook closely and copy the file to $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/ folder from the model repository." && return 1
-    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.npz ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.npz is required. Please follow the steps in jupyter playbook and copy file to $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/ folder from the model repository." && return 1
-    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.h5 ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.h5 is required. please follow steps in jupyter notebook closely  and copy the file to  $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/$BESMAN_ARTIFACT_NAME/ folder from the model repository." && return 1
+    [[ ! -f $COUNTERFIT_TARGETS_PATH/$BESMAN_ARTIFACT_NAME.py ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.py is required. Please follow the steps in jupyter playbook closely and copy the file to $COUNTERFIT_TARGETS_PATH folder from the model repository." && return 1
+    [[ ! -f $COUNTERFIT_TARGETS_PATH/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.npz ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.npz is required. Please follow the steps in jupyter playbook and copy file to $COUNTERFIT_TARGETS_PATH/$BESMAN_ARTIFACT_NAME/ folder from the model repository." && return 1
+    [[ ! -f $COUNTERFIT_TARGETS_PATH/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME.h5 ]] && __besman_echo_red "$BESMAN_ARTIFACT_NAME.h5 is required. please follow steps in jupyter notebook closely  and copy the file to  $COUNTERFIT_TARGETS_PATH/$BESMAN_ARTIFACT_NAME/ folder from the model repository." && return 1
 
     local attack_id=$(cat $BESMAN_DIR/tmp/attack_id)
 
@@ -100,17 +105,12 @@ function __besman_execute() {
 
     export COUNTERFIT_ATTACKID=$attack_id
 
-    # echo "attack id = $COUNTERFIT_ATTACKID"
-    # source ~/.bashrc
-
-    # [[ -z $COUNTERFIT_ATTACKID ]] && __besman_echo_red "Attack Id is not set. Required. Please set it and try again." && return 1
-
-    [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json ]] && __besman_echo_red "Counterfit result file not found. Execute the playbook to generate the results first." && flag="true"
+    [[ ! -f $COUNTERFIT_RESULTS_PATH/${COUNTERFIT_ATTACKID}/run_summary.json ]] && __besman_echo_red "Counterfit result file not found. Execute the playbook to generate the results first." && flag="true"
 
     duration=$SECONDS
 
     export EXECUTION_DURATION=$duration
-    if [[ ! -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json ]]; then
+    if [[ ! -f $COUNTERFIT_RESULTS_PATH/${COUNTERFIT_ATTACKID}/run_summary.json ]]; then
         export PLAYBOOK_EXECUTION_STATUS=failure
         return 1
     else
@@ -122,13 +122,12 @@ function __besman_execute() {
 }
 
 function __besman_prepare() {
-    __besman_echo_yellow "preparing data"
     EXECUTION_TIMESTAMP=$(date)
     export EXECUTION_TIMESTAMP
     
-    source ~/.bashrc
-    [[ ! -d $BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/dast ]] && mkdir -p $BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/dast
-    cp -f $BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets/results/${COUNTERFIT_ATTACKID}/run_summary.json $SUMMARY_REPORT_PATH
+    __besman_echo_yellow "Saving Results to assessment datastore."
+    [[ ! -d $ASSESSMENT_MODELS_PATH/$BESMAN_ARTIFACT_NAME/dast ]] && mkdir -p $ASSESSMENT_MODELS_PATH/$BESMAN_ARTIFACT_NAME/dast
+    cp -f $COUNTERFIT_RESULTS_PATH/${COUNTERFIT_ATTACKID}/run_summary.json $SUMMARY_REPORT_PATH
     [[ ! -f $SUMMARY_REPORT_PATH ]] && __besman_echo_red "Could not find report @ $SUMMARY_REPORT_PATH" && return 1
 
     __besman_generate_osar
@@ -136,7 +135,7 @@ function __besman_prepare() {
 
 
 function __besman_publish() {
-    __besman_echo_yellow "Pushing to datastore"
+    __besman_echo_yellow "Pushing results,OSAR and attestation to assessment datastore"
     cd "$BESMAN_ASSESSMENT_DATASTORE_DIR"
 
     git add models/$BESMAN_ARTIFACT_NAME/*
@@ -147,6 +146,7 @@ function __besman_publish() {
 }
 
 function __besman_cleanup() {
+    __besman_echo_yellow "Cleaning up" 
     local var_array=("ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_STEPS_FILE_PATH" "DETAILED_REPORT_PATH" "OSAR_PATH" "EXECUTION_TIMESTAMP" "EXECUTION_DURATION")
 
     for var in "${var_array[@]}"; do
@@ -154,15 +154,18 @@ function __besman_cleanup() {
             unset "$var"
         fi
     done
+
     [[ -f $BESMAN_DIR/tmp/attack_id ]] && rm "$BESMAN_DIR/tmp/attack_id"
     sed -i "/export COUNTERFIT_ATTACKID=/d" ~/.bashrc
 
     [[ -v $COUNTERFIT_ATTACKID ]] && unset $COUNTERFIT_ATTACKID
     [[ -d $BESMAN_ARTIFACT_NAME ]] && rm -rf $BESMAN_ARTIFACT_NAME
+    [[ -f $BESMAN_STEPS_FILE_PATH ]] && rm $BESMAN_STEPS_FILE_PATH
 }
 
 function __besman_launch() {
-    __besman_echo_yellow "Starting playbook"
+    __besman_echo_yellow "Executing Playbook $0"
+
     local flag=1
 
     __besman_init
@@ -187,7 +190,7 @@ function __besman_launch() {
 }
 
 function __besman_fetch_steps_file() {
-    echo "Fetching steps file"
+    __besman_echo_yellow "Fetching steps file"
     local steps_file_name=$1
     local steps_file_url="https://raw.githubusercontent.com/$BESMAN_PLAYBOOK_REPO/$BESMAN_PLAYBOOK_REPO_BRANCH/playbooks/$steps_file_name"
     __besman_check_url_valid "$steps_file_url" || return 1
@@ -197,13 +200,11 @@ function __besman_fetch_steps_file() {
         __besman_secure_curl "$steps_file_url" >>"$BESMAN_STEPS_FILE_PATH"
         [[ "$?" != "0" ]] && echo "Failed to fetch from $steps_file_url" && return 1
     fi
-    echo "Done fetching"
 }
 
 function __besman_fetch_source() {
-    __besman_echo_no_colour "Fetching model files"
+    __besman_echo_yellow "Fetching model files"
 
     git clone --quiet $BESMAN_ARTIFACT_URL
     [[ ! -d $BESMAN_ARTIFACT_NAME ]] && __besman_echo_red "Not able to download the model repository." && return 1
-    #rm -rf $BESMAN_ARTIFACT_NAME
 }
