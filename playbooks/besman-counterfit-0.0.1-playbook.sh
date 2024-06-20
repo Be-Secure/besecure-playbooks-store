@@ -4,7 +4,7 @@ function __besman_init() {
     __besman_echo_white "initializing"
     export ASSESSMENT_TOOL_NAME="counterfit"
     export ASSESSMENT_TOOL_TYPE="dast"
-    export ASSESSMENT_TOOL_VERSION="0.1.0"
+    export ASSESSMENT_TOOL_VERSION="0.1.1"
     export ASSESSMENT_PLAYBOOK_VERSION=$(basename "$0" | cut -d "-" -f 3)
     export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_NAME-$ASSESSMENT_PLAYBOOK_VERSION-playbook.sh"
     export COUNTERFIT_TARGETS_PATH="$BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets"
