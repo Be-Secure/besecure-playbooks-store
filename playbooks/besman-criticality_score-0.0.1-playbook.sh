@@ -6,7 +6,7 @@ function __besman_init() {
     export ASSESSMENT_TOOL_VERSION="2.0.3"
     #export BESLAB_OWNER_TYPE="Organization"
     #export BESLAB_OWNER_NAME="Be-Secure"
-    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_TYPE-0.0.1-playbook.sh"
+    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_NAME-0.0.1-playbook.sh"
 
     local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-0.0.1-steps.sh"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
@@ -49,7 +49,7 @@ function __besman_init() {
         export CRITICALITY_SCORE_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_VERSION/criticality_score"
         export DETAILED_REPORT_PATH="$CRITICALITY_SCORE_PATH/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-criticality_score-report.json"
         mkdir -p "$CRITICALITY_SCORE_PATH"
-        export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/osar/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-OSAR.json"
+        export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_VERSION/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-osar.json"
         __besman_fetch_steps_file "$steps_file_name" || return 1
         return 0
 
@@ -135,7 +135,7 @@ function __besman_launch() {
 function __besman_fetch_steps_file() {
     __besman_echo_white "fetching steps file"
     local steps_file_name=$1
-    local steps_file_url="https://raw.githubusercontent.com/$BESMAN_NAMESPACE/$BESMAN_PLAYBOOK_REPO/main/playbooks/$steps_file_name"
+    local steps_file_url="https://raw.githubusercontent.com/$BESMAN_PLAYBOOK_REPO/$BESMAN_PLAYBOOK_REPO_BRANCH/playbooks/$steps_file_name"
     __besman_check_url_valid "$steps_file_url" || return 1
 
     if [[ ! -f "$BESMAN_STEPS_FILE_PATH" ]]; then

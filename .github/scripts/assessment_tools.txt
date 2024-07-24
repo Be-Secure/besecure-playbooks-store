@@ -1,0 +1,9 @@
+spdx-sbom-generator
+criticality_score
+scorecard
+codeql
+snyk
+fossology
+sonarqube
+watchtower
+counterfit

@@ -2,12 +2,12 @@
 
 function __besman_init() {
     __besman_echo_white "initialising"
-    export ASSESSMENT_TOOL_NAME="spdx-sbom-generator"
-    export ASSESSMENT_TOOL_TYPE="sbom"
-    export ASSESSMENT_TOOL_VERSION="v0.0.15"
+    export ASSESSMENT_TOOL_NAME="sonarqube"
+    export ASSESSMENT_TOOL_TYPE="sast"
+    export ASSESSMENT_TOOL_VERSION="9.9.4"
     export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_NAME-0.0.1-playbook.sh"
     
-    local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-0.0.1-steps.sh"
+    local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-0.0.1-steps.ipynb"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
     local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME")
@@ -41,18 +41,33 @@ function __besman_init() {
 
     done
 
-    [[ ! -f $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME ]] && __besman_echo_red "Could not find artifact @ $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME" && flag=true
+    if [[ -z $(command -v docker) ]]; 
+    then
+        
+        __besman_echo_red "Docker not installed"
+        flag=true
+    fi
+
 
     if [[ $flag == true ]]; then
 
         return 1
 
     else
-        export SBOM_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_VERSION/sbom"
-        export DETAILED_REPORT_PATH="$SBOM_PATH/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-sbom-report.json"
-        mkdir -p "$SBOM_PATH"
+        export SONARQUBE_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_VERSION/$ASSESSMENT_TOOL_TYPE"
+        export DETAILED_REPORT_PATH="$SONARQUBE_PATH/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-sonarqube-report.json"
+        mkdir -p "$SONARQUBE_PATH"
         export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_VERSION/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-osar.json"
         __besman_fetch_steps_file "$steps_file_name" || return 1
+        if ! grep -q "export DETAILED_REPORT_PATH=" ~/.bashrc; then
+            echo "export DETAILED_REPORT_PATH=$DETAILED_REPORT_PATH"
+            source ~/.bashrc
+        fi
+
+        if ! grep -q "export BESMAN_ARTIFACT_DIR=" ~/.bashrc; then
+            echo "export BESMAN_ARTIFACT_DIR=$BESMAN_ARTIFACT_DIR"
+            source ~/.bashrc
+        fi
         return 0
 
     fi
@@ -61,15 +76,17 @@ function __besman_init() {
 
 function __besman_execute() {
     local duration
+    mkdir -p "$BESMAN_DIR/tmp/steps"
     __besman_echo_yellow "Launching steps file"
-
+    cp "$BESMAN_STEPS_FILE_PATH" "$BESMAN_DIR/tmp/steps"
     SECONDS=0
-    . "$BESMAN_STEPS_FILE_PATH"
+    jupyter notebook "$BESMAN_DIR/tmp/steps"
     duration=$SECONDS
 
     export EXECUTION_DURATION=$duration
-    if [[ $SBOM_RESULT == 1 ]]; then
+    if [[ ! -f $DETAILED_REPORT_PATH ]]; then
 
+        __besman_echo_red "Could not find detailed report @ $DETAILED_REPORT_PATH"
         export PLAYBOOK_EXECUTION_STATUS=failure
         return 1
 
@@ -77,6 +94,7 @@ function __besman_execute() {
         export PLAYBOOK_EXECUTION_STATUS=success
         return 0
     fi
+    rm -rf "$BESMAN_DIR/tmp/steps"
 
 }
 
@@ -85,8 +103,7 @@ function __besman_prepare() {
     __besman_echo_white "preparing data"
     EXECUTION_TIMESTAMP=$(date)
     export EXECUTION_TIMESTAMP
-    mv "$SBOM_PATH"/bom-*.json "$DETAILED_REPORT_PATH"
-
+    [[ ! -f $DETAILED_REPORT_PATH ]] && __besman_echo_red "Could not find report at $DETAILED_REPORT_PATH" && return 1
     __besman_generate_osar
 
 }
@@ -105,7 +122,7 @@ function __besman_publish() {
 }
 
 function __besman_cleanup() {
-    local var_array=("ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_PLAYBOOK" "ASSESSMENT_TOOL_VERSION" "OSAR_PATH" "SBOM_PATH" "DETAILED_REPORT_PATH")
+    local var_array=("ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_PLAYBOOK" "ASSESSMENT_TOOL_VERSION" "OSAR_PATH" "SONARQUBE_PATH" "DETAILED_REPORT_PATH")
 
     for var in "${var_array[@]}"; do
         if [[ -v $var ]]; then
