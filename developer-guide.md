@@ -115,6 +115,9 @@ The following variables has to be exported in the `init` function,
 - `ASSESSMENT_TOOL_TYPE` - Type of tool(sast, sbom, license_compliance...)
 - `ASSESSMENT_TOOL_VERSION` - Version of the assessment tool.
 - `ASSESSMENT_TOOL_PLAYBOOK` - Name of the lifecycle file. Eg:- besman-criticality_score-0.0.1-playbook.sh.
+- `DETAILED_REPORT_PATH` - Path to the detail report of the assessment.
+- `OSAR_PATH` - Path to the OSAR file.
+- `EXECUTION_TIMESTAMP` - The timestamp of execution.
 
 You should check whether the following variables are empty or not.
 ```code
@@ -151,6 +154,68 @@ BESMAN_LAB_NAME (Set by env config)
 
 It is important to note that the above variables are required you to create the OSAR. The developer can also check for other variables that are required to be set before the actual execution of tool.
 
+Here is an example code snippet for the `init` function.
+
+```code
+function __besman_init() {
+    __besman_echo_white "initialising"
+    export ASSESSMENT_TOOL_NAME="criticality_score"
+    export ASSESSMENT_TOOL_TYPE="criticality_score"
+    export ASSESSMENT_TOOL_VERSION="2.0.3"
+	EXECUTION_TIMESTAMP=$(date)
+	export EXECUTION_TIMESTAMP
+    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_NAME-0.0.1-playbook.sh"
+
+    local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-0.0.1-steps.sh"
+    export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
+
+    local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME")
+
+    local flag=false
+    for var in "${var_array[@]}"; do
+        if [[ ! -v $var ]]; then
+
+            # read -rp "Enter value for $var:" value #remove
+            # export "$var"="$value" #remove
+            __besman_echo_yellow "$var is not set" #uncomment
+            __besman_echo_no_colour ""             #uncomment
+            flag=true                              #uncomment
+        fi
+
+    done
+
+    local dir_array=("BESMAN_ASSESSMENT_DATASTORE_DIR")
+    for dir in "${dir_array[@]}"; do
+        # Get the value of the variable with the name stored in $dir
+        dir_path="${!dir}"
+
+        if [[ ! -d $dir_path ]]; then
+            __besman_echo_red "Could not find $dir_path"
+            flag=true
+        fi
+
+    done
+
+    # [[ ! -f $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME ]] && __besman_echo_red "Could not find artifact @ $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME" && flag=true
+    if ! [ -x "$(command -v criticality_score)" ]; then
+        __besman_echo_red "required tool - criticality_score is not installed. Please check the installed Bes env"
+    fi
+
+    if [[ $flag == true ]]; then
+        return 1
+    else
+        export CRITICALITY_SCORE_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_VERSION/criticality_score"
+        export DETAILED_REPORT_PATH="$CRITICALITY_SCORE_PATH/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-criticality_score-report.json"
+        mkdir -p "$CRITICALITY_SCORE_PATH"
+        export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_VERSION/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-osar.json"
+        __besman_fetch_steps_file "$steps_file_name" || return 1
+        return 0
+
+    fi
+}
+```
+
+We do a `return 1` to exit from the functions when facing a error condition.
 
 #### __besman_execute()
 
@@ -239,3 +304,93 @@ duration=$SECONDS
 export EXECUTION_DURATION=$duration
 
 ```
+
+#### __besman_prepare()
+
+The `prepare()` function is where we prepare the detailed report path and generate OSAR. By preparing the detailed report path, we mean operations like moving the detailed report generated to the appropriate location or renaming it to our naming standard.
+
+```code
+function __besman_prepare() {
+    __besman_echo_white "preparing data"
+	# Write the code to move the data to appropriate location and rename it to the naming standard(if required).
+    __besman_generate_osar
+}
+```
+
+`__besman_generate_osar` is a function call to generate the OSAR. All the required data for generating the report is taken from the environment variables set in the `init()`, `execute()` and also from env config(during installation of environment).
+
+#### __besman_publish()
+
+The `publish()` function is used to push the detailed report and OSAR to the user's fork of the assessment datastore. The repo is cloned during the installation of the environment. We are also checking whether the datastore is available in the local in the `init()` using the var `BESMAN_ASSESSMENT_DATASTORE_DIR`.
+
+Here is an example code,
+
+```code
+function __besman_publish() {
+    __besman_echo_yellow "Pushing to datastores"
+    # push code to remote datastore
+    cd "$BESMAN_ASSESSMENT_DATASTORE_DIR"
+
+    git add "$DETAILED_REPORT_PATH" "$OSAR_PATH"
+    git commit -m "Added osar and detailed report"
+    git push origin main
+}
+```
+
+`Note: It is assumed that the reports should be in the main branch. If you wish to put the reports in a different branch, you should write the code for it`.
+
+#### __besman_cleanup()
+
+The `cleanup()` is used to remove any temporary files/directories/variables created using the playbook exeuction.
+
+For example, in the below code, we are unsetting the variables set during the playbook execution,
+
+```code
+function __besman_cleanup() {
+    local var_array=("ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_PLAYBOOK" "ASSESSMENT_TOOL_VERSION" "OSAR_PATH" "CRITICALITY_SCORE_PATH" "DETAILED_REPORT_PATH")
+
+    for var in "${var_array[@]}"; do
+        if [[ -v $var ]]; then
+            unset "$var"
+        fi
+
+    done
+
+}
+```
+
+#### __besman_launch()
+
+The `launch` function is similar to the main() function. This is were the playbook execution is started. The launch function calls all the other functions and handle returns from them.
+
+The `launch()` function is called from the `run` command is besman.
+
+An example for launch function,
+
+```code
+function __besman_launch() {
+    __besman_echo_yellow "Starting playbook"
+    local flag=1
+
+    __besman_init
+    flag=$?
+    if [[ $flag == 0 ]]; then
+        __besman_execute
+        flag=$?
+    else
+        __besman_cleanup
+        return
+    fi
+    if [[ $flag == 0 ]]; then
+        __besman_prepare
+        __besman_publish
+        __besman_cleanup
+    else
+        __besman_cleanup
+        return
+    fi
+}
+
+```
+
+Here we are using a `flag` var. This var stores the return values from each function. If the return value is `1` (Error), the `cleanup` function is called and the execution is stopped.
