@@ -394,3 +394,25 @@ function __besman_launch() {
 ```
 
 Here we are using a `flag` var. This var stores the return values from each function. If the return value is `1` (Error), the `cleanup` function is called and the execution is stopped.
+
+
+## Steps file
+
+As said in the above, the steps file is where we write the actual steps of assessment. There can be three types of steps file - Automated(.sh), Semi automated(.ipynb) and Manual(.ipynb|.md)
+
+Here is an example of the steps file code for criticality_score.
+
+```code
+echo "Running $ASSESSMENT_TOOL_NAME"
+cd "$BESMAN_TOOL_PATH" || return 1
+criticality_score -depsdev-disable -format json $BESMAN_ARTIFACT_URL | grep -o '{"default_score":.*}' > "$DETAILED_REPORT_PATH" 2>&1
+if [[ "$?" != "0" ]]; then
+    export CRITICALITY_SCORE_RESULT=1
+else
+    export CRITICALITY_SCORE_RESULT=0
+fi
+```
+
+## Push and Pr
+
+Commit the file and push it into your remote repo. After that you can raise a pr to the develop branch of [besecure-playbooks-store](https://github.com/Be-Secure/besecure-playbooks-store/tree/develop).
