@@ -158,6 +158,7 @@ function __besman_get_workflow_status()
 {
     local workflow_id=$1
     local status
+    local url
     url="https://api.github.com/repos/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME/actions/workflows/$workflow_id/runs"
     # status=$(curl --insecure   -H "Accept: application/vnd.github+json"   -H "Authorization: Bearer $BESMAN_GH_TOKEN"   -H "X-GitHub-Api-Version: 2022-11-28"   https://api.github.com/repos/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME/actions/workflows/$workflow_id/runs | jq '.workflow_runs[0].status')
 
@@ -189,6 +190,7 @@ function __besman_get_conclusion()
 {
     local workflow_id=$1
     local conclusion
+    local url
     url="https://api.github.com/repos/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME/actions/workflows/$workflow_id/runs"
 
     conclusion=$(curl --insecure --silent -H "Accept: application/vnd.github+json"   -H "Authorization: Bearer $BESMAN_GH_TOKEN"   -H "X-GitHub-Api-Version: 2022-11-28" "$url" | jq '.workflow_runs[0].conclusion')
@@ -197,14 +199,22 @@ function __besman_get_conclusion()
 }
 
 function __besman_download_data() {
-    local url="$1"
+    local url 
+    GLOBAL_RESPONSE_CODE=0
+    url="$1"
     
-    curl -s --insecure -X 'GET' \
-        "$url" \
-        -H 'accept: application/json' \
-        -o "$DETAILED_REPORT_PATH" \
-        -w "%{http_code}" \
-        -o /dev/null
+    GLOBAL_RESPONSE_CODE=$(curl -s --insecure -X 'GET' \
+    "$url" \
+    -H 'accept: application/json' \
+    -o "$DETAILED_REPORT_PATH" \
+    -w "%{http_code}")
+    
+   # curl -s --insecure -X 'GET' \
+   #     "$url" \
+    #    -H 'accept: application/json' \
+     #   -o "$DETAILED_REPORT_PATH" \
+      #  -w "%{http_code}" \
+       # -o /dev/null
 }
 
 function __besman_download_report() {
@@ -217,6 +227,7 @@ function __besman_download_report() {
     local elapsed_time
     local workflow_id
     local conclusion
+    local url
     
     if [[ "$BESMAN_CODE_COLLAB_URL" == "https://github.com" ]]; then
         code_collab="github.com"
@@ -224,7 +235,8 @@ function __besman_download_report() {
         code_collab="gitlab.com"
     fi
     # Define the url
-    local url="https://api.securityscorecards.dev/projects/$code_collab/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME"
+    
+    url="https://api.securityscorecards.dev/projects/$code_collab/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME"
 
     workflow_id=$(__besman_get_workflow_id)
     __besman_get_workflow_status "$workflow_id"
@@ -242,8 +254,10 @@ function __besman_download_report() {
 
     # Loop until a successful response is received or timeout occurs
     while true; do
-        response_code=$(__besman_download_data "$url")
-        if [ "$response_code" = "200" ]; then
+        #response_code=$(__besman_download_data "$url")
+        __besman_download_data "$url"
+        __besman_echo_white "=====response-code====== $GLOBAL_RESPONSE_CODE================="
+        if [ "$GLOBAL_RESPONSE_CODE" = "200" ]; then
             __besman_echo_green "Data downloaded successfully!"
             return 0
         else
