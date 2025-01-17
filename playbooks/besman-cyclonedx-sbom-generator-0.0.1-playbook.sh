@@ -85,7 +85,7 @@ function __besman_prepare() {
     __besman_echo_white "preparing data"
     EXECUTION_TIMESTAMP=$(date)
     export EXECUTION_TIMESTAMP
-    mv "$SBOM_PATH"/bom-*.json "$DETAILED_REPORT_PATH"
+   ## mv "$SBOM_PATH"/bom-*.json "$DETAILED_REPORT_PATH"
 
     __besman_generate_osar
 
