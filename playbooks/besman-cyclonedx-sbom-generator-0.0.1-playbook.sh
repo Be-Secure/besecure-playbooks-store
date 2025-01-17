@@ -4,7 +4,7 @@ function __besman_init() {
     __besman_echo_white "initialising"
     export ASSESSMENT_TOOL_NAME="cyclonedx-sbom-generator"
     export ASSESSMENT_TOOL_TYPE="sbom"
-    export ASSESSMENT_TOOL_VERSION="v11.0.10"
+    export ASSESSMENT_TOOL_VERSION="0.0.1"
     export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_NAME-0.0.1-playbook.sh"
     
     local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-0.0.1-steps.sh"
