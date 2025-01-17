@@ -117,7 +117,7 @@
     },
     {
       "name": "cyclonedx-sbom-generator",
-      "version": "v11.0.10",
+      "version": "0.0.1",
       "type": "tool",
       "author": {
         "name": "Be-Secure",
