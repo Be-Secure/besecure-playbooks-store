@@ -69,6 +69,10 @@ A typical BeS playbook consists of two files - the playbook lifecycle file and t
         __besman_cleanup
     }
 
+## Developer guide
+
+Thank you for your contribution. You can take a look at our [developer guide](./developer-guide.md) to start working on playbooks.
+
 ## Usage
 
 ### 1. Install BeSman
