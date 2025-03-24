@@ -66,3 +66,4 @@ python3 -m CybersecurityBenchmarks.benchmark.run \
    --response-path="$DATASETS/autocomplete_responses.json" \
    --stat-path="$DATASETS/autocomplete_stat.json" \
    --llm-under-test=<MODEL_SPEC_1> --llm-under-test=<MODEL_SPEC_2>
+   [--run-llm-in-parallel]
