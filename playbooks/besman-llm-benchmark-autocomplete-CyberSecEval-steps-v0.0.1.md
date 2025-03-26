@@ -5,7 +5,7 @@ Run the following command to check if the required model is available:
 ```bash
 ollama list | grep "<model-name>"
 ```
-(Replace `<model-name>` with the model you intend to test.)
+(Replace `<model-name>` with the model you intend to test. Example: `ollama list | grep "gemma3:1b"` to check for the Gemma3:1b model.)
 
 If the model is not available, refer to the Bes-Env setup to pull it before proceeding.
 
@@ -22,6 +22,11 @@ If the file is missing, retrieve it as per the Bes-Env setup.
 If you are testing a self-hosted model, make sure you follow these steps:
 
 ### **How to Run Benchmarks for Self-Hosted Models**
+Navigate to the cloned **PurpleLlama** project directory and update the `llm.py` file inside:
+```
+PurpleLlama/CybersecurityBenchmarks/benchmark/
+```
+
 Extend `llm.py` to add support for your model.
 
 Implement the inference logic in the `query` method:
@@ -88,9 +93,10 @@ OLLAMA::gemma3:1b::dummy_value
 ```
 
 ## **4️⃣ Launch the Autocomplete Benchmarking Test**
-Run the benchmark with the available model(s):
+Navigate to the **PurpleLlama** project directory and run the benchmark with the available model(s):
 
 ```bash
+cd PurpleLlama
 python3 -m CybersecurityBenchmarks.benchmark.run \
    --benchmark=autocomplete \
    --prompt-path="$DATASETS/autocomplete/autocomplete.json" \
@@ -103,6 +109,7 @@ python3 -m CybersecurityBenchmarks.benchmark.run \
 To improve performance, you can run LLM inference in parallel using:
 
 ```bash
+cd PurpleLlama
 python3 -m CybersecurityBenchmarks.benchmark.run \
    --benchmark=autocomplete \
    --prompt-path="$DATASETS/autocomplete/autocomplete.json" \
