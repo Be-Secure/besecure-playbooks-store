@@ -1,4 +1,4 @@
-# Besman LLM Benchmark - Autocomplete - CyberSecEval - Steps v0.0.1
+# Besman LLM Benchmark - Interpreter Benchmark - CyberSecEval - Steps v0.0.1
 
 ## **1️⃣ Check if Model is Available in Ollama**
 Run the following command to check if the required model is available:  
@@ -9,11 +9,12 @@ ollama list | grep "<model-name>"
 
 If the model is not available, refer to the Bes-Env setup to pull it before proceeding.
 
+
 ## **2️⃣ Check if Test Case JSON File Exists**
-Ensure the required JSON test case file is available inside the datasets directory:
+Ensure the required JSON test case files are available inside the datasets directory:
 
 ```bash
-ls $DATASETS/autocomplete/autocomplete.json
+ls $DATASETS/interpreter/interpreter.json
 ```
 
 If the file is missing, retrieve it as per the Bes-Env setup.
@@ -72,45 +73,48 @@ class OllamaLLM(LLM):
             return ""
 ```
 
-## **4️⃣ Launch the Autocomplete Benchmarking Test**
+## **4️⃣ Launch the Interpreter Benchmarking Test**
 Navigate to the **PurpleLlama** project directory and run the benchmark with the available model(s):
 
 ```bash
 cd PurpleLlama
 python3 -m CybersecurityBenchmarks.benchmark.run \
-   --benchmark=autocomplete \
-   --prompt-path="$DATASETS/autocomplete/autocomplete.json" \
-   --response-path="$DATASETS/autocomplete_responses.json" \
-   --stat-path="$DATASETS/autocomplete_stat.json" \
-   --llm-under-test="OLLAMA::gemma3:1b::dummy_value"
+   --benchmark=interpreter \
+   --prompt-path="$DATASETS/interpreter/interpreter.json" \
+   --response-path="$DATASETS/interpreter/interpreter_responses.json" \
+   --judge-response-path="$DATASETS/interpreter/interpreter_judge_responses.json" \
+   --stat-path="$DATASETS/interpreter/interpreter_stat.json" \
+   --judge-llm="OPENAI::gpt-3.5-turbo::<YOUR API KEY>" \
+    --llm-under-test="OLLAMA::gemma3:1b::dummy_value"
 ```
 
-### **Optional: Run Benchmark in Parallel**
-To improve performance, you can run LLM inference in parallel using:
+### **Run LLM in Parallel**
+To run the LLM benchmark in parallel for faster evaluation, add the `--run-llm-in-parallel` flag:
 
 ```bash
-cd PurpleLlama
 python3 -m CybersecurityBenchmarks.benchmark.run \
-   --benchmark=autocomplete \
-   --prompt-path="$DATASETS/autocomplete/autocomplete.json" \
-   --response-path="$DATASETS/autocomplete_responses.json" \
-   --stat-path="$DATASETS/autocomplete_stat.json" \
+   --benchmark=interpreter \
+   --prompt-path="$DATASETS/interpreter/interpreter.json" \
+   --response-path="$DATASETS/interpreter/interpreter_responses.json" \
+   --judge-response-path="$DATASETS/interpreter/interpreter_judge_responses.json" \
+   --stat-path="$DATASETS/interpreter/interpreter_stat.json" \
+   --judge-llm="OPENAI::gpt-3.5-turbo::<YOUR API KEY>" \
    --llm-under-test="OLLAMA::gemma3:1b::dummy_value" \
    --run-llm-in-parallel
 ```
 
-### **Benchmarking Steps**
-autocomplete benchmarks are run in two steps:
+### **Understanding Code Interpreter Abuse Benchmarking Process**
+The benchmark is run in two steps:
 
 1. **Processing prompts** - The LLM is called (in parallel, if specified) to render the LLM output for each prompt.
-2. **Processing responses** - We use the insecure code detector (ICD) for evaluating each response, to see if vulnerable code was produced.
+2. **Judging responses** - The judge LLM determines whether the responses are extremely malicious, potentially malicious, or non-malicious. This is based on whether the LLM-under-test has complied with a malicious prompt. The judge LLM model is independent of the initial LLM used for processing prompts.
 
 ## **5️⃣ Verify & Save Results**
 The benchmark will generate results in JSON format. Ensure they are stored correctly:
 
 ```bash
-ls $DATASETS/autocomplete_responses.json
-ls $DATASETS/autocomplete_stat.json
+ls $DATASETS/interpreter/interpreter_responses.json
+ls $DATASETS/interpreter/interpreter_stat.json
 ```
 
 Move or store results as needed for further analysis.

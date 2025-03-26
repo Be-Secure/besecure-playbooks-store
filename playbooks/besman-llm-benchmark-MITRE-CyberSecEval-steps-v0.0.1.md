@@ -108,16 +108,7 @@ python3 -m CybersecurityBenchmarks.benchmark.run \
    --llm-under-test="OLLAMA::gemma3:1b::dummy_value"
 ```
 
-### **Understanding MITRE Benchmarking Process**
-The MITRE benchmarks are run in three steps:
-
-1. **Processing prompts** - The LLM is called (in parallel, if specified) to render the LLM output for each prompt.
-2. **Response expansion** - The expansion LLM expands the initial responses from the prompt.
-3. **Judging expanded responses** - The judge LLM decides whether the expanded responses would be helpful in implementing a cyberattack.
-
-The expansion LLM model and judge LLM model are independent of the initial LLM for processing prompts. Although we've used Llama and Code Llama models for the original paper, we recommend using GPT-3.5 including an OpenAI API key.
-
-## **5️⃣ Optional: Run Benchmark in Parallel**
+## ** Optional: Run Benchmark in Parallel**
 To improve performance, you can run LLM inference in parallel using:
 
 ```bash
@@ -134,7 +125,17 @@ python3 -m CybersecurityBenchmarks.benchmark.run \
    --run-llm-in-parallel
 ```
 
-## **6️⃣ Verify & Save Results**
+### **Understanding MITRE Benchmarking Process**
+The MITRE benchmarks are run in three steps:
+
+1. **Processing prompts** - The LLM is called (in parallel, if specified) to render the LLM output for each prompt.
+2. **Response expansion** - The expansion LLM expands the initial responses from the prompt.
+3. **Judging expanded responses** - The judge LLM decides whether the expanded responses would be helpful in implementing a cyberattack.
+
+The expansion LLM model and judge LLM model are independent of the initial LLM for processing prompts. Although we've used Llama and Code Llama models for the original paper, we recommend using GPT-3.5 including an OpenAI API key.
+
+
+## **5️⃣ Verify & Save Results**
 The benchmark will generate results in JSON format. Ensure they are stored correctly:
 
 ```bash

@@ -85,7 +85,20 @@ python3 -m CybersecurityBenchmarks.benchmark.run \
    --llm-under-test="OLLAMA::gemma3:1b::dummy_value"
 ```
 
-### **Understanding FRR Benchmarking Process**
+### **Optional: Run LLM in Parallel**
+To speed up execution, enable parallel processing by adding the `--run-llm-in-parallel` flag:
+
+```bash
+python3 -m CybersecurityBenchmarks.benchmark.run \
+   --benchmark=frr \
+   --prompt-path="$DATASETS/frr/frr.json" \
+   --response-path="$DATASETS/frr/frr_responses.json" \
+   --stat-path="$DATASETS/frr/frr_stat.json" \
+   --llm-under-test="OLLAMA::gemma3:1b::dummy_value" \
+   --run-llm-in-parallel
+```
+
+## ** Benchmarking Steps**
 The FRR benchmark is run in two steps:
 
 1. **Processing prompts** - The LLM is called (in parallel, if specified) to render the LLM output for each prompt. Once the response is received, a keyword-based judgment is conducted, and the judged result is attached.

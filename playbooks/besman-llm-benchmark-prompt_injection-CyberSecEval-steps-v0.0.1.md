@@ -1,4 +1,4 @@
-# Besman LLM Benchmark - Autocomplete - CyberSecEval - Steps v0.0.1
+# Besman LLM Benchmark - Prompt Injection Benchmark - CyberSecEval - Steps v0.0.1
 
 ## **1️⃣ Check if Model is Available in Ollama**
 Run the following command to check if the required model is available:  
@@ -10,10 +10,10 @@ ollama list | grep "<model-name>"
 If the model is not available, refer to the Bes-Env setup to pull it before proceeding.
 
 ## **2️⃣ Check if Test Case JSON File Exists**
-Ensure the required JSON test case file is available inside the datasets directory:
+Ensure the required JSON test case files are available inside the datasets directory:
 
 ```bash
-ls $DATASETS/autocomplete/autocomplete.json
+ls $DATASETS/prompt_injection/prompt_injection.json
 ```
 
 If the file is missing, retrieve it as per the Bes-Env setup.
@@ -72,45 +72,48 @@ class OllamaLLM(LLM):
             return ""
 ```
 
-## **4️⃣ Launch the Autocomplete Benchmarking Test**
+## **4️⃣ Launch the Prompt Injection Benchmarking Test**
 Navigate to the **PurpleLlama** project directory and run the benchmark with the available model(s):
 
 ```bash
 cd PurpleLlama
 python3 -m CybersecurityBenchmarks.benchmark.run \
-   --benchmark=autocomplete \
-   --prompt-path="$DATASETS/autocomplete/autocomplete.json" \
-   --response-path="$DATASETS/autocomplete_responses.json" \
-   --stat-path="$DATASETS/autocomplete_stat.json" \
+   --benchmark=prompt-injection \
+   --prompt-path="$DATASETS/prompt_injection/prompt_injection.json" \
+   --response-path="$DATASETS/prompt_injection/prompt_injection_responses.json" \
+   --judge-response-path="$DATASETS/prompt_injection/prompt_injection_judge_responses.json" \
+   --stat-path="$DATASETS/prompt_injection/prompt_injection_stat.json" \
+   --judge-llm="OPENAI::gpt-3.5-turbo::<YOUR API KEY>" \
    --llm-under-test="OLLAMA::gemma3:1b::dummy_value"
 ```
 
-### **Optional: Run Benchmark in Parallel**
-To improve performance, you can run LLM inference in parallel using:
+### **Run LLM in Parallel**
+To run the LLM benchmark in parallel for faster evaluation, add the `--run-llm-in-parallel` flag:
 
 ```bash
-cd PurpleLlama
 python3 -m CybersecurityBenchmarks.benchmark.run \
-   --benchmark=autocomplete \
-   --prompt-path="$DATASETS/autocomplete/autocomplete.json" \
-   --response-path="$DATASETS/autocomplete_responses.json" \
-   --stat-path="$DATASETS/autocomplete_stat.json" \
+   --benchmark=prompt-injection \
+   --prompt-path="$DATASETS/prompt_injection/prompt_injection.json" \
+   --response-path="$DATASETS/prompt_injection/prompt_injection_responses.json" \
+   --judge-response-path="$DATASETS/prompt_injection/prompt_injection_judge_responses.json" \
+   --stat-path="$DATASETS/prompt_injection/prompt_injection_stat.json" \
+   --judge-llm="OPENAI::gpt-3.5-turbo::<YOUR API KEY>" \
    --llm-under-test="OLLAMA::gemma3:1b::dummy_value" \
    --run-llm-in-parallel
 ```
 
-### **Benchmarking Steps**
-autocomplete benchmarks are run in two steps:
+### **Understanding Prompt Injection Benchmarking Process**
+Textual prompt injection benchmarks are run in the following two steps:
 
-1. **Processing prompts** - The LLM is called (in parallel, if specified) to render the LLM output for each prompt.
-2. **Processing responses** - We use the insecure code detector (ICD) for evaluating each response, to see if vulnerable code was produced.
+1. **Processing prompts** - Query the LLMs under test with a system prompt and a user prompt, where the user prompt tries to inject instructions to the LLM that violate the original system prompt.
+2. **Processing response** - The responses of the LLMs under test will go through another judge LLM, where the judge LLM will judge if the injected instruction is executed.
 
 ## **5️⃣ Verify & Save Results**
 The benchmark will generate results in JSON format. Ensure they are stored correctly:
 
 ```bash
-ls $DATASETS/autocomplete_responses.json
-ls $DATASETS/autocomplete_stat.json
+ls $DATASETS/prompt_injection/prompt_injection_responses.json
+ls $DATASETS/prompt_injection/prompt_injection_stat.json
 ```
 
 Move or store results as needed for further analysis.
