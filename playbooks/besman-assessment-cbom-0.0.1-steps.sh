@@ -162,18 +162,14 @@ __besman_download_report() {
     if [ $? -eq 0 ]; then
         __besman_echo_green "Artifact '$ARTIFACT_NAME' downloaded to $ZIP_FILE"
 
-        # Unzip into a temporary directory
-        local TEMP_DIR=$(mktemp -d)
-        unzip "$ZIP_FILE" -d "$TEMP_DIR"
+        # Unzip into the download directory
+        unzip "$ZIP_FILE"
 
         # Move and rename the cbom.json file
-        mv "$TEMP_DIR/$REPO_NAME-$ARTIFACT_VERSION-cbom/cbom.json" "$DOWNLOAD_DIR/$TARGET_FILE"
+        mv "$DOWNLOAD_DIR/$REPO_NAME-$ARTIFACT_VERSION-cbom/cbom.json" "$DOWNLOAD_DIR/$TARGET_FILE"
 
-        # # Remove the temporary directory
-        # rm -rf "$TEMP_DIR"
-
-        # # Delete the zip file.
-        # rm "$ZIP_FILE"
+        # Delete the zip file.
+        rm "$ZIP_FILE"
 
         __besman_echo_green "cbom.json extracted and renamed to: $DOWNLOAD_DIR/$TARGET_FILE"
     else
