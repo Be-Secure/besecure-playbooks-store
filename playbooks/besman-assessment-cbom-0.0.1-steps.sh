@@ -124,9 +124,11 @@ function __besman_get_workflow_status() {
 
     start_time=$(date +%s)
 
+    __besman_echo_white "===== URL to check workflow status======   $url"
     # Loop until a successful response is received or timeout occurs
     while true; do
         status=$(__besman_status_url "$url")
+        __besman_echo_white "==========Status============  $status"
         if echo "$status" | grep -q "completed"; then
             __besman_echo_green "Workflow done"
             break
