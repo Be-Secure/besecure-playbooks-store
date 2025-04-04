@@ -82,7 +82,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: 3.6.0_cbom # Ensure the correct branch is checked out
+          ref: "${BESMAN_ARTIFACT_VERSION}_tavoss" # Ensure the correct branch is checked out
 
       - name: Create CBOM
         uses: PQCA/cbomkit-action@v1.1.0

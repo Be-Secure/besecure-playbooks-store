@@ -5,9 +5,9 @@ function __besman_init() {
     export ASSESSMENT_TOOL_NAME="cbom"
     export ASSESSMENT_TOOL_TYPE="cbom"
     export ASSESSMENT_TOOL_VERSION="0.0.1"
-    export ASSESSMENT_TOOL_PLAYBOOK="besman-cbom-0.0.1-playbook.sh"
+    export ASSESSMENT_TOOL_PLAYBOOK="besman-assessment-cbom-0.0.1-playbook.sh"
 
-    local steps_file_name="besman-cbom-0.0.1-steps.sh"
+    local steps_file_name="besman-assessment-cbom-0.0.1-steps.sh"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
     local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME")
@@ -148,7 +148,8 @@ function __besman_launch() {
 function __besman_fetch_steps_file() {
     __besman_echo_white "fetching steps file"
     local steps_file_name=$1
-    local steps_file_url="https://raw.githubusercontent.com/$BESMAN_PLAYBOOK_REPO/$BESMAN_PLAYBOOK_REPO_BRANCH/playbooks/$steps_file_name"
+    # local steps_file_url="https://raw.githubusercontent.com/$BESMAN_PLAYBOOK_REPO/$BESMAN_PLAYBOOK_REPO_BRANCH/playbooks/$steps_file_name"
+    local steps_file_url="https://raw.githubusercontent.com/NeerajK007/besecure-playbooks-store/develop/playbooks/$steps_file_name"
     __besman_check_url_valid "$steps_file_url" || return 1
 
     if [[ ! -f "$BESMAN_STEPS_FILE_PATH" ]]; then
