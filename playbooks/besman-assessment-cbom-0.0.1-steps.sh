@@ -93,6 +93,7 @@ __besman_download_report() {
     local ARTIFACT_NAME="CBOM"
 
     local ZIP_FILE="$DOWNLOAD_DIR/$REPO_NAME-$ARTIFACT_VERSION-cbom.zip"
+    local TARGET_FILE="$REPO_NAME-$ARTIFACT_VERSION-cbom-report.json"
 
     # 1. Get the run ID
     local RUN_ID=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
@@ -166,6 +167,9 @@ __besman_download_report() {
 
         # Unzip and overwrite existing files
         unzip -o "$ZIP_FILE"
+
+        # Rename cbom.json
+        mv "cbom.json" "$TARGET_FILE"
 
         # Change directory back to the original directory
         cd -
