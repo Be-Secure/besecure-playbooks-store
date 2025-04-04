@@ -90,6 +90,8 @@ __besman_download_report() {
     local ARTIFACT_NAME="CBOM"
     local DOWNLOAD_DIR="$CBOM_PATH"
     local ARTIFACT_VERSION="$BESMAN_ARTIFACT_VERSION"
+    local TARGET_FILE="$ARTIFACT_NAME-$ARTIFACT_VERSION-cbom-report.json"
+    local ZIP_FILE="$DOWNLOAD_DIR/$ARTIFACT_NAME-$ARTIFACT_VERSION-cbom.zip"
 
     # 1. Get the run ID
     local RUN_ID=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
@@ -106,7 +108,7 @@ __besman_download_report() {
     # 2. Loop to check the run's conclusion/status
     local RUN_STATUS=""
     local attempt=0
-    local max_attempts=30 # Adjust as needed (30 attempts * 30 seconds = 5 minutes)
+    local max_attempts=30 # Adjust as needed (30 attempts * 90 seconds = 45 minutes)
 
     while [ "$RUN_STATUS" != "success" ] && [ "$attempt" -lt "$max_attempts" ]; do
         RUN_STATUS=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
@@ -126,7 +128,7 @@ __besman_download_report() {
             return 1
         else
             attempt=$((attempt + 1))
-            __besman_echo_green "Workflow run in progress. Attempt $attempt. Status: $RUN_STATUS. Waiting 10 seconds..."
+            __besman_echo_green "Workflow run in progress. Attempt $attempt. Status: $RUN_STATUS. Waiting 90 seconds..."
             sleep 90
         fi
     done
@@ -149,17 +151,29 @@ __besman_download_report() {
     __besman_echo_green "Artifact ID: $ARTIFACT_ID"
 
     # 4. Download the artifact
-   # mkdir -p "$DOWNLOAD_DIR"
-
     curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
         -H "Accept: application/vnd.github+json" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
         -L "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/actions/artifacts/$ARTIFACT_ID/zip" \
-        -o "$DOWNLOAD_DIR/$ARTIFACT_NAME-$ARTIFACT_VERSION-cbom.zip"
+        -o "$ZIP_FILE"
 
     if [ $? -eq 0 ]; then
-        __besman_echo_green "Artifact '$ARTIFACT_NAME' downloaded to $DOWNLOAD_DIR/$ARTIFACT_NAME-$ARTIFACT_VERSION-cbom.zip"
-        unzip "$DOWNLOAD_DIR/$ARTIFACT_NAME-$ARTIFACT_VERSION-cbom.zip" -d "$DOWNLOAD_DIR/$ARTIFACT_NAME-$ARTIFACT_VERSION-cbom-report.json"
+        __besman_echo_green "Artifact '$ARTIFACT_NAME' downloaded to $ZIP_FILE"
+
+        # Unzip into a temporary directory
+        local TEMP_DIR=$(mktemp -d)
+        unzip "$ZIP_FILE" -d "$TEMP_DIR"
+
+        # Move and rename the cbom.json file
+        mv "$TEMP_DIR/CBOM-$ARTIFACT_VERSION-cbom/cbom.json" "$DOWNLOAD_DIR/$TARGET_FILE"
+
+        # Remove the temporary directory
+        rm -rf "$TEMP_DIR"
+
+        # Delete the zip file.
+        rm "$ZIP_FILE"
+
+        __besman_echo_green "cbom.json extracted and renamed to: $DOWNLOAD_DIR/$TARGET_FILE"
     else
         __besman_echo_red "Error: Failed to download artifact."
         return 1
