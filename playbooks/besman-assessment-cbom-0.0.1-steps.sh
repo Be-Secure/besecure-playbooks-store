@@ -161,8 +161,14 @@ __besman_download_report() {
     if [ $? -eq 0 ]; then
         __besman_echo_green "Artifact '$ARTIFACT_NAME' downloaded to $ZIP_FILE"
 
-        # Unzip into the download directory
-        unzip "$ZIP_FILE"
+        # Change directory to DOWNLOAD_DIR
+        cd "$DOWNLOAD_DIR"
+
+        # Unzip and overwrite existing files
+        unzip -o "$ZIP_FILE"
+
+        # Change directory back to the original directory
+        cd -
 
         __besman_echo_green "completed."
     else
