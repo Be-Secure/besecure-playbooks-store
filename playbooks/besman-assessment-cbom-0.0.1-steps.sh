@@ -92,7 +92,6 @@ __besman_download_report() {
     local WORKFLOW_NAME="cbom.yml"
     local ARTIFACT_NAME="CBOM"
 
-    local TARGET_FILE="$REPO_NAME-$ARTIFACT_VERSION-cbom-report.json"
     local ZIP_FILE="$DOWNLOAD_DIR/$REPO_NAME-$ARTIFACT_VERSION-cbom.zip"
 
     # 1. Get the run ID
@@ -165,13 +164,7 @@ __besman_download_report() {
         # Unzip into the download directory
         unzip "$ZIP_FILE"
 
-        # Move and rename the cbom.json file
-        mv "$DOWNLOAD_DIR/$REPO_NAME-$ARTIFACT_VERSION-cbom/cbom.json" "$DOWNLOAD_DIR/$TARGET_FILE"
-
-        # Delete the zip file.
-        rm "$ZIP_FILE"
-
-        __besman_echo_green "cbom.json extracted and renamed to: $DOWNLOAD_DIR/$TARGET_FILE"
+        __besman_echo_green "completed."
     else
         __besman_echo_red "Error: Failed to download artifact."
         return 1
