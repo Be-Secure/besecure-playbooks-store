@@ -134,7 +134,7 @@ function __besman_get_workflow_status() {
             # Check if 15 minutes have passed
             current_time=$(date +%s)
             elapsed_time=$((current_time - start_time))
-            if [ "$elapsed_time" -ge 300 ]; then
+            if [ "$elapsed_time" -ge 3600 ]; then
                 __besman_echo_red "Exiting... Time limit exceeded"
                 return 1
             fi
@@ -220,7 +220,7 @@ function __besman_download_report() {
             # Check if 15 minutes have passed
             current_time=$(date +%s)
             elapsed_time=$((current_time - start_time))
-            if [ "$elapsed_time" -ge 900 ]; then
+            if [ "$elapsed_time" -ge 3600 ]; then
                 __besman_echo_red "Exiting... Time limit exceeded"
                 return 1
             fi
