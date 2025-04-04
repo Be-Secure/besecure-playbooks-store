@@ -86,12 +86,14 @@ __besman_download_report() {
     local GITHUB_TOKEN="$BESMAN_GH_TOKEN"
     local REPO_OWNER="$BESMAN_USER_NAMESPACE"
     local REPO_NAME="$BESMAN_ARTIFACT_NAME"
-    local WORKFLOW_NAME="cbom.yml"
-    local ARTIFACT_NAME="CBOM"
     local DOWNLOAD_DIR="$CBOM_PATH"
     local ARTIFACT_VERSION="$BESMAN_ARTIFACT_VERSION"
-    local TARGET_FILE="$ARTIFACT_NAME-$ARTIFACT_VERSION-cbom-report.json"
-    local ZIP_FILE="$DOWNLOAD_DIR/$ARTIFACT_NAME-$ARTIFACT_VERSION-cbom.zip"
+
+    local WORKFLOW_NAME="cbom.yml"
+    local ARTIFACT_NAME="CBOM"
+
+    local TARGET_FILE="$REPO_NAME-$ARTIFACT_VERSION-cbom-report.json"
+    local ZIP_FILE="$DOWNLOAD_DIR/$REPO_NAME-$ARTIFACT_VERSION-cbom.zip"
 
     # 1. Get the run ID
     local RUN_ID=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
@@ -165,13 +167,13 @@ __besman_download_report() {
         unzip "$ZIP_FILE" -d "$TEMP_DIR"
 
         # Move and rename the cbom.json file
-        mv "$TEMP_DIR/CBOM-$ARTIFACT_VERSION-cbom/cbom.json" "$DOWNLOAD_DIR/$TARGET_FILE"
+        mv "$TEMP_DIR/$REPO_NAME-$ARTIFACT_VERSION-cbom/cbom.json" "$DOWNLOAD_DIR/$TARGET_FILE"
 
-        # Remove the temporary directory
-        rm -rf "$TEMP_DIR"
+        # # Remove the temporary directory
+        # rm -rf "$TEMP_DIR"
 
-        # Delete the zip file.
-        rm "$ZIP_FILE"
+        # # Delete the zip file.
+        # rm "$ZIP_FILE"
 
         __besman_echo_green "cbom.json extracted and renamed to: $DOWNLOAD_DIR/$TARGET_FILE"
     else
