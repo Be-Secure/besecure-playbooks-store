@@ -171,6 +171,9 @@ __besman_download_report() {
         # Rename cbom.json
         mv "cbom.json" "$TARGET_FILE"
 
+        # Delete the zip file.
+        rm "$ZIP_FILE"
+
         # Change directory back to the original directory
         cd -
 
