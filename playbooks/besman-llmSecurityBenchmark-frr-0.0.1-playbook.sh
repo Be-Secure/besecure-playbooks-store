@@ -65,7 +65,7 @@ function __besman_execute() {
     duration=$SECONDS
 
     export EXECUTION_DURATION=$duration
-    if [[ $CRITICALITY_SCORE_RESULT == 1 ]]; then
+    if [[ $FRR_RESULT == 1 ]]; then
 
         export PLAYBOOK_EXECUTION_STATUS=failure
         return 1

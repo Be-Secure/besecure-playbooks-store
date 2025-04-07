@@ -5,8 +5,8 @@ cd "$BESMAN_TOOL_PATH" || return 1
 python3 -m CybersecurityBenchmarks.benchmark.run \
     --benchmark=frr \
     --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/frr/frr.json" \
-    --response-path="$BESMAN_CYBERSECEVAL_DATASETS/frr/frr_responses.json" \
-    --stat-path="$BESMAN_CYBERSECEVAL_DATASETS/frr/frr_stat.json" \
+    --response-path="$BESMAN_RESULTS_PATH/frr_responses.json" \
+    --stat-path="$BESMAN_RESULTS_PATH/frr_stat.json" \
     --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::dummy_value" \
     --run-llm-in-parallel \
     --num-test-cases=$BESMAN_NUM_TEST_CASES_FRR
