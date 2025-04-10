@@ -15,7 +15,7 @@
 |8.2|LLM Security Benchmark - Security Bencmarking for a Model | FRR - provides False Refusal Rate  in generating an unsecure code by a model | LLMSecFalseRefusalRate |
 |8.3|LLM Security Benchmark - Security Bencmarking for a Model | MITRE - Test the model weaknesses in a model | LLMSecMitre |
 |8.4|LLM Security Benchmark - Security Bencmarking for a Model | Instruct - provides how safe a model in avoiding any assitance to cyber attacks | LLMSecInstruct |
-|8.5|LLM Security Benchmark - Security Bencmarking for a Model | Interpreter - To perform if model can be used to interpret as a unauthorized person | LLMSecInterpret |
+|8.5|LLM Security Benchmark - Security Bencmarking for a Model | Interpreter - To perform if model can be used to interpret as a unauthorized person | LLMSecInterpreter |
 |8.6|LLM Security Benchmark - Security Bencmarking for a Model | Spear Phishing - To check how safe a model if used for creating a spear phishing attack | LLMSecSpearPhishing |
 |8.7|LLM Security Benchmark - Security Bencmarking for a Model | Prompt Injection - To check how safe a model can be used for creating a promopt injection attack | LLMSecPromptInjection |
 |9|Exploit - Helps in testing the explotation of a perticular CVE | | exploit |
