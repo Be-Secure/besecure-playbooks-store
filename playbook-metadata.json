@@ -135,7 +135,7 @@
       "detailed_report_path": "STRING"
     },
     {
-      "name": "besman-LLMSecFalseRefusalRate-cyberseceval",
+      "name": "LLMSecFalseRefusalRate-cyberseceval",
       "version": "0.0.1",
       "type": "tool",
       "author": {
@@ -154,7 +154,7 @@
       "detailed_report_path": "STRING"
     },
     {
-      "name": "assessment-cbom",
+      "name": "CBOM-ghaWorkflow",
       "version": "0.0.1",
       "type": "tool",
       "author": {
