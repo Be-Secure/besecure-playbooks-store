@@ -135,7 +135,7 @@
       "detailed_report_path": "STRING"
     },
     {
-      "name": "llmSecurityBenchmark-frr",
+      "name": "besman-LLMSecFalseRefusalRate-cyberseceval",
       "version": "0.0.1",
       "type": "tool",
       "author": {
@@ -149,7 +149,7 @@
         "type": "Organization",
         "status": "Success",
         "timestamp": "2025-04-04T16:07:47",
-        "environment": "gemma3-llmSecurityBenchmark-RT-env"
+        "environment": "gemma3-assessment-env"
       },
       "detailed_report_path": "STRING"
     },
