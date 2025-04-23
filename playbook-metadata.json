@@ -126,11 +126,49 @@
       "date_of_creation": "2025-01-17T10:00:00",
       "last_update_date": "2025-01-17T10:00:00",
       "last_execution": {
-        "name": "",
-        "type": "",
-        "status": "",
-        "timestamp": "",
-        "environment": ""
+        "name": "Be-Secure",
+        "type": "Organization",
+        "status": "Success",
+        "timestamp": "2025-01-23T16:07:47",
+        "environment": "lime-RT-env"
+      },
+      "detailed_report_path": "STRING"
+    },
+    {
+      "name": "LLMSecFalseRefusalRate-cyberseceval",
+      "version": "0.0.1",
+      "type": "tool",
+      "author": {
+        "name": "Be-Secure",
+        "type": "Organization"
+      },
+      "date_of_creation": "2025-04-04T10:00:00",
+      "last_update_date": "2025-04-04T10:00:00",
+      "last_execution": {
+        "name": "Be-Secure",
+        "type": "Organization",
+        "status": "Success",
+        "timestamp": "2025-04-04T16:07:47",
+        "environment": "gemma3-assessment-env"
+      },
+      "detailed_report_path": "STRING"
+    },
+    {
+      "name": "CBOM-ghaWorkflow",
+      "version": "0.0.1",
+      "type": "tool",
+      "author": {
+        "name": "Be-Secure",
+        "type": "Organization"
+      },
+      "date_of_creation": "2025-04-04T10:00:00",
+      "last_update_date": "2025-04-04T10:00:00",
+      "last_execution": {
+        "name": "Be-Secure",
+        "type": "Organization",
+        "status": "Success",
+        "timestamp": "2025-04-04T16:07:47",
+        "environment": "gemma3-llmSecurityBenchmark-RT-env"
       },
       "detailed_report_path": "STRING"
     }
