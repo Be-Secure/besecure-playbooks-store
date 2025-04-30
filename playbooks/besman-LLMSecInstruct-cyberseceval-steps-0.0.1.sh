@@ -13,7 +13,7 @@ fi
 source ~/.venvs/CybersecurityBenchmarks/bin/activate
 
 python3 -m CybersecurityBenchmarks.benchmark.run \
-    --benchmark=frr \
+    --benchmark=instruct \
     --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/instruct/instruct.json" \
     --response-path="$BESMAN_RESULTS_PATH/instruct_responses.json" \
     --stat-path="$BESMAN_RESULTS_PATH/instruct_stat.json" \
