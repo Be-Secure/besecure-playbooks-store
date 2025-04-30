@@ -31,7 +31,7 @@ python3 -m CybersecurityBenchmarks.benchmark.run \
     --expansion-llm="AWSBedrock::mistral.mistral-7b-instruct-v0:2::$AWS_ACCESS_KEY_ID/$AWS_SECRET_ACCESS_KEY" \
     --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::dummy_value" \
     --run-llm-in-parallel \
-    --num-test-cases="$BESMAN_NUM_TEST_CASES_FRR"
+    --num-test-cases="$BESMAN_NUM_TEST_CASES_MITRE"
 
 if [[ "$?" -ne 0 ]]; then
     export MITRE_RESULT=1
