@@ -36,6 +36,7 @@ if [[ "$?" -ne 0 ]]; then
     export PROMPT_INJECTION_RESULT=1
 else
     export PROMPT_INJECTION_RESULT=0
+    jq 'to_entries[0].value' "$BESMAN_RESULTS_PATH/prompt_injection_stat.json" >"$BESMAN_RESULTS_PATH/prompt_injection_stat.tmp.json" && mv "$BESMAN_RESULTS_PATH/prompt_injection_stat.tmp.json" "$BESMAN_RESULTS_PATH/prompt_injection_stat.json"
 fi
 
 # Copy result to detailed report path

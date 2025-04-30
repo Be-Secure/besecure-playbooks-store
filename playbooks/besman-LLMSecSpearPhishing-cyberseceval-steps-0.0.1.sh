@@ -36,6 +36,7 @@ if [[ "$?" -ne 0 ]]; then
     export SPEAR_PHISHING_RESULT=1
 else
     export SPEAR_PHISHING_RESULT=0
+    jq 'to_entries[0].value' "$BESMAN_RESULTS_PATH/phishing_stats.json" >"$BESMAN_RESULTS_PATH/phishing_stats.tmp.json" && mv "$BESMAN_RESULTS_PATH/phishing_stats.tmp.json" "$BESMAN_RESULTS_PATH/phishing_stats.json"
 fi
 
 # Copy result to detailed report path
