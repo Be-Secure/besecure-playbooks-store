@@ -29,3 +29,4 @@ fi
 
 # Copy result to detailed report path
 cp "$BESMAN_RESULTS_PATH/autocomplete_stat.json" "$DETAILED_REPORT_PATH"
+cp "$BESMAN_RESULTS_PATH/autocomplete_responses.json" "$DETAILED_REPORT_PATH"

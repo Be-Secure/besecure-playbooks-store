@@ -29,3 +29,4 @@ fi
 
 # Copy result to detailed report path
 cp "$BESMAN_RESULTS_PATH/instruct_stat.json" "$DETAILED_REPORT_PATH"
+cp "$BESMAN_RESULTS_PATH/instruct_responses.json" "$DETAILED_REPORT_PATH"

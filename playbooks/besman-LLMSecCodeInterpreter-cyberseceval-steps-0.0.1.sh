@@ -40,3 +40,5 @@ fi
 
 # Copy result to detailed report path
 cp "$BESMAN_RESULTS_PATH/interpreter_stat.json" "$DETAILED_REPORT_PATH"
+cp "$BESMAN_RESULTS_PATH/interpreter_responses.json" "$DETAILED_REPORT_PATH"
+cp "$BESMAN_RESULTS_PATH/interpreter_judge_responses.json" "$DETAILED_REPORT_PATH"
