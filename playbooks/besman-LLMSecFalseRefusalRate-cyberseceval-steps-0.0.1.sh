@@ -12,6 +12,9 @@ fi
 
 source ~/.venvs/CybersecurityBenchmarks/bin/activate
 
+# Ensure results directory exists
+mkdir -p "$BESMAN_RESULTS_PATH"
+
 python3 -m CybersecurityBenchmarks.benchmark.run \
     --benchmark=frr \
     --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/frr/frr.json" \
