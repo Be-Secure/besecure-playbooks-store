@@ -18,7 +18,7 @@ if [[ -z "$AWS_ACCESS_KEY_ID" || -z "$AWS_SECRET_ACCESS_KEY" ]]; then
     __besman_echo_white "Please export them before running:"
     __besman_echo_white "export AWS_ACCESS_KEY_ID=<your-access-key-id>"
     __besman_echo_white "export AWS_SECRET_ACCESS_KEY=<your-secret-access-key>"
-    (return 1 2>/dev/null) || exit 1
+    return 1
 fi
 
 python3 -m CybersecurityBenchmarks.benchmark.run \
