@@ -28,6 +28,8 @@ if [[ "$?" -ne 0 ]]; then
     export FRR_RESULT=1
 else
     export FRR_RESULT=0
+    # Flatten the frr_stat.json
+    jq 'to_entries[0].value' "$BESMAN_RESULTS_PATH/frr_stat.json" >"$BESMAN_RESULTS_PATH/frr_stat.tmp.json" && mv "$BESMAN_RESULTS_PATH/frr_stat.tmp.json" "$BESMAN_RESULTS_PATH/frr_stat.json"
 fi
 
 # Copy result to detailed report path
