@@ -25,9 +25,9 @@ if [[ "$?" -ne 0 ]]; then
     export INSTRUCT_RESULT=1
 else
     export INSTRUCT_RESULT=0
-     jq 'to_entries[0].value' "$BESMAN_RESULTS_PATH/instruct_stat.json" >"$BESMAN_RESULTS_PATH/instruct_stat.tmp.json" && mv "$BESMAN_RESULTS_PATH/instruct_stat.tmp.json" "$BESMAN_RESULTS_PATH/instruct_stat.json"
+    jq 'to_entries[0].value' "$BESMAN_RESULTS_PATH/instruct_stat.json" >"$BESMAN_RESULTS_PATH/instruct_stat.tmp.json" && mv "$BESMAN_RESULTS_PATH/instruct_stat.tmp.json" "$BESMAN_RESULTS_PATH/instruct_stat.json"
 fi
 
 # Copy result to detailed report path
-cp "$BESMAN_RESULTS_PATH/instruct_stat.json" "$DETAILED_REPORT_PATH"
-cp "$BESMAN_RESULTS_PATH/instruct_responses.json" "$DETAILED_REPORT_PATH"
+cp "$BESMAN_RESULTS_PATH/instruct_stat.json" "$INSTRUCT_TEST_REPORT_PATH/instruct_stat.json"
+cp "$BESMAN_RESULTS_PATH/instruct_responses.json" "$INSTRUCT_TEST_REPORT_PATH/instruct_responses.json"

@@ -40,6 +40,6 @@ else
 fi
 
 # Copy result to detailed report path
-cp "$BESMAN_RESULTS_PATH/prompt_injection_stat.json" "$DETAILED_REPORT_PATH"
-cp "$BESMAN_RESULTS_PATH/prompt_injection_responses.json" "$DETAILED_REPORT_PATH"
-cp "$BESMAN_RESULTS_PATH/prompt_injection_judge_responses.json" "$DETAILED_REPORT_PATH"
+cp "$BESMAN_RESULTS_PATH/prompt_injection_stat.json" "$PROMPT_INJECTION_TEST_REPORT_PATH/prompt_injection_stat.json"
+cp "$BESMAN_RESULTS_PATH/prompt_injection_responses.json" "$PROMPT_INJECTION_TEST_REPORT_PATH/prompt_injection_responses.json"
+cp "$BESMAN_RESULTS_PATH/prompt_injection_judge_responses.json" "$PROMPT_INJECTION_TEST_REPORT_PATH/prompt_injection_judge_responses.json"

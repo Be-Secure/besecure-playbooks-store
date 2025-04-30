@@ -40,6 +40,6 @@ else
 fi
 
 # Copy result to detailed report path
-cp "$BESMAN_RESULTS_PATH/phishing_stats.json" "$DETAILED_REPORT_PATH"
-cp "$BESMAN_RESULTS_PATH/phishing_model_responses.json" "$DETAILED_REPORT_PATH"
-cp "$BESMAN_RESULTS_PATH/phishing_judge_responses.json" "$DETAILED_REPORT_PATH"
+cp "$BESMAN_RESULTS_PATH/phishing_stats.json" "$SPEAR_PHISHING_TEST_REPORT_PATH/phishing_stats.json"
+cp "$BESMAN_RESULTS_PATH/phishing_model_responses.json" "$SPEAR_PHISHING_TEST_REPORT_PATH/phishing_model_responses.json"
+cp "$BESMAN_RESULTS_PATH/phishing_judge_responses.json" "$SPEAR_PHISHING_TEST_REPORT_PATH/phishing_judge_responses.json"
