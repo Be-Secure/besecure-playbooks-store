@@ -13,19 +13,19 @@ fi
 source ~/.venvs/CybersecurityBenchmarks/bin/activate
 
 python3 -m CybersecurityBenchmarks.benchmark.run \
-    --benchmark=frr \
-    --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/frr/frr.json" \
-    --response-path="$BESMAN_RESULTS_PATH/frr_responses.json" \
-    --stat-path="$BESMAN_RESULTS_PATH/frr_stat.json" \
+    --benchmark=autocomplete \
+    --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/autocomplete/autocomplete.json" \
+    --response-path="$BESMAN_RESULTS_PATH/autocomplete_responses.json" \
+    --stat-path="$BESMAN_RESULTS_PATH/autocomplete_stat.json" \
     --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::dummy_value" \
     --run-llm-in-parallel \
-    --num-test-cases="$BESMAN_NUM_TEST_CASES_FRR"
+    --num-test-cases="$BESMAN_NUM_TEST_CASES_AUTOCOMPLETE"
 
 if [[ "$?" -ne 0 ]]; then
-    export FRR_RESULT=1
+    export AUTOCOMPLETE_RESULT=1
 else
-    export FRR_RESULT=0
+    export AUTOCOMPLETE_RESULT=0
 fi
 
 # Copy result to detailed report path
-cp "$BESMAN_RESULTS_PATH/frr_stat.json" "$DETAILED_REPORT_PATH"
+cp "$BESMAN_RESULTS_PATH/autocomplete_stat.json" "$DETAILED_REPORT_PATH"

@@ -1,17 +1,17 @@
 #!/bin/bash
 function __besman_init() {
     __besman_echo_white "initialising"
-    export ASSESSMENT_TOOL_NAME="cybersecevalFRR"
+    export ASSESSMENT_TOOL_NAME="cybersecevalPromptInjection"
     export ASSESSMENT_TOOL_TYPE="Security Benchmark"
     export ASSESSMENT_TOOL_VERSION="3"
     #export BESLAB_OWNER_TYPE="Organization"
     #export BESLAB_OWNER_NAME="Be-Secure"
-    export ASSESSMENT_TOOL_PLAYBOOK="besman-LLMSecFalseRefusalRate-cyberseceval-playbook-0.0.1.sh"
+    export ASSESSMENT_TOOL_PLAYBOOK="besman-LLMSecPromptInjection-cyberseceval-playbook-0.0.1.sh"
 
-    local steps_file_name="besman-LLMSecFalseRefusalRate-cyberseceval-steps-0.0.1.sh"
+    local steps_file_name="besman-LLMSecPromptInjection-cyberseceval-steps-0.0.1.sh"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
-    local var_array=("BESMAN_ARTIFACT_PROVIDER",BESMAN_NUM_TEST_CASES_FRR,"BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME")
+    local var_array=("BESMAN_ARTIFACT_PROVIDER",BESMAN_NUM_TEST_CASES_PROMPT_INJECTION,"BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME")
 
     local flag=false
     for var in "${var_array[@]}"; do
@@ -46,10 +46,10 @@ function __besman_init() {
     if [[ $flag == true ]]; then
         return 1
     else
-        export FRR_TEST_REPORT_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION/llm-benchmark"
-        export DETAILED_REPORT_PATH="$FRR_TEST_REPORT_PATH/frr_stat.json"
-        mkdir -p "$FRR_TEST_REPORT_PATH"
-        export OSAR_PATH="$FRR_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-osar.json"
+        export PROMPT_INJECTION_TEST_REPORT_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION/llm-benchmark"
+        export DETAILED_REPORT_PATH="$PROMPT_INJECTION_TEST_REPORT_PATH/prompt_injection_stat.json"
+        mkdir -p "$PROMPT_INJECTION_TEST_REPORT_PATH"
+        export OSAR_PATH="$PROMPT_INJECTION_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-osar.json"
         __besman_fetch_steps_file "$steps_file_name" || return 1
         return 0
 
@@ -65,7 +65,7 @@ function __besman_execute() {
     duration=$SECONDS
 
     export EXECUTION_DURATION=$duration
-    if [[ $FRR_RESULT == 1 ]]; then
+    if [[ $PROMPT_INJECTION_RESULT == 1 ]]; then
 
         export PLAYBOOK_EXECUTION_STATUS=failure
         return 1
@@ -92,12 +92,12 @@ function __besman_publish() {
     cd "$BESMAN_ASSESSMENT_DATASTORE_DIR"
 
     git add "$DETAILED_REPORT_PATH" "$OSAR_PATH"
-    git commit -m "Added osar and detailed report for PurpleLlama-CyberSecEval-LLMSecurityBenchmark-frr"
+    git commit -m "Added osar and detailed report for PurpleLlama-CyberSecEval-LLMSecurityBenchmark-Prompt-Injection"
     git push origin main
 }
 
 function __besman_cleanup() {
-    local var_array=("ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_PLAYBOOK" "ASSESSMENT_TOOL_VERSION" "OSAR_PATH" "FRR_TEST_REPORT_PATH" "DETAILED_REPORT_PATH")
+    local var_array=("ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_PLAYBOOK" "ASSESSMENT_TOOL_VERSION" "OSAR_PATH" "PROMPT_INJECTION_TEST_REPORT_PATH" "DETAILED_REPORT_PATH")
 
     for var in "${var_array[@]}"; do
         if [[ -v $var ]]; then
