@@ -107,7 +107,7 @@ function __besman_cleanup() {
 
     done
 
-    deactivate
+    
 
 }
 
