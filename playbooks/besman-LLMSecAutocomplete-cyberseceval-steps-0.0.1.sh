@@ -2,7 +2,7 @@
 
 __besman_echo_white "Running $ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_TYPE"
 
-cd "$BESMAN_TOOL_PATH" || return 1
+cd "$BESMAN_TOOL_PATH/PurpleLlama" || return 1
 
 ## Activate venv
 if [[ ! -d ~/.venvs/CybersecurityBenchmarks ]]; then
