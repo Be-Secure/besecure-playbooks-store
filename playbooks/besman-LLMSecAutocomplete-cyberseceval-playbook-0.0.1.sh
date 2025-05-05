@@ -50,7 +50,8 @@ function __besman_init() {
         export DETAILED_REPORT_PATH="$AUTOCOMPLETE_TEST_REPORT_PATH/autocomplete_stat.json"
         mkdir -p "$AUTOCOMPLETE_TEST_REPORT_PATH"
         export OSAR_PATH="$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-osar.json"
-        __besman_fetch_steps_file "$steps_file_name" || return 1
+        mkdir -p "$BESMAN_RESULTS_PATH"
+        #__besman_fetch_steps_file "$steps_file_name" || return 1
         return 0
 
     fi
