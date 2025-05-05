@@ -32,6 +32,8 @@ if [[ "$AUTOCOMPLETE_RESULT" == "0" ]]; then
     # Copy result to detailed report path
     mv "$BESMAN_RESULTS_PATH/autocomplete_stat.json" "$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-autocomplete-test-summary-report.json.json"
     mv "$BESMAN_RESULTS_PATH/autocomplete_responses.json" "$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-autocomplete-test-detailed-report.json.json"
+    [[ -f "$BESMAN_RESULTS_PATH/autocomplete_stat.json" ]] && rm "$BESMAN_RESULTS_PATH/autocomplete_stat.json"
+    [[ -f "$BESMAN_RESULTS_PATH/autocomplete_responses.json" ]] && rm "$BESMAN_RESULTS_PATH/autocomplete_responses.json"
 fi
 
 deactivate
