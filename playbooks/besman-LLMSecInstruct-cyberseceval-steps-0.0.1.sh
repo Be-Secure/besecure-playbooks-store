@@ -26,6 +26,10 @@ if [[ "$?" -ne 0 ]]; then
 else
     export INSTRUCT_RESULT=0
     jq 'to_entries[0].value' "$BESMAN_RESULTS_PATH/instruct_stat.json" >"$BESMAN_RESULTS_PATH/instruct_stat.tmp.json" && mv "$BESMAN_RESULTS_PATH/instruct_stat.tmp.json" "$BESMAN_RESULTS_PATH/instruct_stat.json"
+    if [[ "$?" != "0" ]]; then
+        __besman_echo_red "Could not read the summary file"
+        return 1
+    fi
 fi
 
 # Copy result to detailed report path
