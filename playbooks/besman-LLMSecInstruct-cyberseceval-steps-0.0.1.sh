@@ -2,7 +2,7 @@
 
 __besman_echo_white "Running $ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_TYPE"
 
-cd "$BESMAN_TOOL_PATH" || return 1
+cd "$BESMAN_TOOL_PATH/PurpleLlama" || return 1
 
 ## Activate venv
 if [[ ! -d ~/.venvs/CybersecurityBenchmarks ]]; then
@@ -29,5 +29,12 @@ else
 fi
 
 # Copy result to detailed report path
-cp "$BESMAN_RESULTS_PATH/instruct_stat.json" "$INSTRUCT_TEST_REPORT_PATH/instruct_stat.json"
-cp "$BESMAN_RESULTS_PATH/instruct_responses.json" "$INSTRUCT_TEST_REPORT_PATH/instruct_responses.json"
+if [[ "$AUTOCOMPLETE_RESULT" == "0" ]]; then
+    # Copy result to detailed report path
+    mv "$BESMAN_RESULTS_PATH/instruct_stat.json" "$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-autocomplete-test-summary-report.json.json"
+    mv "$BESMAN_RESULTS_PATH/instruct_responses.json" "$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-autocomplete-test-detailed-report.json.json"
+    [[ -f "$BESMAN_RESULTS_PATH/instruct_stat.json" ]] && rm "$BESMAN_RESULTS_PATH/instruct_stat.json"
+    [[ -f "$BESMAN_RESULTS_PATH/instruct_responses.json" ]] && rm "$BESMAN_RESULTS_PATH/instruct_responses.json"
+fi
+
+deactivate
