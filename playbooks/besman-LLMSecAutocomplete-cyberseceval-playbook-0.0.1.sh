@@ -106,7 +106,8 @@ function __besman_cleanup() {
 
     done
 
-    
+    [[ -f "$AUTOCOMPLETE_TEST_REPORT_PATH/autocomplete_stat.json" ]] && rm "$AUTOCOMPLETE_TEST_REPORT_PATH/autocomplete_stat.json"
+    [[ -f "$AUTOCOMPLETE_TEST_REPORT_PATH/autocomplete_responses.json" ]] && rm "$AUTOCOMPLETE_TEST_REPORT_PATH/autocomplete_responses.json"
 
 }
 
