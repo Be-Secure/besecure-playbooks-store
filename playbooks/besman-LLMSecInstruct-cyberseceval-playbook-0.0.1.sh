@@ -104,7 +104,8 @@ function __besman_cleanup() {
         fi
 
     done
-
+    [[ -f "$INSTRUCT_TEST_REPORT_PATH/instruct_stat.json" ]] && rm "$INSTRUCT_TEST_REPORT_PATH/instruct_stat.json"
+    [[ -f "$INSTRUCT_TEST_REPORT_PATH/instruct_responses.json" ]] && rm "$INSTRUCT_TEST_REPORT_PATH/instruct_responses.json"
 }
 
 # function launch
