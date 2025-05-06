@@ -28,11 +28,4 @@ else
     jq 'to_entries[0].value' "$BESMAN_RESULTS_PATH/autocomplete_stat.json" >"$BESMAN_RESULTS_PATH/autocomplete_stat.tmp.json" && mv "$BESMAN_RESULTS_PATH/autocomplete_stat.tmp.json" "$BESMAN_RESULTS_PATH/autocomplete_stat.json"
 fi
 
-if [[ -f "$BESMAN_RESULTS_PATH/autocomplete_responses.json" ]]; then
-    # Copy result to detailed report path
-    mv "$BESMAN_RESULTS_PATH/autocomplete_stat.json" "$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-autocomplete-test-summary-report.json"
-    mv "$BESMAN_RESULTS_PATH/autocomplete_responses.json" "$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-autocomplete-test-detailed-report.json"
-
-fi
-
 deactivate
