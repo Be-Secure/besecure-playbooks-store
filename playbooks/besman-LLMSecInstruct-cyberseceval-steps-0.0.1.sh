@@ -35,8 +35,8 @@ fi
 # Copy result to detailed report path
 if [[ "$AUTOCOMPLETE_RESULT" == "0" ]]; then
     # Copy result to detailed report path
-    mv "$BESMAN_RESULTS_PATH/instruct_stat.json" "$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-autocomplete-test-summary-report.json.json"
-    mv "$BESMAN_RESULTS_PATH/instruct_responses.json" "$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-autocomplete-test-detailed-report.json.json"
+    mv "$BESMAN_RESULTS_PATH/instruct_stat.json" "$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-instruct-test-summary-report.json.json"
+    mv "$BESMAN_RESULTS_PATH/instruct_responses.json" "$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-instruct-test-detailed-report.json.json"
     
 fi
 
