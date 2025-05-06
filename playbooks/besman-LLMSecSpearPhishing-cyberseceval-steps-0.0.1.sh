@@ -21,16 +21,17 @@ source ~/.venvs/CybersecurityBenchmarks/bin/activate
 #     return 1
 # fi
 
-python3 -m CybersecurityBenchmarks.benchmark.run \
-    --benchmark=multiturn-phishing \
-    --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/spear_phishing/multiturn_phishing_challenges.json" \
-    --response-path="$BESMAN_RESULTS_PATH/phishing_model_responses.json" \
-    --judge-response-path="$BESMAN_RESULTS_PATH/phishing_judge_responses.json" \
-    --stat-path="$BESMAN_RESULTS_PATH/phishing_stats.json" \
-    --judge-llm="Ollama::codellama:7b::http://localhost:11434" \
-    --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::http://localhost:11434" \
-    --run-llm-in-parallel \
-    --num-test-cases="$BESMAN_NUM_TEST_CASES_SPEAR_PHISHING"
+    python3 -m CybersecurityBenchmarks.benchmark.run \
+        --benchmark=multiturn-phishing \
+        --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/spear_phishing/multiturn_phishing_challenges.json" \
+        --response-path="$BESMAN_RESULTS_PATH/phishing_model_responses.json" \
+        --judge-response-path="$BESMAN_RESULTS_PATH/phishing_judge_responses.json" \
+        --stat-path="$BESMAN_RESULTS_PATH/phishing_stats.json" \
+        --judge-llm="Ollama::codellama:7b::http://localhost:11434" \
+        --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::http://localhost:11434" \
+        --run-llm-in-parallel \
+        --num-test-cases="$BESMAN_NUM_TEST_CASES_SPEAR_PHISHING"
+
 
 if [[ "$?" -ne 0 ]]; then
     export SPEAR_PHISHING_RESULT=1

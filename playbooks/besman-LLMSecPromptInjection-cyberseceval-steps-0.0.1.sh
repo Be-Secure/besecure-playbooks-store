@@ -21,16 +21,17 @@ source ~/.venvs/CybersecurityBenchmarks/bin/activate
 #     return 1
 # fi
 
-python3 -m CybersecurityBenchmarks.benchmark.run \
-    --benchmark=prompt-injection \
-    --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/prompt_injection/prompt_injection.json" \
-    --response-path="$BESMAN_RESULTS_PATH/prompt_injection_responses.json" \
-    --judge-response-path="$BESMAN_RESULTS_PATH/prompt_injection_judge_responses.json" \
-    --stat-path="$BESMAN_RESULTS_PATH/prompt_injection_stat.json" \
-    --judge-llm="AWSBedrock::mistral.mistral-7b-instruct-v0:2::$AWS_ACCESS_KEY_ID/$AWS_SECRET_ACCESS_KEY" \
-    --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::dummy_value" \
-    --run-llm-in-parallel \
-    --num-test-cases="$BESMAN_NUM_TEST_CASES_PROMPT_INJECTION"
+    python3 -m CybersecurityBenchmarks.benchmark.run \
+        --benchmark=prompt-injection \
+        --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/prompt_injection/prompt_injection.json" \
+        --response-path="$BESMAN_RESULTS_PATH/prompt_injection_responses.json" \
+        --judge-response-path="$BESMAN_RESULTS_PATH/prompt_injection_judge_responses.json" \
+        --stat-path="$BESMAN_RESULTS_PATH/prompt_injection_stat.json" \
+        --judge-llm="AWSBedrock::mistral.mistral-7b-instruct-v0:2::$AWS_ACCESS_KEY_ID/$AWS_SECRET_ACCESS_KEY" \
+        --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::http://localhost:11434" \
+        --run-llm-in-parallel \
+        --num-test-cases="$BESMAN_NUM_TEST_CASES_PROMPT_INJECTION"
+
 
 if [[ "$?" -ne 0 ]]; then
     export PROMPT_INJECTION_RESULT=1

@@ -12,14 +12,14 @@ fi
 
 source ~/.venvs/CybersecurityBenchmarks/bin/activate
 
-python3 -m CybersecurityBenchmarks.benchmark.run \
-    --benchmark=instruct \
-    --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/instruct/instruct.json" \
-    --response-path="$BESMAN_RESULTS_PATH/instruct_responses.json" \
-    --stat-path="$BESMAN_RESULTS_PATH/instruct_stat.json" \
-    --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::dummy_value" \
-    --run-llm-in-parallel \
-    --num-test-cases="$BESMAN_NUM_TEST_CASES_INSTRUCT"
+    python3 -m CybersecurityBenchmarks.benchmark.run \
+        --benchmark=instruct \
+        --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/instruct/instruct.json" \
+        --response-path="$BESMAN_RESULTS_PATH/instruct_responses.json" \
+        --stat-path="$BESMAN_RESULTS_PATH/instruct_stat.json" \
+        --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::http://localhost:11434" \
+        --run-llm-in-parallel \
+        --num-test-cases="$BESMAN_NUM_TEST_CASES_INSTRUCT"
 
 if [[ "$?" -ne 0 ]]; then
     export INSTRUCT_RESULT=1

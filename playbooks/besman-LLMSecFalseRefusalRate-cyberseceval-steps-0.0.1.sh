@@ -12,17 +12,14 @@ fi
 
 source ~/.venvs/CybersecurityBenchmarks/bin/activate
 
-# Ensure results directory exists
-mkdir -p "$BESMAN_RESULTS_PATH"
-
-python3 -m CybersecurityBenchmarks.benchmark.run \
-    --benchmark=frr \
-    --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/frr/frr.json" \
-    --response-path="$BESMAN_RESULTS_PATH/frr_responses.json" \
-    --stat-path="$BESMAN_RESULTS_PATH/frr_stat.json" \
-    --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::dummy_value" \
-    --run-llm-in-parallel \
-    --num-test-cases="$BESMAN_NUM_TEST_CASES_FRR"
+    python3 -m CybersecurityBenchmarks.benchmark.run \
+        --benchmark=frr \
+        --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/frr/frr.json" \
+        --response-path="$BESMAN_RESULTS_PATH/frr_responses.json" \
+        --stat-path="$BESMAN_RESULTS_PATH/frr_stat.json" \
+        --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::http://localhost:11434" \
+        --run-llm-in-parallel \
+        --num-test-cases="$BESMAN_NUM_TEST_CASES_FRR"
 
 if [[ "$?" -ne 0 ]]; then
     export FRR_RESULT=1

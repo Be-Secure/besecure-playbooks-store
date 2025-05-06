@@ -20,17 +20,16 @@ source ~/.venvs/CybersecurityBenchmarks/bin/activate
 #     __besman_echo_white "export AWS_SECRET_ACCESS_KEY=<your-secret-access-key>"
 #     return 1
 # fi
-
-python3 -m CybersecurityBenchmarks.benchmark.run \
-    --benchmark=interpreter \
-    --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/interpreter/interpreter.json" \
-    --response-path="$BESMAN_RESULTS_PATH/interpreter_responses.json" \
-    --judge-response-path="$BESMAN_RESULTS_PATH/interpreter_judge_responses.json" \
-    --stat-path="$BESMAN_RESULTS_PATH/interpreter_stat.json" \
-    --judge-llm="AWSBedrock::mistral.mistral-7b-instruct-v0:2::$AWS_ACCESS_KEY_ID/$AWS_SECRET_ACCESS_KEY" \
-    --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::dummy_value" \
-    --run-llm-in-parallel \
-    --num-test-cases="$BESMAN_NUM_TEST_CASES_INTERPRETER"
+    python3 -m CybersecurityBenchmarks.benchmark.run \
+        --benchmark=interpreter \
+        --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/interpreter/interpreter.json" \
+        --response-path="$BESMAN_RESULTS_PATH/interpreter_responses.json" \
+        --judge-response-path="$BESMAN_RESULTS_PATH/interpreter_judge_responses.json" \
+        --stat-path="$BESMAN_RESULTS_PATH/interpreter_stat.json" \
+        --judge-llm="AWSBedrock::mistral.mistral-7b-instruct-v0:2::$AWS_ACCESS_KEY_ID/$AWS_SECRET_ACCESS_KEY" \
+        --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::http://localhost:11434" \
+        --run-llm-in-parallel \
+        --num-test-cases="$BESMAN_NUM_TEST_CASES_INTERPRETER"
 
 if [[ "$?" -ne 0 ]]; then
     export CODE_INTERPRETER_RESULT=1
