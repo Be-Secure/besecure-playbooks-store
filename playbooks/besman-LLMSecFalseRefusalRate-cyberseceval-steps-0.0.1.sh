@@ -2,7 +2,7 @@
 
 __besman_echo_white "Running $ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_TYPE"
 
-cd "$BESMAN_TOOL_PATH" || return 1
+cd "$BESMAN_TOOL_PATH/PurpleLlama" || return 1
 
 ## Activate venv
 if [[ ! -d ~/.venvs/CybersecurityBenchmarks ]]; then
@@ -32,6 +32,6 @@ else
     jq 'to_entries[0].value' "$BESMAN_RESULTS_PATH/frr_stat.json" >"$BESMAN_RESULTS_PATH/frr_stat.tmp.json" && mv "$BESMAN_RESULTS_PATH/frr_stat.tmp.json" "$BESMAN_RESULTS_PATH/frr_stat.json"
 fi
 
-# Copy result to detailed report path
-cp "$BESMAN_RESULTS_PATH/frr_stat.json" "$FRR_TEST_REPORT_PATH/frr_stat.json"
-cp "$BESMAN_RESULTS_PATH/frr_responses.json" "$FRR_TEST_REPORT_PATH/frr_responses.json"
+# # Copy result to detailed report path
+# cp "$BESMAN_RESULTS_PATH/frr_stat.json" "$FRR_TEST_REPORT_PATH/frr_stat.json"
+# cp "$BESMAN_RESULTS_PATH/frr_responses.json" "$FRR_TEST_REPORT_PATH/frr_responses.json"
