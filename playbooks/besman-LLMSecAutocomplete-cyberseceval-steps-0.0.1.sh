@@ -11,15 +11,29 @@ if [[ ! -d ~/.venvs/CybersecurityBenchmarks ]]; then
 fi
 
 source ~/.venvs/CybersecurityBenchmarks/bin/activate
-
-python3 -m CybersecurityBenchmarks.benchmark.run \
+if [[ "$BESMAN_ARTIFACT_PROVIDER" == "Ollama" ]] 
+then
+    python3 -m CybersecurityBenchmarks.benchmark.run \
     --benchmark=autocomplete \
     --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/autocomplete/autocomplete.json" \
     --response-path="$BESMAN_RESULTS_PATH/autocomplete_responses.json" \
     --stat-path="$BESMAN_RESULTS_PATH/autocomplete_stat.json" \
-    --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::dummy_value" \
+    --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::http://localhost:11434" \
     --run-llm-in-parallel \
     --num-test-cases="$BESMAN_NUM_TEST_CASES_AUTOCOMPLETE"
+elif [[ "$BESMAN_ARTIFACT_PROVIDER" == "Huggingface" ]] 
+then
+
+    python3 -m CybersecurityBenchmarks.benchmark.run \
+    --benchmark=autocomplete \
+    --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/autocomplete/autocomplete.json" \
+    --response-path="$BESMAN_RESULTS_PATH/autocomplete_responses.json" \
+    --stat-path="$BESMAN_RESULTS_PATH/autocomplete_stat.json" \
+    --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::random-string" \
+    --run-llm-in-parallel \
+    --num-test-cases="$BESMAN_NUM_TEST_CASES_AUTOCOMPLETE"
+
+fi
 
 if [[ "$?" -ne 0 ]]; then
     export AUTOCOMPLETE_RESULT=1
