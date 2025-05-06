@@ -2,7 +2,7 @@
 
 __besman_echo_white "Running $ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_TYPE"
 
-cd "$BESMAN_TOOL_PATH" || return 1
+cd "$BESMAN_TOOL_PATH/PurpleLlama" || return 1
 
 ## Activate venv
 if [[ ! -d ~/.venvs/CybersecurityBenchmarks ]]; then
@@ -13,13 +13,13 @@ fi
 source ~/.venvs/CybersecurityBenchmarks/bin/activate
 
 # Check if AWS credentials are set
-if [[ -z "$AWS_ACCESS_KEY_ID" || -z "$AWS_SECRET_ACCESS_KEY" ]]; then
-    __besman_echo_red "[ERROR] AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY is not set."
-    __besman_echo_white "Please export them before running:"
-    __besman_echo_white "export AWS_ACCESS_KEY_ID=<your-access-key-id>"
-    __besman_echo_white "export AWS_SECRET_ACCESS_KEY=<your-secret-access-key>"
-    return 1
-fi
+# if [[ -z "$AWS_ACCESS_KEY_ID" || -z "$AWS_SECRET_ACCESS_KEY" ]]; then
+#     __besman_echo_red "[ERROR] AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY is not set."
+#     __besman_echo_white "Please export them before running:"
+#     __besman_echo_white "export AWS_ACCESS_KEY_ID=<your-access-key-id>"
+#     __besman_echo_white "export AWS_SECRET_ACCESS_KEY=<your-secret-access-key>"
+#     return 1
+# fi
 
 python3 -m CybersecurityBenchmarks.benchmark.run \
     --benchmark=interpreter \
@@ -40,6 +40,6 @@ else
 fi
 
 # Copy result to detailed report path
-cp "$BESMAN_RESULTS_PATH/interpreter_stat.json" "$INTERPRETER_TEST_REPORT_PATH/interpreter_stat.json"
-cp "$BESMAN_RESULTS_PATH/interpreter_responses.json" "$INTERPRETER_TEST_REPORT_PATH/interpreter_responses.json"
-cp "$BESMAN_RESULTS_PATH/interpreter_judge_responses.json" "$INTERPRETER_TEST_REPORT_PATH/interpreter_judge_responses.json"
+# cp "$BESMAN_RESULTS_PATH/interpreter_stat.json" "$INTERPRETER_TEST_REPORT_PATH/interpreter_stat.json"
+# cp "$BESMAN_RESULTS_PATH/interpreter_responses.json" "$INTERPRETER_TEST_REPORT_PATH/interpreter_responses.json"
+# cp "$BESMAN_RESULTS_PATH/interpreter_judge_responses.json" "$INTERPRETER_TEST_REPORT_PATH/interpreter_judge_responses.json"
