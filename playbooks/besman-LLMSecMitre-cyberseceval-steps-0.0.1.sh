@@ -2,7 +2,7 @@
 
 __besman_echo_white "Running $ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_TYPE"
 
-cd "$BESMAN_TOOL_PATH" || return 1
+cd "$BESMAN_TOOL_PATH/PurpleLlama" || return 1
 
 ## Activate venv
 if [[ ! -d ~/.venvs/CybersecurityBenchmarks ]]; then
@@ -39,6 +39,6 @@ else
     export MITRE_RESULT=0
 fi
 
-# Copy result to detailed report path
-cp "$BESMAN_RESULTS_PATH/mitre_judge_responses.json" "$MITRE_TEST_REPORT_PATH/mitre_judge_responses.json"
-cp "$BESMAN_RESULTS_PATH/mitre_responses.json" "$MITRE_TEST_REPORT_PATH/mitre_responses.json"
+# # Copy result to detailed report path
+# cp "$BESMAN_RESULTS_PATH/mitre_judge_responses.json" "$MITRE_TEST_REPORT_PATH/mitre_judge_responses.json"
+# cp "$BESMAN_RESULTS_PATH/mitre_responses.json" "$MITRE_TEST_REPORT_PATH/mitre_responses.json"
