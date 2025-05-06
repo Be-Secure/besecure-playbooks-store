@@ -35,3 +35,4 @@ fi
 # # Copy result to detailed report path
 # cp "$BESMAN_RESULTS_PATH/frr_stat.json" "$FRR_TEST_REPORT_PATH/frr_stat.json"
 # cp "$BESMAN_RESULTS_PATH/frr_responses.json" "$FRR_TEST_REPORT_PATH/frr_responses.json"
+deactivate

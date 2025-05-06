@@ -43,3 +43,4 @@ fi
 # cp "$BESMAN_RESULTS_PATH/interpreter_stat.json" "$INTERPRETER_TEST_REPORT_PATH/interpreter_stat.json"
 # cp "$BESMAN_RESULTS_PATH/interpreter_responses.json" "$INTERPRETER_TEST_REPORT_PATH/interpreter_responses.json"
 # cp "$BESMAN_RESULTS_PATH/interpreter_judge_responses.json" "$INTERPRETER_TEST_REPORT_PATH/interpreter_judge_responses.json"
+deactivate
