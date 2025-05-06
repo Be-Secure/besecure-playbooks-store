@@ -47,7 +47,7 @@ function __besman_init() {
         return 1
     else
         export AUTOCOMPLETE_TEST_REPORT_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION/llm-benchmark"
-        export DETAILED_REPORT_PATH="$AUTOCOMPLETE_TEST_REPORT_PATH/autocomplete_stat.json"
+        export DETAILED_REPORT_PATH="$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-autocomplete-test-summary-report.json"
         mkdir -p "$AUTOCOMPLETE_TEST_REPORT_PATH"
         export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-osar.json"
         #__besman_fetch_steps_file "$steps_file_name" || return 1

@@ -35,8 +35,8 @@ fi
 # Copy result to detailed report path
 if [[ -f "$BESMAN_RESULTS_PATH/instruct_responses.json" ]]; then
     # Copy result to detailed report path
-    mv "$BESMAN_RESULTS_PATH/instruct_stat.json" "$INSTRUCT_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-instruct-test-summary-report.json.json"
-    mv "$BESMAN_RESULTS_PATH/instruct_responses.json" "$INSTRUCT_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-instruct-test-detailed-report.json.json"
+    mv "$BESMAN_RESULTS_PATH/instruct_stat.json" "$INSTRUCT_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-instruct-test-summary-report.json"
+    mv "$BESMAN_RESULTS_PATH/instruct_responses.json" "$INSTRUCT_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-instruct-test-detailed-report.json"
     
 fi
 
