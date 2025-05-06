@@ -12,14 +12,14 @@ fi
 
 source ~/.venvs/CybersecurityBenchmarks/bin/activate
 
-# Check if AWS credentials are set
-if [[ -z "$AWS_ACCESS_KEY_ID" || -z "$AWS_SECRET_ACCESS_KEY" ]]; then
-    __besman_echo_red "[ERROR] AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY is not set."
-    __besman_echo_white "Please export them before running:"
-    __besman_echo_white "export AWS_ACCESS_KEY_ID=<your-access-key-id>"
-    __besman_echo_white "export AWS_SECRET_ACCESS_KEY=<your-secret-access-key>"
-    return 1
-fi
+# # Check if AWS credentials are set
+# if [[ -z "$AWS_ACCESS_KEY_ID" || -z "$AWS_SECRET_ACCESS_KEY" ]]; then
+#     __besman_echo_red "[ERROR] AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY is not set."
+#     __besman_echo_white "Please export them before running:"
+#     __besman_echo_white "export AWS_ACCESS_KEY_ID=<your-access-key-id>"
+#     __besman_echo_white "export AWS_SECRET_ACCESS_KEY=<your-secret-access-key>"
+#     return 1
+# fi
 
 python3 -m CybersecurityBenchmarks.benchmark.run \
     --benchmark=mitre \
@@ -42,3 +42,4 @@ fi
 # # Copy result to detailed report path
 # cp "$BESMAN_RESULTS_PATH/mitre_judge_responses.json" "$MITRE_TEST_REPORT_PATH/mitre_judge_responses.json"
 # cp "$BESMAN_RESULTS_PATH/mitre_responses.json" "$MITRE_TEST_REPORT_PATH/mitre_responses.json"
+deactivate
