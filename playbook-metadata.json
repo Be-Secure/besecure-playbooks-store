@@ -5,6 +5,8 @@
       "name": "spdx-sbom-generator",
       "version": "0.0.1",
       "type": "tool",
+      "intent": "SBOM",
+      "description": "Generates Software Bill of Materials using SPDX format.",
       "author": {
         "name": "Be-Secure",
         "type": "Organization"
@@ -24,6 +26,8 @@
       "name": "criticality_score",
       "version": "0.0.1",
       "type": "tool",
+      "intent": "PIA",
+      "description": "Evaluates the criticality of an open-source project using project metrics.",
       "author": {
         "name": "Be-Secure",
         "type": "Organization"
@@ -43,6 +47,8 @@
       "name": "sonarqube",
       "version": "0.0.1",
       "type": "tool",
+      "intent": "SAST",
+      "description": "Performs static analysis and code quality checks for codebases.",
       "author": {
         "name": "Be-Secure",
         "type": "Organization"
@@ -62,6 +68,8 @@
       "name": "scorecard",
       "version": "0.0.1",
       "type": "tool",
+      "intent": "RIP",
+      "description": "Analyzes open-source repositories for security best practices and risks.",
       "author": {
         "name": "Be-Secure",
         "type": "Organization"
@@ -81,6 +89,8 @@
       "name": "watchtower",
       "version": "0.0.1",
       "type": "tool",
+      "intent": "SAST",
+      "description": "Performs security and vulnerability scans on machine learning models.",
       "author": {
         "name": "Be-Secure",
         "type": "Organization"
@@ -100,6 +110,8 @@
       "name": "counterfit",
       "version": "0.0.1",
       "type": "tool",
+      "intent": "DAST",
+      "description": "Framework for assessing the security of AI systems using adversarial attacks.",
       "author": {
         "name": "Be-Secure",
         "type": "Organization"
@@ -119,6 +131,8 @@
       "name": "cyclonedx-sbom-generator",
       "version": "0.0.1",
       "type": "tool",
+      "intent": "SBOM",
+      "description": "Generates Software Bill of Materials in CycloneDX format for dependency visibility.",
       "author": {
         "name": "Be-Secure",
         "type": "Organization"
@@ -126,11 +140,179 @@
       "date_of_creation": "2025-01-17T10:00:00",
       "last_update_date": "2025-01-17T10:00:00",
       "last_execution": {
-        "name": "",
-        "type": "",
-        "status": "",
-        "timestamp": "",
-        "environment": ""
+        "name": "Be-Secure",
+        "type": "Organization",
+        "status": "Success",
+        "timestamp": "2025-01-23T16:07:47",
+        "environment": "lime-RT-env"
+      },
+      "detailed_report_path": "STRING"
+    },
+    {
+      "name": "LLMSecFalseRefusalRate-cyberseceval",
+      "version": "0.0.1",
+      "type": "tool",
+      "intent": "LLMSecFalseRefusalRate",
+      "description": "LLM Security benchmark using cyberseceval3",
+      "author": {
+        "name": "Be-Secure",
+        "type": "Organization"
+      },
+      "date_of_creation": "2025-04-04T10:00:00",
+      "last_update_date": "2025-04-04T10:00:00",
+      "last_execution": {
+        "name": "Be-Secure",
+        "type": "Organization",
+        "status": "Success",
+        "timestamp": "2025-04-04T16:07:47",
+        "environment": "gemma3-assessment-env"
+      },
+      "detailed_report_path": "STRING"
+    },
+    {
+      "name": "LLMSecAutocomplete-cyberseceval",
+      "version": "0.0.1",
+      "type": "tool",
+      "intent": "LLMSecAutocomplete",
+      "description": "LLM Security benchmark using cyberseceval3",
+      "author": {
+        "name": "Be-Secure",
+        "type": "Organization"
+      },
+      "date_of_creation": "2025-04-29T03:25:34",
+      "last_update_date": "2025-04-30T03:25:34",
+      "last_execution": {
+        "name": "Be-Secure",
+        "type": "Organization",
+        "status": "Success",
+        "timestamp": "2025-04-30T06:25:34",
+        "environment": "gemma3-assessment-env"
+      },
+      "detailed_report_path": "STRING"
+    },
+    {
+      "name": "LLMSecCodeInterpreter-cyberseceval",
+      "version": "0.0.1",
+      "type": "tool",
+      "intent": "LLMSecCodeInterpreter",
+      "description": "LLM Security benchmark using cyberseceval3",
+      "author": {
+        "name": "Be-Secure",
+        "type": "Organization"
+      },
+      "date_of_creation": "2025-04-29T03:25:34",
+      "last_update_date": "2025-04-30T03:25:34",
+      "last_execution": {
+        "name": "Be-Secure",
+        "type": "Organization",
+        "status": "Success",
+        "timestamp": "2025-04-30T06:25:34",
+        "environment": "gemma3-assessment-env"
+      },
+      "detailed_report_path": "STRING"
+    },
+    {
+      "name": "LLMSecInstruct-cyberseceval",
+      "version": "0.0.1",
+      "type": "tool",
+      "intent": "LLMSecInstruct",
+      "description": "LLM Security benchmark using cyberseceval3",
+      "author": {
+        "name": "Be-Secure",
+        "type": "Organization"
+      },
+      "date_of_creation": "2025-04-29T03:25:34",
+      "last_update_date": "2025-04-30T03:25:34",
+      "last_execution": {
+        "name": "Be-Secure",
+        "type": "Organization",
+        "status": "Success",
+        "timestamp": "2025-04-30T07:25:34",
+        "environment": "gemma3-assessment-env"
+      },
+      "detailed_report_path": "STRING"
+    },
+    {
+      "name": "LLMSecMitre-cyberseceval",
+      "version": "0.0.1",
+      "type": "tool",
+      "intent": "LLMSecMitre",
+      "description": "LLM Security benchmark using cyberseceval3",
+      "author": {
+        "name": "Be-Secure",
+        "type": "Organization"
+      },
+      "date_of_creation": "2025-04-29T03:25:34",
+      "last_update_date": "2025-04-30T03:25:34",
+      "last_execution": {
+        "name": "Be-Secure",
+        "type": "Organization",
+        "status": "Success",
+        "timestamp": "2025-04-30T07:25:34",
+        "environment": "gemma3-assessment-env"
+      },
+      "detailed_report_path": "STRING"
+    },
+    {
+      "name": "LLMSecPromptInjection-cyberseceval",
+      "version": "0.0.1",
+      "type": "tool",
+      "intent": "LLMSecPromptInjection",
+      "description": "LLM Security benchmark using cyberseceval3",
+      "author": {
+        "name": "Be-Secure",
+        "type": "Organization"
+      },
+      "date_of_creation": "2025-04-29T03:25:34",
+      "last_update_date": "2025-04-30T03:25:34",
+      "last_execution": {
+        "name": "Be-Secure",
+        "type": "Organization",
+        "status": "Success",
+        "timestamp": "2025-04-30T08:25:34",
+        "environment": "gemma3-assessment-env"
+      },
+      "detailed_report_path": "STRING"
+    },
+    {
+      "name": "LLMSecSpearPhishing-cyberseceval",
+      "version": "0.0.1",
+      "type": "tool",
+      "intent": "LLMSecSpearPhishing",
+      "description": "LLM Security benchmark using cyberseceval3",
+      "author": {
+        "name": "Be-Secure",
+        "type": "Organization"
+      },
+      "date_of_creation": "2025-04-29T03:25:34",
+      "last_update_date": "2025-04-30T03:25:34",
+      "last_execution": {
+        "name": "Be-Secure",
+        "type": "Organization",
+        "status": "Success",
+        "timestamp": "2025-04-30T08:25:34",
+        "environment": "gemma3-assessment-env"
+      },
+      "detailed_report_path": "STRING"
+    },
+    {
+      "name": "CBOM-ghaWorkflow",
+      "version": "0.0.1",
+      "type": "tool",
+      "intent": "CBOM",
+      "description": "Performs SBOM-based Continuous Build Operations Monitoring for GitHub Actions workflows.",
+      "author": {
+        "name": "Be-Secure",
+        "type": "Organization"
+      },
+      "date_of_creation": "2025-04-04T10:00:00",
+      "last_update_date": "2025-04-04T10:00:00",
+      "last_execution": {
+        "name": "Be-Secure",
+        "type": "Organization",
+        "status": "Success",
+        "timestamp": "2025-04-04T16:07:47",
+        "environment": "gemma3-llmSecurityBenchmark-RT-env"
       },
       "detailed_report_path": "STRING"
     }
