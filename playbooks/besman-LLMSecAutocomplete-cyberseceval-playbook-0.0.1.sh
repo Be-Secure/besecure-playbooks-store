@@ -13,6 +13,15 @@ function __besman_init() {
 
     local var_array=("BESMAN_ARTIFACT_PROVIDER" "BESMAN_NUM_TEST_CASES_AUTOCOMPLETE" "BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME" "BESMAN_RESULTS_PATH")
 
+    if [[ "$BESMAN_ARTIFACT_PROVIDER" == "HuggingFace" && -z "$BESMAN_MODEL_REPO_NAMESPACE" ]]; then
+        __besman_echo_red "HuggingFace model repo namespace is not set"
+        __besman_echo_no_colour ""
+        __besman_echo_no_colour "Run the below command to set it"
+        __besman_echo_no_colour ""
+        __besman_echo_yellow "export BESMAN_MODEL_REPO_NAMESPACE=<namespace>"
+        return 1
+    fi
+
     local flag=false
     for var in "${var_array[@]}"; do
         if [[ ! -v $var ]]; then

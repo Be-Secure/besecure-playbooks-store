@@ -26,6 +26,15 @@ function __besman_init() {
 
     done
 
+    if [[ "$BESMAN_ARTIFACT_PROVIDER" == "HuggingFace" && -z "$BESMAN_MODEL_REPO_NAMESPACE" ]]; then
+        __besman_echo_red "HuggingFace model repo namespace is not set"
+        __besman_echo_no_colour ""
+        __besman_echo_no_colour "Run the below command to set it"
+        __besman_echo_no_colour ""
+        __besman_echo_yellow "export BESMAN_MODEL_REPO_NAMESPACE=<namespace>"
+        return 1
+    fi
+
     local dir_array=("BESMAN_ASSESSMENT_DATASTORE_DIR")
     for dir in "${dir_array[@]}"; do
         # Get the value of the variable with the name stored in $dir
