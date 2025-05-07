@@ -2,12 +2,12 @@
 
 function __besman_init() {
     __besman_echo_white "initializing"
-    export ASSESSMENT_TOOL_NAME="watchtower"
+    export ASSESSMENT_TOOL_NAME="SAST-watchtower"
     export ASSESSMENT_TOOL_TYPE="sast"
     export ASSESSMENT_TOOL_VERSION="0.0.1"
-    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_VERSION-playbook.sh"
+    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_NAME-playbook-$ASSESSMENT_TOOL_VERSION.sh"
     
-    local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_VERSION-steps.sh"
+    local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-steps-$ASSESSMENT_TOOL_VERSION.sh"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
     local var_array=("BESMAN_TARGET_REPO_TYPE" "BESMAN_TARGET_BRANCH_NAME" "BESMAN_TARGET_DEPTH_VAL" "BESMAN_ARTIFACT_NAME" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_WATCHTOWER_PATH")
