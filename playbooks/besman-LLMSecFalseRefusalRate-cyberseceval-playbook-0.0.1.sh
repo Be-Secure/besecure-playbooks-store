@@ -57,6 +57,7 @@ function __besman_init() {
         export DETAILED_REPORT_PATH="$FRR_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-frr-test-summary-report.json"
         mkdir -p "$FRR_TEST_REPORT_PATH"
         export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-osar.json"
+        mkdir -p "$BESMAN_RESULTS_PATH"
         return 0
 
     fi
