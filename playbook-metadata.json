@@ -2,7 +2,7 @@
   "schema_version": "0.1.0",
   "playbooks": [
     {
-      "name": "spdx-sbom-generator",
+      "name": "SBOM-SpdxSbomGenerator",
       "version": "0.0.1",
       "type": "tool",
       "intent": "SBOM",
@@ -23,7 +23,7 @@
       "detailed_report_path": "STRING"
     },
     {
-      "name": "criticality_score",
+      "name": "PIA-CriticalityScore",
       "version": "0.0.1",
       "type": "tool",
       "intent": "PIA",
@@ -44,7 +44,7 @@
       "detailed_report_path": "STRING"
     },
     {
-      "name": "sonarqube",
+      "name": "SAST-sonarqube",
       "version": "0.0.1",
       "type": "tool",
       "intent": "SAST",
@@ -65,7 +65,7 @@
       "detailed_report_path": "STRING"
     },
     {
-      "name": "scorecard",
+      "name": "PIA-scorecard",
       "version": "0.0.1",
       "type": "tool",
       "intent": "RIP",
@@ -86,7 +86,7 @@
       "detailed_report_path": "STRING"
     },
     {
-      "name": "watchtower",
+      "name": "SAST-watchtower",
       "version": "0.0.1",
       "type": "tool",
       "intent": "SAST",
@@ -107,7 +107,7 @@
       "detailed_report_path": "STRING"
     },
     {
-      "name": "counterfit",
+      "name": "DAST-counterfit",
       "version": "0.0.1",
       "type": "tool",
       "intent": "DAST",
@@ -128,7 +128,7 @@
       "detailed_report_path": "STRING"
     },
     {
-      "name": "cyclonedx-sbom-generator",
+      "name": "SBOM-CyclonedxSbomGenerator",
       "version": "0.0.1",
       "type": "tool",
       "intent": "SBOM",

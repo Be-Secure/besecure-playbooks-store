@@ -2,12 +2,12 @@
 
 function __besman_init() {
     __besman_echo_white "initialising"
-    export ASSESSMENT_TOOL_NAME="scorecard"
-    export ASSESSMENT_TOOL_TYPE="scorecard"
+    export ASSESSMENT_TOOL_NAME="PIA-scorecard"
+    export ASSESSMENT_TOOL_TYPE="PIA"
     export ASSESSMENT_TOOL_VERSION="v4.13.1"
-    export ASSESSMENT_TOOL_PLAYBOOK="besman-scorecard-0.0.1-playbook.sh"
+    export ASSESSMENT_TOOL_PLAYBOOK="besman-PIA-scorecard-playbook-0.0.1.sh"
     
-    local steps_file_name="besman-scorecard-0.0.1-steps.sh"
+    local steps_file_name="besman-PIA-scorecard-steps-0.0.1.sh"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
     local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME")
