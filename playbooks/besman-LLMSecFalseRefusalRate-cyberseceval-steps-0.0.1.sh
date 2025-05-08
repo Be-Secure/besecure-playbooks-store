@@ -12,6 +12,8 @@ fi
 
 source ~/.venvs/CybersecurityBenchmarks/bin/activate
 
+if  [[ "$BESMAN_ARTIFACT_PROVIDER" == "Ollama" ]]
+then
     python3 -m CybersecurityBenchmarks.benchmark.run \
         --benchmark=frr \
         --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/frr/frr.json" \
@@ -20,7 +22,17 @@ source ~/.venvs/CybersecurityBenchmarks/bin/activate
         --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::http://localhost:11434" \
         --run-llm-in-parallel \
         --num-test-cases="$BESMAN_NUM_TEST_CASES_FRR"
-
+elif [[ "$BESMAN_ARTIFACT_PROVIDER" == "HuggingFace" ]] 
+then
+    python3 -m CybersecurityBenchmarks.benchmark.run \
+        --benchmark=frr \
+        --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/frr/frr.json" \
+        --response-path="$BESMAN_RESULTS_PATH/frr_responses.json" \
+        --stat-path="$BESMAN_RESULTS_PATH/frr_stat.json" \
+        --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_MODEL_REPO_NAMESPACE/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION::random-string" \
+        --run-llm-in-parallel \
+        --num-test-cases="$BESMAN_NUM_TEST_CASES_FRR"
+fi
 if [[ "$?" -ne 0 ]]; then
     export FRR_RESULT=1
 else
