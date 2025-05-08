@@ -33,29 +33,27 @@ function __besman_init() {
         __besman_echo_yellow "export BESMAN_MODEL_REPO_NAMESPACE=<namespace>"
         return 1
     elif [[ "$BESMAN_ARTIFACT_PROVIDER" == "Ollama" ]]; then
-        if ! ollama ps | grep -q "$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION" 
-        then
+        if ! ollama ps | grep -q "$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION"; then
             __besman_echo_red "Model $BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION is not running"
             __besman_echo_no_colour ""
             __besman_echo_no_colour "Run the below command to start it"
             __besman_echo_no_colour ""
             __besman_echo_yellow "   ollama run $BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION"
-            "$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION" 
+            "$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION"
             return 1
-        fi        
+        fi
+        if ! ollama ps | grep -q "codellama:7b"; then
+            __besman_echo_red "Codellama 7b is not running"
+            __besman_echo_no_colour ""
+            __besman_echo_no_colour "We use Codellama as the judge llm for spear phishing benchmark"
+            __besman_echo_no_colour "Run the below command to start it"
+            __besman_echo_no_colour ""
+            __besman_echo_yellow "   ollama run codellama:7b"
+            __besman_echo_no_colour ""
+            return 1
+        fi
     fi
 
-    if ! ollama ps | grep -q "codellama:7b"
-    then
-        __besman_echo_red "Codellama 7b is not running"
-        __besman_echo_no_colour ""
-        __besman_echo_no_colour "We use Codellama as the judge llm for spear phishing benchmark"
-        __besman_echo_no_colour "Run the below command to start it"
-        __besman_echo_no_colour ""
-        __besman_echo_yellow "   ollama run codellama:7b"
-        __besman_echo_no_colour ""
-        return 1
-    fi
     local dir_array=("BESMAN_ASSESSMENT_DATASTORE_DIR")
     for dir in "${dir_array[@]}"; do
         # Get the value of the variable with the name stored in $dir
@@ -168,5 +166,3 @@ function __besman_launch() {
         return
     fi
 }
-
-
