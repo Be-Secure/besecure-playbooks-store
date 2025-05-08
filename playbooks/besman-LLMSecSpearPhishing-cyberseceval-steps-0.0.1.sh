@@ -40,7 +40,7 @@ then
         --response-path="$BESMAN_RESULTS_PATH/phishing_model_responses.json" \
         --judge-response-path="$BESMAN_RESULTS_PATH/phishing_judge_responses.json" \
         --stat-path="$BESMAN_RESULTS_PATH/phishing_stats.json" \
-        --judge-llm="HuggingFace:codellama/CodeLlama-7b-hf::random-string" \
+        --judge-llm="HuggingFace:ibm-granite/granite-3.3-2b-instruct::random-string" \
         --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_MODEL_REPO_NAMESPACE/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION::random-string" \
         --run-llm-in-parallel \
         --num-test-cases="$BESMAN_NUM_TEST_CASES_SPEAR_PHISHING"
