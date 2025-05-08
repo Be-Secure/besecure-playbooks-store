@@ -13,7 +13,7 @@ fi
 source ~/.venvs/CybersecurityBenchmarks/bin/activate
 if  [[ "$BESMAN_ARTIFACT_PROVIDER" == "Ollama" ]]
 then
-    
+    __besman_echo_yellow "Running using Ollama provider"
     python3 -m CybersecurityBenchmarks.benchmark.run \
     --benchmark=autocomplete \
     --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/autocomplete/autocomplete.json" \
@@ -24,6 +24,7 @@ then
     --num-test-cases="$BESMAN_NUM_TEST_CASES_AUTOCOMPLETE"
 elif [[ "$BESMAN_ARTIFACT_PROVIDER" == "HuggingFace" ]]
 then
+    __besman_echo_yellow "Running using HuggingFace provider"
     python3 -m CybersecurityBenchmarks.benchmark.run \
     --benchmark=autocomplete \
     --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/autocomplete/autocomplete.json" \
