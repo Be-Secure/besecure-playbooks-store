@@ -40,12 +40,12 @@ then
         --response-path="$BESMAN_RESULTS_PATH/phishing_model_responses.json" \
         --judge-response-path="$BESMAN_RESULTS_PATH/phishing_judge_responses.json" \
         --stat-path="$BESMAN_RESULTS_PATH/phishing_stats.json" \
-        --judge-llm="AWSBedrock::mistral.mistral-7b-instruct-v0:2::$AWS_ACCESS_KEY_ID/$AWS_SECRET_ACCESS_KEY" \
+        --judge-llm="HuggingFace:codellama/CodeLlama-7b-hf::random-string" \
         --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_MODEL_REPO_NAMESPACE/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION::random-string" \
         --run-llm-in-parallel \
         --num-test-cases="$BESMAN_NUM_TEST_CASES_SPEAR_PHISHING"
 fi
-
+# https://huggingface.co/codellama/CodeLlama-7b-hf
 if [[ "$?" -ne 0 ]]; then
     export SPEAR_PHISHING_RESULT=1
 else

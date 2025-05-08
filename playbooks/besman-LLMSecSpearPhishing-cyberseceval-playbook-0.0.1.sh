@@ -44,6 +44,18 @@ function __besman_init() {
             return 1
         fi        
     fi
+
+    if ! ollama ps | grep -q "codellama:7b"
+    then
+        __besman_echo_red "Codellama 7b is not running"
+        __besman_echo_no_colour ""
+        __besman_echo_no_colour "We use Codellama as the judge llm for spear phishing benchmark"
+        __besman_echo_no_colour "Run the below command to start it"
+        __besman_echo_no_colour ""
+        __besman_echo_yellow "   ollama run codellama:7b"
+        __besman_echo_no_colour ""
+        return 1
+    fi
     local dir_array=("BESMAN_ASSESSMENT_DATASTORE_DIR")
     for dir in "${dir_array[@]}"; do
         # Get the value of the variable with the name stored in $dir
