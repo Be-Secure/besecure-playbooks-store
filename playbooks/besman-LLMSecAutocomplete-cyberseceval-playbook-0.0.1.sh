@@ -11,7 +11,27 @@ function __besman_init() {
     local steps_file_name="besman-LLMSecAutocomplete-cyberseceval-steps-0.0.1.sh"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
-    local var_array=("BESMAN_ARTIFACT_PROVIDER" "BESMAN_NUM_TEST_CASES_AUTOCOMPLETE" "BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME")
+    local var_array=("BESMAN_ARTIFACT_PROVIDER" "BESMAN_NUM_TEST_CASES_AUTOCOMPLETE" "BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME" "BESMAN_RESULTS_PATH")
+
+    if [[ "$BESMAN_ARTIFACT_PROVIDER" == "HuggingFace" && -z "$BESMAN_MODEL_REPO_NAMESPACE" ]]; then
+        __besman_echo_red "HuggingFace model repo namespace is not set"
+        __besman_echo_no_colour ""
+        __besman_echo_no_colour "Run the below command to set it"
+        __besman_echo_no_colour ""
+        __besman_echo_yellow "export BESMAN_MODEL_REPO_NAMESPACE=<namespace>"
+        return 1
+    elif [[ "$BESMAN_ARTIFACT_PROVIDER" == "Ollama" ]]; then
+        if ! ollama ps | grep -q "$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION" 
+        then
+            __besman_echo_red "Model $BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION is not running"
+            __besman_echo_no_colour ""
+            __besman_echo_no_colour "Run the below command to start it"
+            __besman_echo_no_colour ""
+            __besman_echo_yellow "   ollama run $BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION"
+            "$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION" 
+            return 1
+        fi        
+    fi
 
     local flag=false
     for var in "${var_array[@]}"; do
@@ -47,10 +67,11 @@ function __besman_init() {
         return 1
     else
         export AUTOCOMPLETE_TEST_REPORT_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION/llm-benchmark"
-        export DETAILED_REPORT_PATH="$AUTOCOMPLETE_TEST_REPORT_PATH/autocomplete_stat.json"
+        export DETAILED_REPORT_PATH="$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-autocomplete-test-summary-report.json"
         mkdir -p "$AUTOCOMPLETE_TEST_REPORT_PATH"
-        export OSAR_PATH="$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-osar.json"
-        __besman_fetch_steps_file "$steps_file_name" || return 1
+        export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-osar.json"
+        #__besman_fetch_steps_file "$steps_file_name" || return 1
+        mkdir -p "$BESMAN_RESULTS_PATH"
         return 0
 
     fi
@@ -81,6 +102,14 @@ function __besman_prepare() {
     __besman_echo_white "preparing data"
     EXECUTION_TIMESTAMP=$(date)
     export EXECUTION_TIMESTAMP
+    if [[ -f "$BESMAN_RESULTS_PATH/autocomplete_responses.json" ]]; then
+        [[ -f "$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-autocomplete-test-summary-report.json" ]] && rm "$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-autocomplete-test-summary-report.json"
+        [[ -f "$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-autocomplete-test-detailed-report.json" ]] && rm "$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-autocomplete-test-detailed-report.json"
+        # Copy result to detailed report path
+        mv "$BESMAN_RESULTS_PATH/autocomplete_stat.json" "$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-autocomplete-test-summary-report.json"
+        mv "$BESMAN_RESULTS_PATH/autocomplete_responses.json" "$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-autocomplete-test-detailed-report.json"
+
+    fi
 
     __besman_generate_osar
 
@@ -105,6 +134,9 @@ function __besman_cleanup() {
         fi
 
     done
+
+    [[ -f "$AUTOCOMPLETE_TEST_REPORT_PATH/autocomplete_stat.json" ]] && rm "$AUTOCOMPLETE_TEST_REPORT_PATH/autocomplete_stat.json"
+    [[ -f "$AUTOCOMPLETE_TEST_REPORT_PATH/autocomplete_responses.json" ]] && rm "$AUTOCOMPLETE_TEST_REPORT_PATH/autocomplete_responses.json"
 
 }
 
@@ -132,19 +164,3 @@ function __besman_launch() {
     fi
 }
 
-function __besman_fetch_steps_file() {
-    __besman_echo_white "fetching steps file"
-    local steps_file_name=$1
-    local steps_file_url="https://raw.githubusercontent.com/$BESMAN_PLAYBOOK_REPO/$BESMAN_PLAYBOOK_REPO_BRANCH/playbooks/$steps_file_name"
-    #local steps_file_url="https://raw.githubusercontent.com/NeerajK007/besecure-playbooks-store/develop/playbooks/$steps_file_name"
-    __besman_check_url_valid "$steps_file_url" || return 1
-
-    if [[ ! -f "$BESMAN_STEPS_FILE_PATH" ]]; then
-
-        touch "$BESMAN_STEPS_FILE_PATH"
-
-        __besman_secure_curl "$steps_file_url" >>"$BESMAN_STEPS_FILE_PATH"
-        [[ "$?" != "0" ]] && __besman_echo_red "Failed to fetch from $steps_file_url" && return 1
-    fi
-    __besman_echo_white "done fetching"
-}
