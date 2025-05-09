@@ -2,6 +2,7 @@
 
 function __besman_init() {
     __besman_echo_white "initializing"
+
     export ASSESSMENT_TOOL_NAME="counterfit"
     export ASSESSMENT_TOOL_TYPE="dast"
     export ASSESSMENT_TOOL_VERSION="0.1.1"
