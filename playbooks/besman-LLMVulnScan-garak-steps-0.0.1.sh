@@ -16,11 +16,13 @@ fi
 
 if [[ -f "$GARAK_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-garak-test-detailed.report.jsonl" ]] 
 then
+    [[ -f "$DETAILED_REPORT_PATH" ]] && rm "$DETAILED_REPORT_PATH"
     jq -n '
     reduce inputs as $i ({}; 
         if $i.entry_type == "eval" then
-        .[$i.probe | split(".")[0]] |= (. // {}) 
-        | .[$i.probe | split(".")[0]][($i.detector | split(".")[-1])] = $i
+        .[$i.probe | split(".")[0]] |= (. // {}) |
+        .[$i.probe | split(".")[0]][($i.probe | split(".")[1])] |= (. // {}) |
+        .[$i.probe | split(".")[0]][($i.probe | split(".")[1])][($i.detector | split(".")[-1])] = $i
         else
         .
         end
