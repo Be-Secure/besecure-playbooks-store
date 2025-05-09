@@ -2,7 +2,7 @@
 
 function __besman_init() {
     __besman_echo_white "initializing"
-    export ASSESSMENT_TOOL_NAME="SAST-watchtower"
+    export ASSESSMENT_TOOL_NAME="watchtower"
     export ASSESSMENT_TOOL_TYPE="sast"
     export ASSESSMENT_TOOL_VERSION="0.0.1"
     export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_NAME-playbook-$ASSESSMENT_TOOL_VERSION.sh"

@@ -2,7 +2,7 @@
 
 function __besman_init() {
     __besman_echo_white "initialising"
-    export ASSESSMENT_TOOL_NAME="SBOM-SpdxSbomGenerator"
+    export ASSESSMENT_TOOL_NAME="SpdxSbomGenerator"
     export ASSESSMENT_TOOL_TYPE="sbom"
     export ASSESSMENT_TOOL_VERSION="v0.0.15"
     export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_NAME-playbook-0.0.1.sh"

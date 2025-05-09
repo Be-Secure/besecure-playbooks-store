@@ -2,7 +2,7 @@
 
 function __besman_init() {
     __besman_echo_white "initialising"
-    export ASSESSMENT_TOOL_NAME="SAST-sonarqube"
+    export ASSESSMENT_TOOL_NAME="sonarqube"
     export ASSESSMENT_TOOL_TYPE="sast"
     export ASSESSMENT_TOOL_VERSION="9.9.4"
     export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_NAME-playbook-0.0.1.sh"

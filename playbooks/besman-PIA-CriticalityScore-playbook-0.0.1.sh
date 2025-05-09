@@ -1,7 +1,7 @@
 #!/bin/bash
 function __besman_init() {
     __besman_echo_white "initialising"
-    export ASSESSMENT_TOOL_NAME="PIA-CriticalityScore"
+    export ASSESSMENT_TOOL_NAME="CriticalityScore"
     export ASSESSMENT_TOOL_TYPE="PIA"
     export ASSESSMENT_TOOL_VERSION="2.0.3"
     #export BESLAB_OWNER_TYPE="Organization"
