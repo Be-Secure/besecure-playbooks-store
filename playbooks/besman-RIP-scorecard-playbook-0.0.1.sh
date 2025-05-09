@@ -2,8 +2,8 @@
 
 function __besman_init() {
     __besman_echo_white "initialising"
-    export ASSESSMENT_TOOL_NAME="PIA-scorecard"
-    export ASSESSMENT_TOOL_TYPE="PIA"
+    export ASSESSMENT_TOOL_NAME="RIP-scorecard"
+    export ASSESSMENT_TOOL_TYPE="RIP"
     export ASSESSMENT_TOOL_VERSION="v4.13.1"
     export ASSESSMENT_TOOL_PLAYBOOK="besman-PIA-scorecard-playbook-0.0.1.sh"
     
