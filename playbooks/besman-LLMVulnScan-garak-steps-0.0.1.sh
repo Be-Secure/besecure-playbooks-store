@@ -33,3 +33,5 @@ else
     return 1
 fi
 
+conda deactivate
+
