@@ -286,28 +286,43 @@ function __besman_get_default_branch()
 function __besman_execute_steps() {
 
     local default_branch
-    default_branch=$(__besman_get_default_branch)
-    if [[ "$default_branch" != ""$BESMAN_ARTIFACT_VERSION"_tavoss" ]] 
+
+
+    if [[ -z "$BESMAN_SCORECARD_ASSESSMENT_MODE" || "$BESMAN_SCORECARD_ASSESSMENT_MODE" == "github-action" ]] 
     then
-        __besman_echo_yellow "Changing default branch"
+        __besman_echo_yellow "Running scorecard GitHub action"
+        default_branch=$(__besman_get_default_branch)
+        if [[ "$default_branch" != ""$BESMAN_ARTIFACT_VERSION"_tavoss" ]] 
+        then
+            __besman_echo_yellow "Changing default branch"
+            cd "$BESMAN_ARTIFACT_DIR" || return 1
+
+            git checkout -b "$BESMAN_ARTIFACT_VERSION"_tavoss "$BESMAN_ARTIFACT_VERSION"
+
+            git push origin -u "$BESMAN_ARTIFACT_VERSION"_tavoss
+
+            __besman_change_default_branch || return 1
+        fi
+        __besman_write_workflow_file
+
+        __besman_download_report || return 1
+        if [[ "$?" == "0" ]] 
+        then
+            export PLAYBOOK_EXECUTION_STATUS="success"
+        else
+            export PLAYBOOK_EXECUTION_STATUS="failure"
+        fi
+    elif [[ "$BESMAN_SCORECARD_ASSESSMENT_MODE" == "cli" ]] 
+    then
+        __besman_echo_yellow "Running scorecard CLI"
         cd "$BESMAN_ARTIFACT_DIR" || return 1
-
-        git checkout -b "$BESMAN_ARTIFACT_VERSION"_tavoss "$BESMAN_ARTIFACT_VERSION"
-
-        git push origin -u "$BESMAN_ARTIFACT_VERSION"_tavoss
-
-        __besman_change_default_branch || return 1
-    fi
-
-    __besman_write_workflow_file
-
-    __besman_download_report || return 1
-
-    if [[ "$?" == "0" ]] 
-    then
-        export PLAYBOOK_EXECUTION_STATUS="success"
-    else
-        export PLAYBOOK_EXECUTION_STATUS="failure"
+        scorecard --local "$BESMAN_ARTIFACT_DIR" --format json --output "$DETAILED_REPORT_PATH" 
+        if [[ "$?" == "0" ]] 
+        then
+            export PLAYBOOK_EXECUTION_STATUS="success"
+        else
+            export PLAYBOOK_EXECUTION_STATUS="failure"
+        fi
     fi
 
 }

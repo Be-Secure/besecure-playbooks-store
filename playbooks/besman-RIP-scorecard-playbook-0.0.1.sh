@@ -41,7 +41,7 @@ function __besman_init() {
 
     done
 
-    if [[ -z $BESMAN_GH_TOKEN ]] 
+    if [[ -z $BESMAN_GH_TOKEN && "$BESMAN_SCORECARD_ASSESSMENT_MODE" == "github-action" ]] 
     then
         __besman_echo_red "GitHub Auth token not found"
         __besman_echo_white ""
@@ -63,7 +63,6 @@ function __besman_init() {
         export DETAILED_REPORT_PATH="$SCORECARD_PATH/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-scorecard-report.json"
         mkdir -p "$SCORECARD_PATH"
         export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_VERSION/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION-osar.json"
-        __besman_fetch_steps_file "$steps_file_name" || return 1
         return 0
 
     fi
@@ -170,20 +169,3 @@ function __besman_launch() {
     fi
 }
 
-function __besman_fetch_steps_file() {
-   __besman_echo_white "fetching steps file"
-   local steps_file_name=$1
-   local steps_file_url="https://raw.githubusercontent.com/$BESMAN_PLAYBOOK_REPO/$BESMAN_PLAYBOOK_REPO_BRANCH/playbooks/$steps_file_name"
-   __besman_check_url_valid "$steps_file_url" || return 1
-
-   if [[ ! -f "$BESMAN_STEPS_FILE_PATH" ]]; then
-    
-       touch "$BESMAN_STEPS_FILE_PATH"
-
-       __besman_secure_curl "$steps_file_url" >>"$BESMAN_STEPS_FILE_PATH"
-   [[ "$?" != "0" ]] && __besman_echo_red "Failed to fetch from $steps_file_url" && return 1
-   fi
-    # nano $BESMAN_STEPS_FILE_PATH
-    # wait
-    # __besman_echo_white "Generating the scorecard report"
-}
