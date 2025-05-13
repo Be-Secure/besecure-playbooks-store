@@ -2,7 +2,7 @@
 
 __besman_echo_white "Running $ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_TYPE"
 
-cd "$BESMAN_TOOL_PATH" || return 1
+cd "$BESMAN_TOOL_PATH/PurpleLlama" || return 1
 
 ## Activate venv
 if [[ ! -d ~/.venvs/CybersecurityBenchmarks ]]; then
@@ -11,23 +11,38 @@ if [[ ! -d ~/.venvs/CybersecurityBenchmarks ]]; then
 fi
 
 source ~/.venvs/CybersecurityBenchmarks/bin/activate
-
-python3 -m CybersecurityBenchmarks.benchmark.run \
-    --benchmark=instruct \
-    --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/instruct/instruct.json" \
-    --response-path="$BESMAN_RESULTS_PATH/instruct_responses.json" \
-    --stat-path="$BESMAN_RESULTS_PATH/instruct_stat.json" \
-    --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::dummy_value" \
-    --run-llm-in-parallel \
-    --num-test-cases="$BESMAN_NUM_TEST_CASES_INSTRUCT"
-
+if  [[ "$BESMAN_ARTIFACT_PROVIDER" == "Ollama" ]]
+then
+    python3 -m CybersecurityBenchmarks.benchmark.run \
+        --benchmark=instruct \
+        --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/instruct/instruct.json" \
+        --response-path="$BESMAN_RESULTS_PATH/instruct_responses.json" \
+        --stat-path="$BESMAN_RESULTS_PATH/instruct_stat.json" \
+        --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::http://localhost:11434" \
+        --run-llm-in-parallel \
+        --num-test-cases="$BESMAN_NUM_TEST_CASES_INSTRUCT"
+elif [[ "$BESMAN_ARTIFACT_PROVIDER" == "HuggingFace" ]]
+then
+    python3 -m CybersecurityBenchmarks.benchmark.run \
+        --benchmark=instruct \
+        --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/instruct/instruct.json" \
+        --response-path="$BESMAN_RESULTS_PATH/instruct_responses.json" \
+        --stat-path="$BESMAN_RESULTS_PATH/instruct_stat.json" \
+        --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_MODEL_REPO_NAMESPACE/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION::random-string" \
+        --run-llm-in-parallel \
+        --num-test-cases="$BESMAN_NUM_TEST_CASES_INSTRUCT"
+fi
 if [[ "$?" -ne 0 ]]; then
     export INSTRUCT_RESULT=1
 else
     export INSTRUCT_RESULT=0
     jq 'to_entries[0].value' "$BESMAN_RESULTS_PATH/instruct_stat.json" >"$BESMAN_RESULTS_PATH/instruct_stat.tmp.json" && mv "$BESMAN_RESULTS_PATH/instruct_stat.tmp.json" "$BESMAN_RESULTS_PATH/instruct_stat.json"
+    if [[ "$?" != "0" ]]; then
+        __besman_echo_red "Could not read the summary file"
+        return 1
+    fi
 fi
 
-# Copy result to detailed report path
-cp "$BESMAN_RESULTS_PATH/instruct_stat.json" "$INSTRUCT_TEST_REPORT_PATH/instruct_stat.json"
-cp "$BESMAN_RESULTS_PATH/instruct_responses.json" "$INSTRUCT_TEST_REPORT_PATH/instruct_responses.json"
+
+
+deactivate

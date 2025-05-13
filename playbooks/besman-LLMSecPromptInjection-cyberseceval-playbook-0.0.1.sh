@@ -11,7 +11,7 @@ function __besman_init() {
     local steps_file_name="besman-LLMSecPromptInjection-cyberseceval-steps-0.0.1.sh"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
-    local var_array=("BESMAN_ARTIFACT_PROVIDER" "BESMAN_NUM_TEST_CASES_PROMPT_INJECTION" "BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME")
+    local var_array=("BESMAN_ARTIFACT_PROVIDER" "BESMAN_NUM_TEST_CASES_INTERPRETER" "BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME" "AWS_ACCESS_KEY_ID" "AWS_SECRET_ACCESS_KEY" "BESMAN_RESULTS_PATH")
 
     local flag=false
     for var in "${var_array[@]}"; do
@@ -25,7 +25,25 @@ function __besman_init() {
         fi
 
     done
-
+    if [[ "$BESMAN_ARTIFACT_PROVIDER" == "HuggingFace" && -z "$BESMAN_MODEL_REPO_NAMESPACE" ]]; then
+        __besman_echo_red "HuggingFace model repo namespace is not set"
+        __besman_echo_no_colour ""
+        __besman_echo_no_colour "Run the below command to set it"
+        __besman_echo_no_colour ""
+        __besman_echo_yellow "export BESMAN_MODEL_REPO_NAMESPACE=<namespace>"
+        return 1
+    elif [[ "$BESMAN_ARTIFACT_PROVIDER" == "Ollama" ]]; then
+        if ! ollama ps | grep -q "$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION" 
+        then
+            __besman_echo_red "Model $BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION is not running"
+            __besman_echo_no_colour ""
+            __besman_echo_no_colour "Run the below command to start it"
+            __besman_echo_no_colour ""
+            __besman_echo_yellow "   ollama run $BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION"
+            "$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION" 
+            return 1
+        fi        
+    fi
     local dir_array=("BESMAN_ASSESSMENT_DATASTORE_DIR")
     for dir in "${dir_array[@]}"; do
         # Get the value of the variable with the name stored in $dir
@@ -47,10 +65,11 @@ function __besman_init() {
         return 1
     else
         export PROMPT_INJECTION_TEST_REPORT_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION/llm-benchmark"
-        export DETAILED_REPORT_PATH="$PROMPT_INJECTION_TEST_REPORT_PATH/prompt_injection_stat.json"
+        export DETAILED_REPORT_PATH="$PROMPT_INJECTION_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-prompt-injection-test-summary-report.json"
         mkdir -p "$PROMPT_INJECTION_TEST_REPORT_PATH"
-        export OSAR_PATH="$PROMPT_INJECTION_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-osar.json"
+        export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-osar.json"
         __besman_fetch_steps_file "$steps_file_name" || return 1
+        mkdir -p "$BESMAN_RESULTS_PATH"
         return 0
 
     fi
@@ -81,7 +100,14 @@ function __besman_prepare() {
     __besman_echo_white "preparing data"
     EXECUTION_TIMESTAMP=$(date)
     export EXECUTION_TIMESTAMP
+    if [[ -f "$BESMAN_RESULTS_PATH/prompt_injection_judge_responses.json" ]]; then
+        [[ -f "$PROMPT_INJECTION_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-prompt-injection-test-summary-report.json" ]] && rm "$PROMPT_INJECTION_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-prompt-injection-test-summary-report.json"
+        [[ -f "$PROMPT_INJECTION_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-prompt-injection-test-detailed-report.json" ]] && rm "$PROMPT_INJECTION_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-prompt-injection-test-detailed-report.json"
+        # Copy result to detailed report path
+        mv "$BESMAN_RESULTS_PATH/prompt_injection_stat.json" "$PROMPT_INJECTION_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-prompt-injection-test-summary-report.json"
+        mv "$BESMAN_RESULTS_PATH/prompt_injection_judge_responses.json" "$PROMPT_INJECTION_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-prompt-injection-test-detailed-report.json"
 
+    fi
     __besman_generate_osar
 
 }

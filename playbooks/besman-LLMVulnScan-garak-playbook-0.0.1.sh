@@ -1,30 +1,18 @@
 #!/bin/bash
 function __besman_init() {
     __besman_echo_white "initialising"
-    export ASSESSMENT_TOOL_NAME="cybersecevalFRR"
-    export ASSESSMENT_TOOL_TYPE="Security Benchmark"
-    export ASSESSMENT_TOOL_VERSION="3"
+    export ASSESSMENT_TOOL_NAME="garak"
+    export ASSESSMENT_TOOL_TYPE="LLM Vulnerability Scanner"
+    export ASSESSMENT_TOOL_VERSION="v0.11.0.pre1"
     #export BESLAB_OWNER_TYPE="Organization"
     #export BESLAB_OWNER_NAME="Be-Secure"
-    export ASSESSMENT_TOOL_PLAYBOOK="besman-LLMSecFalseRefusalRate-cyberseceval-playbook-0.0.1.sh"
+    export ASSESSMENT_TOOL_PLAYBOOK="besman-LLMVulnScan-garak-playbook-0.0.1.sh"
 
-    local steps_file_name="besman-LLMSecFalseRefusalRate-cyberseceval-steps-0.0.1.sh"
+    local steps_file_name="besman-LLMVulnScan-garak-steps-0.0.1.sh"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
-    local var_array=("BESMAN_ARTIFACT_PROVIDER" "BESMAN_NUM_TEST_CASES_INTERPRETER" "BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME" "BESMAN_RESULTS_PATH")
+    local var_array=("BESMAN_ARTIFACT_PROVIDER" "BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME" "BESMAN_GARAK_PROBES")
 
-    local flag=false
-    for var in "${var_array[@]}"; do
-        if [[ ! -v $var ]]; then
-
-            # read -rp "Enter value for $var:" value #remove
-            # export "$var"="$value" #remove
-            __besman_echo_yellow "$var is not set" #uncomment
-            __besman_echo_no_colour ""             #uncomment
-            flag=true                              #uncomment
-        fi
-
-    done
     if [[ "$BESMAN_ARTIFACT_PROVIDER" == "HuggingFace" && -z "$BESMAN_MODEL_REPO_NAMESPACE" ]]; then
         __besman_echo_red "HuggingFace model repo namespace is not set"
         __besman_echo_no_colour ""
@@ -44,6 +32,20 @@ function __besman_init() {
             return 1
         fi        
     fi
+
+    local flag=false
+    for var in "${var_array[@]}"; do
+        if [[ ! -v $var ]]; then
+
+            # read -rp "Enter value for $var:" value #remove
+            # export "$var"="$value" #remove
+            __besman_echo_yellow "$var is not set" #uncomment
+            __besman_echo_no_colour ""             #uncomment
+            flag=true                              #uncomment
+        fi
+
+    done
+
     local dir_array=("BESMAN_ASSESSMENT_DATASTORE_DIR")
     for dir in "${dir_array[@]}"; do
         # Get the value of the variable with the name stored in $dir
@@ -56,6 +58,12 @@ function __besman_init() {
 
     done
 
+    if [[ -z $(which jq) ]] 
+    then
+        __besman_echo_red "jq is not installed. Please install jq"
+        flag=true
+    fi
+
     # # [[ ! -f $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME ]] && __besman_echo_red "Could not find artifact @ $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME" && flag=true
     # if ! [ -x "$(command -v criticality_score)" ]; then
     #     __besman_echo_red "required tool - criticality_score is not installed. Please check the installed Bes env"
@@ -64,10 +72,11 @@ function __besman_init() {
     if [[ $flag == true ]]; then
         return 1
     else
-        export FRR_TEST_REPORT_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION/llm-benchmark"
-        export DETAILED_REPORT_PATH="$FRR_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-frr-test-summary-report.json"
-        mkdir -p "$FRR_TEST_REPORT_PATH"
+        export GARAK_TEST_REPORT_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION/llm-benchmark"
+        export DETAILED_REPORT_PATH="$GARAK_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-garak-test-summary-report.json"
+        mkdir -p "$GARAK_TEST_REPORT_PATH"
         export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-osar.json"
+        #__besman_fetch_steps_file "$steps_file_name" || return 1
         mkdir -p "$BESMAN_RESULTS_PATH"
         return 0
 
@@ -83,7 +92,7 @@ function __besman_execute() {
     duration=$SECONDS
 
     export EXECUTION_DURATION=$duration
-    if [[ $FRR_RESULT == 1 ]]; then
+    if [[ $GARAK_RESULT == 1 ]]; then
 
         export PLAYBOOK_EXECUTION_STATUS=failure
         return 1
@@ -99,14 +108,11 @@ function __besman_prepare() {
     __besman_echo_white "preparing data"
     EXECUTION_TIMESTAMP=$(date)
     export EXECUTION_TIMESTAMP
-    if [[ -f "$BESMAN_RESULTS_PATH/frr_responses.json" ]]; then
-        [[ -f "$FRR_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-frr-test-summary-report.json" ]] && rm "$FRR_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-frr-test-summary-report.json"
-        [[ -f "$FRR_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-frr-test-detailed-report.json" ]] && rm "$FRR_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-frr-test-detailed-report.json"
-        # Copy result to detailed report path
-        mv "$BESMAN_RESULTS_PATH/frr_stat.json" "$FRR_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-frr-test-summary-report.json"
-        mv "$BESMAN_RESULTS_PATH/frr_responses.json" "$FRR_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-frr-test-detailed-report.json"
-
+    if [[ -f "$GARAK_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-garak-test-detailed.report.jsonl" ]] 
+    then
+        mv "$GARAK_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-garak-test-detailed.report.jsonl" "$GARAK_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-garak-test-detailed-report.json"
     fi
+
     __besman_generate_osar
 
 }
@@ -117,12 +123,12 @@ function __besman_publish() {
     cd "$BESMAN_ASSESSMENT_DATASTORE_DIR"
 
     git add "$DETAILED_REPORT_PATH" "$OSAR_PATH"
-    git commit -m "Added osar and detailed report for PurpleLlama-CyberSecEval-LLMSecurityBenchmark-frr"
+    git commit -m "Added osar and detailed report for garak"
     git push origin main
 }
 
 function __besman_cleanup() {
-    local var_array=("ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_PLAYBOOK" "ASSESSMENT_TOOL_VERSION" "OSAR_PATH" "FRR_TEST_REPORT_PATH" "DETAILED_REPORT_PATH")
+    local var_array=("ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_PLAYBOOK" "ASSESSMENT_TOOL_VERSION" "OSAR_PATH" "GARAK_TEST_REPORT_PATH" "DETAILED_REPORT_PATH")
 
     for var in "${var_array[@]}"; do
         if [[ -v $var ]]; then
