@@ -5,9 +5,9 @@ function __besman_init() {
     export ASSESSMENT_TOOL_NAME="watchtower"
     export ASSESSMENT_TOOL_TYPE="sast"
     export ASSESSMENT_TOOL_VERSION="0.0.1"
-    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_NAME-playbook-$ASSESSMENT_TOOL_VERSION.sh"
+    export ASSESSMENT_TOOL_PLAYBOOK="besman-SAST-$ASSESSMENT_TOOL_NAME-playbook-$ASSESSMENT_TOOL_VERSION.sh"
     
-    local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-steps-$ASSESSMENT_TOOL_VERSION.sh"
+    local steps_file_name="besman-SAST-$ASSESSMENT_TOOL_NAME-steps-$ASSESSMENT_TOOL_VERSION.sh"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
     local var_array=("BESMAN_TARGET_REPO_TYPE" "BESMAN_TARGET_BRANCH_NAME" "BESMAN_TARGET_DEPTH_VAL" "BESMAN_ARTIFACT_NAME" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_WATCHTOWER_PATH")
@@ -26,7 +26,7 @@ function __besman_init() {
     else
         export DETAILED_REPORT_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/sast/$BESMAN_ARTIFACT_NAME-sast-summary-report.json"
         export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME-osar.json"
-        __besman_fetch_steps_file "$steps_file_name" || return 1
+        
         return 0
     fi
 }
@@ -112,18 +112,4 @@ function __besman_launch() {
         __besman_cleanup
         return
     fi
-}
-
-function __besman_fetch_steps_file() {
-    echo "Fetching steps file"
-    local steps_file_name=$1
-    local steps_file_url="https://raw.githubusercontent.com/$BESMAN_PLAYBOOK_REPO/$BESMAN_PLAYBOOK_REPO_BRANCH/playbooks/$steps_file_name"
-    __besman_check_url_valid "$steps_file_url" || return 1
-
-    if [[ ! -f "$BESMAN_STEPS_FILE_PATH" ]]; then
-        touch "$BESMAN_STEPS_FILE_PATH"
-        __besman_secure_curl "$steps_file_url" >>"$BESMAN_STEPS_FILE_PATH"
-        [[ "$?" != "0" ]] && echo "Failed to fetch from $steps_file_url" && return 1
-    fi
-    echo "Done fetching"
 }
