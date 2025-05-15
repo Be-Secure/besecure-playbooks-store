@@ -68,7 +68,7 @@ function __besman_init() {
         export DETAILED_REPORT_PATH="$PROMPT_INJECTION_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-prompt-injection-test-summary-report.json"
         mkdir -p "$PROMPT_INJECTION_TEST_REPORT_PATH"
         export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-osar.json"
-        __besman_fetch_steps_file "$steps_file_name" || return 1
+        
         mkdir -p "$BESMAN_RESULTS_PATH"
         return 0
 
@@ -156,21 +156,4 @@ function __besman_launch() {
         __besman_cleanup
         return
     fi
-}
-
-function __besman_fetch_steps_file() {
-    __besman_echo_white "fetching steps file"
-    local steps_file_name=$1
-    local steps_file_url="https://raw.githubusercontent.com/$BESMAN_PLAYBOOK_REPO/$BESMAN_PLAYBOOK_REPO_BRANCH/playbooks/$steps_file_name"
-    #local steps_file_url="https://raw.githubusercontent.com/NeerajK007/besecure-playbooks-store/develop/playbooks/$steps_file_name"
-    __besman_check_url_valid "$steps_file_url" || return 1
-
-    if [[ ! -f "$BESMAN_STEPS_FILE_PATH" ]]; then
-
-        touch "$BESMAN_STEPS_FILE_PATH"
-
-        __besman_secure_curl "$steps_file_url" >>"$BESMAN_STEPS_FILE_PATH"
-        [[ "$?" != "0" ]] && __besman_echo_red "Failed to fetch from $steps_file_url" && return 1
-    fi
-    __besman_echo_white "done fetching"
 }

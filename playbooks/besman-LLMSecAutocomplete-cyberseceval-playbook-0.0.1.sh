@@ -70,7 +70,7 @@ function __besman_init() {
         export DETAILED_REPORT_PATH="$AUTOCOMPLETE_TEST_REPORT_PATH/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-autocomplete-test-summary-report.json"
         mkdir -p "$AUTOCOMPLETE_TEST_REPORT_PATH"
         export OSAR_PATH="$BESMAN_ASSESSMENT_DATASTORE_DIR/models/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION/$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION-osar.json"
-        #__besman_fetch_steps_file "$steps_file_name" || return 1
+        #
         mkdir -p "$BESMAN_RESULTS_PATH"
         return 0
 
