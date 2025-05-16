@@ -64,7 +64,7 @@ function __besman_init() {
     then
         if ! ollama ps | grep -q "$BESMAN_JUDGE_LLM_NAME:$BESMAN_JUDGE_LLM_VERSION" 
         then
-            __besman_echo_red "Judge LLM $BESMAN_JUDGE_LLM_NAME:$BESMAN_JUDGE_LLM_VERSION is not running"
+            __besman_echo_error "Judge LLM $BESMAN_JUDGE_LLM_NAME:$BESMAN_JUDGE_LLM_VERSION is not running"
             __besman_echo_no_colour ""
             __besman_echo_no_colour "Run the below command to start it"
             __besman_echo_no_colour ""
@@ -72,6 +72,16 @@ function __besman_init() {
             return 1
         fi
     fi
+
+    if [[ $BESMAN_NUM_TEST_CASES_SPEAR_PHISHING -lt 2 ]]; then
+        __besman_echo_error "Number of test cases should be greater than 2 for spear phishing"
+        __besman_echo_no_colour ""
+        __besman_echo_no_colour "Run the below command to set it or edit the environment config file"
+        __besman_echo_no_colour ""
+        __besman_echo_yellow "export BESMAN_NUM_TEST_CASES_SPEAR_PHISHING=<value>"
+        return 1
+    fi
+        
 
     local dir_array=("BESMAN_ASSESSMENT_DATASTORE_DIR")
     for dir in "${dir_array[@]}"; do
