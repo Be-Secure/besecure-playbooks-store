@@ -11,7 +11,7 @@ function __besman_init() {
     local steps_file_name="besman-LLMSecSpearPhishing-cyberseceval-steps-0.0.1.sh"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
-    local var_array=("BESMAN_ARTIFACT_PROVIDER" "BESMAN_NUM_TEST_CASES_INTERPRETER" "BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME" "BESMAN_RESULTS_PATH")
+    local var_array=("BESMAN_ARTIFACT_PROVIDER" "BESMAN_NUM_TEST_CASES_INTERPRETER" "BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_TOOL_PATH" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME" "BESMAN_RESULTS_PATH" "BESMAN_JUDGE_LLM_PROVIDER" "BESMAN_JUDGE_LLM_NAME" "BESMAN_JUDGE_LLM_VERSION")
 
     local flag=false
     for var in "${var_array[@]}"; do
@@ -42,16 +42,28 @@ function __besman_init() {
             "$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION"
             return 1
         fi
-        if ! ollama ps | grep -q "codellama:7b"; then
-            __besman_echo_red "Codellama 7b is not running"
+        if ! ollama ps | grep -q "$BESMAN_JUDGE_LLM_NAME:$BESMAN_JUDGE_LLM_VERSION"; then
+            __besman_echo_red "$BESMAN_JUDGE_LLM_NAME $BESMAN_JUDGE_LLM_VERSION is not running"
             __besman_echo_no_colour ""
-            __besman_echo_no_colour "We use Codellama as the judge llm for spear phishing benchmark"
-            __besman_echo_no_colour "Run the below command to start it"
             __besman_echo_no_colour ""
-            __besman_echo_yellow "   ollama run codellama:7b"
+            __besman_echo_yellow "   ollama run $BESMAN_JUDGE_LLM_NAME:$BESMAN_JUDGE_LLM_VERSION"
             __besman_echo_no_colour ""
             return 1
         fi
+    fi
+
+    if [[ "$BESMAN_JUDGE_LLM_PROVIDER" == "HuggingFace" && -z "$BESMAN_JUDGE_MODEL_REPO_NAMESPACE" ]] 
+    then
+        __besman_echo_error "Judge model repo namespace is not set"
+        __besman_echo_no_colour ""
+        __besman_echo_no_colour "Run the below command to set it"
+        __besman_echo_no_colour ""
+        __besman_echo_yellow "export BESMAN_JUDGE_MODEL_REPO_NAMESPACE=<namespace>"
+        return 1
+    elif [[ "$BESMAN_JUDGE_LLM_PROVIDER" == "AWSBedrock" && ( -z "$AWS_ACCESS_KEY_ID" || -z "$AWS_SECRET_ACCESS_KEY" )]] 
+    then
+        __besman_echo_error "Unauthenticated access to AWSBedrock"
+        __besman_echo_yellow "Export parameters: AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY"
     fi
 
     local dir_array=("BESMAN_ASSESSMENT_DATASTORE_DIR")
