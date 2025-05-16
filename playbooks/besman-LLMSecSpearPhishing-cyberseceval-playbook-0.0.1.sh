@@ -55,7 +55,12 @@ function __besman_init() {
     elif [[ "$BESMAN_JUDGE_LLM_PROVIDER" == "AWSBedrock" && ( -z "$AWS_ACCESS_KEY_ID" || -z "$AWS_SECRET_ACCESS_KEY" )]] 
     then
         __besman_echo_error "Unauthenticated access to AWSBedrock"
-        __besman_echo_yellow "Export parameters: AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY"
+        __besman_echo_no_colour "Set the AWS access keys by running the below command"
+        __besman_echo_no_colour ""
+        __besman_echo_yellow "export AWS_ACCESS_KEY_ID=<value>"
+        __besman_echo_yellow "export AWS_SECRET_ACCESS_KEY=<value"
+        __besman_echo_no_colour ""
+        return 1
     elif [[ "$BESMAN_JUDGE_LLM_PROVIDER" == "Ollama" ]] 
     then
         if ! ollama ps | grep -q "$BESMAN_JUDGE_LLM_NAME:$BESMAN_JUDGE_LLM_VERSION" 
