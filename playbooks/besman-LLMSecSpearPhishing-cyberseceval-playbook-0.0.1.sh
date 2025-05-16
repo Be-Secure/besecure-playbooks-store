@@ -74,7 +74,7 @@ function __besman_init() {
     fi
 
     if [[ $BESMAN_NUM_TEST_CASES_SPEAR_PHISHING -lt 2 ]]; then
-        __besman_echo_error "Number of test cases should be greater than 2 for spear phishing"
+        __besman_echo_error "Number of test cases should be minimum 2 for spear phishing"
         __besman_echo_no_colour ""
         __besman_echo_no_colour "Run the below command to set it or edit the environment config file"
         __besman_echo_no_colour ""
