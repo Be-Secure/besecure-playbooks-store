@@ -41,7 +41,6 @@ function __besman_init() {
             __besman_echo_no_colour "Run the below command to start it"
             __besman_echo_no_colour ""
             __besman_echo_yellow "   ollama run $BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION"
-            "$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION" 
             return 1
         fi        
     fi
@@ -59,8 +58,8 @@ function __besman_init() {
         __besman_echo_error "Unauthenticated access to AWSBedrock"
         __besman_echo_no_colour "Set the AWS access keys by running the below command"
         __besman_echo_no_colour ""
-        __besman_echo_yellow "export AWS_ACCESS_KEY_ID=<value>"
-        __besman_echo_yellow "export AWS_SECRET_ACCESS_KEY=<value"
+        __besman_echo_yellow "      export AWS_ACCESS_KEY_ID=<value>"
+        __besman_echo_yellow "      export AWS_SECRET_ACCESS_KEY=<value"
         __besman_echo_no_colour ""
         return 1
     elif [[ "$BESMAN_JUDGE_LLM_PROVIDER" == "Ollama" ]] 
