@@ -316,7 +316,9 @@ function __besman_execute_steps() {
     then
         __besman_echo_yellow "Running scorecard CLI"
         cd "$BESMAN_ARTIFACT_DIR" || return 1
-        scorecard --local "$BESMAN_ARTIFACT_DIR" --format json --output "$DETAILED_REPORT_PATH" 
+
+        docker run -e GITHUB_AUTH_TOKEN=$GITHUB_AUTH_TOKEN gcr.io/openssf/scorecard:stable --show-details --repo=$BESMAN_ARTIFACT_ORIGIN_URL > $DETAILED_REPORT_PATH
+        #scorecard --repo "$BESMAN_ARTIFACT_ORIGIN_URL" --format json --output "$DETAILED_REPORT_PATH" 
         if [[ "$?" == "0" ]] 
         then
             export PLAYBOOK_EXECUTION_STATUS="success"
