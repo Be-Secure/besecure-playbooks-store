@@ -45,7 +45,7 @@ function __besman_init() {
     fi
 
     # [[ ! -f $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME ]] && __besman_echo_red "Could not find artifact @ $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME" && flag=true
-    if [[ -z "GITHUB_AUTH_TOKEN" ]]; then
+    if [[ -z "$GITHUB_AUTH_TOKEN" ]]; then
         __besman_echo_red "GitHUb token is not set. Run export GITHUB_AUTH_TOKEN=<your access token>"
         flag=true
     fi
