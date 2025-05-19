@@ -19,7 +19,8 @@ function __besman_init() {
             if [[ $var == "GITHUB_AUTH_TOKEN" ]]; then
               __besman_echo_red "$var is not set" #uncomment
               __besman_echo_no_yellow "Please set export $var=<Token Value> and re-run." #uncomment
-              exit 1
+              flag=true
+              return;
             fi
             __besman_echo_yellow "$var is not set" #uncomment
             __besman_echo_no_colour "" #uncomment
