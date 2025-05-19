@@ -10,19 +10,20 @@ function __besman_init() {
     local steps_file_name="besman-RIP-scorecard-steps-0.0.1.sh"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
-    local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME")
+    local var_array=("BESMAN_ARTIFACT_TYPE" "BESMAN_ARTIFACT_NAME" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_ARTIFACT_DIR" "ASSESSMENT_TOOL_NAME" "ASSESSMENT_TOOL_TYPE" "ASSESSMENT_TOOL_VERSION" "ASSESSMENT_TOOL_PLAYBOOK" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_ASSESSMENT_DATASTORE_URL" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME" "GITHUB_AUTH_TOKEN")
 
     local flag=false
     for var in "${var_array[@]}"; do
         if [[ ! -v $var ]]; then
 
-            # read -rp "Enter value for $var:" value #remove
-            # export "$var"="$value" #remove
+            if [[ $var == "GITHUB_AUTH_TOKEN" ]]; then
+              read -rp "Enter value for $var:" value #remove
+              export "$var"="$value" #remove
+            fi
             __besman_echo_yellow "$var is not set" #uncomment
             __besman_echo_no_colour "" #uncomment
             flag=true #uncomment
         fi
-
     done
 
     local dir_array=("BESMAN_ASSESSMENT_DATASTORE_DIR")
