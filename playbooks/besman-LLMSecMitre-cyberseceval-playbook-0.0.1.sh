@@ -40,24 +40,6 @@ function __besman_init() {
             __besman_echo_no_colour "Run the below command to start it"
             __besman_echo_no_colour ""
             __besman_echo_yellow "   ollama run $BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION"
-            "$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION" 
-            return 1
-        fi
-        
-        if ! ollama ps | grep -q "$BESMAN_JUDGE_LLM_NAME:$BESMAN_JUDGE_LLM_VERSION"; then
-            __besman_echo_red "$BESMAN_JUDGE_LLM_NAME $BESMAN_JUDGE_LLM_VERSION is not running"
-            __besman_echo_no_colour ""
-            __besman_echo_no_colour ""
-            __besman_echo_yellow "   ollama run $BESMAN_JUDGE_LLM_NAME:$BESMAN_JUDGE_LLM_VERSION"
-            __besman_echo_no_colour ""
-            return 1
-        fi
-        if ! ollama ps | grep -q "$BESMAN_EXPANSION_LLM_NAME:$BESMAN_EXPANSION_LLM_VERSION"; then
-            __besman_echo_red "$BESMAN_EXPANSION_LLM_NAME $BESMAN_EXPANSION_LLM_VERSION is not running"
-            __besman_echo_no_colour ""
-            __besman_echo_no_colour ""
-            __besman_echo_yellow "   ollama run $BESMAN_EXPANSION_LLM_NAME:$BESMAN_EXPANSION_LLM_VERSION"
-            __besman_echo_no_colour ""
             return 1
         fi
     fi
@@ -72,7 +54,23 @@ function __besman_init() {
     elif [[ "$BESMAN_JUDGE_LLM_PROVIDER" == "AWSBedrock" && ( -z "$AWS_ACCESS_KEY_ID" || -z "$AWS_SECRET_ACCESS_KEY" )]] 
     then
         __besman_echo_error "Unauthenticated access to AWSBedrock"
-        __besman_echo_yellow "Export parameters: AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY"
+        __besman_echo_no_colour "Set the AWS access keys by running the below command"
+        __besman_echo_no_colour ""
+        __besman_echo_yellow "export AWS_ACCESS_KEY_ID=<value>"
+        __besman_echo_yellow "export AWS_SECRET_ACCESS_KEY=<value"
+        __besman_echo_no_colour ""
+        return 1
+    elif [[ "$BESMAN_JUDGE_LLM_PROVIDER" == "Ollama" ]] 
+    then
+        if ! ollama ps | grep -q "$BESMAN_JUDGE_LLM_NAME:$BESMAN_JUDGE_LLM_VERSION" 
+        then
+            __besman_echo_red "Judge LLM $BESMAN_JUDGE_LLM_NAME:$BESMAN_JUDGE_LLM_VERSION is not running"
+            __besman_echo_no_colour ""
+            __besman_echo_no_colour "Run the below command to start it"
+            __besman_echo_no_colour ""
+            __besman_echo_yellow "   ollama run $BESMAN_JUDGE_LLM_NAME:$BESMAN_JUDGE_LLM_VERSION"
+            return 1
+        fi
     fi
 
     if [[ "$BESMAN_EXPANSION_LLM_PROVIDER" == "HuggingFace" && -z "$BESMAN_EXPANSION_LLM_REPO_NAMESPACE" ]] 
@@ -87,6 +85,17 @@ function __besman_init() {
     then
         __besman_echo_error "Unauthenticated access to AWSBedrock"
         __besman_echo_yellow "Export parameters: AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY"
+    elif [[ "$BESMAN_EXPANSION_LLM_PROVIDER" == "Ollama" ]] 
+    then
+        if ! ollama ps | grep -q "$BESMAN_EXPANSION_LLM_NAME:$BESMAN_EXPANSION_LLM_VERSION" 
+        then
+            __besman_echo_red "Expansion LLM $BESMAN_EXPANSION_LLM_NAME:$BESMAN_EXPANSION_LLM_VERSION is not running"
+            __besman_echo_no_colour ""
+            __besman_echo_no_colour "Run the below command to start it"
+            __besman_echo_no_colour ""
+            __besman_echo_yellow "   ollama run $BESMAN_EXPANSION_LLM_NAME:$BESMAN_EXPANSION_LLM_VERSION"
+            return 1
+        fi
     fi
 
     local dir_array=("BESMAN_ASSESSMENT_DATASTORE_DIR")

@@ -288,7 +288,7 @@ function __besman_execute_steps() {
     local default_branch
 
 
-    if [[ -z "$BESMAN_SCORECARD_ASSESSMENT_MODE" || "$BESMAN_SCORECARD_ASSESSMENT_MODE" == "github-action" ]] 
+    if [[ ! -z "$BESMAN_SCORECARD_ASSESSMENT_MODE" || "$BESMAN_SCORECARD_ASSESSMENT_MODE" == "github-action" ]] 
     then
         __besman_echo_yellow "Running scorecard GitHub action"
         default_branch=$(__besman_get_default_branch)
@@ -312,7 +312,7 @@ function __besman_execute_steps() {
         else
             export PLAYBOOK_EXECUTION_STATUS="failure"
         fi
-    elif [[ "$BESMAN_SCORECARD_ASSESSMENT_MODE" == "cli" ]] 
+    elif [[ -z "$BESMAN_SCORECARD_ASSESSMENT_MODE" || "$BESMAN_SCORECARD_ASSESSMENT_MODE" == "cli" ]] 
     then
         __besman_echo_yellow "Running scorecard CLI"
         cd "$BESMAN_ARTIFACT_DIR" || return 1

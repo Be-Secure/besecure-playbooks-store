@@ -41,6 +41,13 @@ function __besman_init() {
     # [[ ! -f $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME ]] && __besman_echo_red "Could not find artifact @ $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME" && flag=true
     if ! [ -x "$(command -v criticality_score)" ]; then
         __besman_echo_red "required tool - criticality_score is not installed. Please check the installed Bes env"
+        flag=true
+    fi
+
+    # [[ ! -f $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME ]] && __besman_echo_red "Could not find artifact @ $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME" && flag=true
+    if [[ -z "$GITHUB_AUTH_TOKEN" ]]; then
+        __besman_echo_red "GitHUb token is not set. Run export GITHUB_AUTH_TOKEN=<your access token>"
+        flag=true
     fi
 
     if [[ $flag == true ]]; then
