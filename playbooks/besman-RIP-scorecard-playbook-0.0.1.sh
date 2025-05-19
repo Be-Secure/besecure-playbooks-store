@@ -20,11 +20,11 @@ function __besman_init() {
               __besman_echo_red "$var is not set" #uncomment
               __besman_echo_no_yellow "Please set export $var=<Token Value> and re-run." #uncomment
               flag=true
-              return;
+            else
+              __besman_echo_yellow "$var is not set" #uncomment
+              __besman_echo_no_colour "" #uncomment
+              flag=true #uncomment
             fi
-            __besman_echo_yellow "$var is not set" #uncomment
-            __besman_echo_no_colour "" #uncomment
-            flag=true #uncomment
         fi
     done
 
