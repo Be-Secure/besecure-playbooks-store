@@ -2,8 +2,8 @@
 
 function __besman_init() {
     __besman_echo_white "initialising"
-    export ASSESSMENT_TOOL_NAME="cyclonedx-sbom-generator"
-    export ASSESSMENT_TOOL_TYPE="sbom"
+    export ASSESSMENT_TOOL_NAME="CyclonedxSbomGenerator"
+    export ASSESSMENT_TOOL_TYPE="SBOM"
     export ASSESSMENT_TOOL_VERSION="0.0.1"
     export ASSESSMENT_TOOL_PLAYBOOK="besman-SBOM-$ASSESSMENT_TOOL_NAME-0.0.1-playbook.sh"
     
