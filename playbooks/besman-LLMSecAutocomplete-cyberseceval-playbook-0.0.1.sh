@@ -21,14 +21,15 @@ function __besman_init() {
         __besman_echo_yellow "export BESMAN_MODEL_REPO_NAMESPACE=<namespace>"
         return 1
     elif [[ "$BESMAN_ARTIFACT_PROVIDER" == "Ollama" ]]; then
-        if ! ollama ps | grep -q "$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION"; then
+        if ! ollama ps | grep -q "$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION" 
+        then
             __besman_echo_red "Model $BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION is not running"
             __besman_echo_no_colour ""
             __besman_echo_no_colour "Run the below command to start it"
             __besman_echo_no_colour ""
             __besman_echo_yellow "   ollama run $BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION"
             return 1
-        fi
+        fi        
     fi
 
     local flag=false
@@ -76,52 +77,19 @@ function __besman_init() {
 }
 
 function __besman_execute() {
-    __besman_echo_yellow "Launching steps file in background"
+    local duration
+    local run_flag="--background"  # <-- can toggle this based on user input or config
+
+    __besman_echo_yellow "Sourcing steps file and running with flag: $run_flag"
 
     SECONDS=0
-
-    local base_name="${ASSESSMENT_TOOL_PLAYBOOK%.*}"
-    local tmp_file="/tmp/${base_name}_assessment.tmp"
-    local pid_file="/tmp/${base_name}_assessment.pid"
-
-    # If a previous PID file exists, check if process is still running
-    if [[ -f "$pid_file" ]]; then
-        local old_pid
-        old_pid=$(<"$pid_file")
-
-        if ps -p "$old_pid" >/dev/null 2>&1; then
-            __besman_echo_red "A previous step execution is already running with PID $old_pid"
-            return 1
-        else
-            rm -f "$pid_file"
-        fi
-    fi
-
-    # Launch step file in background
-    (
-        . "$BESMAN_STEPS_FILE_PATH"
-        echo $? >"$tmp_file"
-    ) &
-
-    local steps_pid=$!
-    echo "$steps_pid" >"$pid_file"
-    __besman_echo_white "Steps script PID: $steps_pid"
-
-    wait "$steps_pid"
-    local status=$?
+    source "$BESMAN_STEPS_FILE_PATH"
+    __besman_run_assessment_in_background "$run_flag"
     duration=$SECONDS
+
     export EXECUTION_DURATION=$duration
 
-    rm -f "$pid_file"
-
-    if [[ -f "$tmp_file" ]]; then
-        exit_code=$(<"$tmp_file")
-        rm -f "$tmp_file"
-    else
-        exit_code=1
-    fi
-
-    if [[ "$exit_code" -ne 0 || "$AUTOCOMPLETE_RESULT" -eq 1 ]]; then
+    if [[ $AUTOCOMPLETE_RESULT == 1 ]]; then
         export PLAYBOOK_EXECUTION_STATUS=failure
         return 1
     else
@@ -195,3 +163,4 @@ function __besman_launch() {
         return
     fi
 }
+
