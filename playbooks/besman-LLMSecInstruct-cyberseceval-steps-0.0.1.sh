@@ -1,48 +1,90 @@
 #!/bin/bash
 
-__besman_echo_white "Running $ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_TYPE"
+function __besman_run_instruct_assessment() {
+    __besman_echo_white "Running $ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_TYPE"
 
-cd "$BESMAN_TOOL_PATH/PurpleLlama" || return 1
+    cd "$BESMAN_TOOL_PATH/PurpleLlama" || return 1
 
-## Activate venv
-if [[ ! -d ~/.venvs/CybersecurityBenchmarks ]]; then
-    __besman_echo_red "[ERROR] Python virtual environment for CybersecurityBenchmarks is missing."
-    (return 1 2>/dev/null) || exit 1
-fi
-
-source ~/.venvs/CybersecurityBenchmarks/bin/activate
-if  [[ "$BESMAN_ARTIFACT_PROVIDER" == "Ollama" ]]
-then
-    python3 -m CybersecurityBenchmarks.benchmark.run \
-        --benchmark=instruct \
-        --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/instruct/instruct.json" \
-        --response-path="$BESMAN_RESULTS_PATH/instruct_responses.json" \
-        --stat-path="$BESMAN_RESULTS_PATH/instruct_stat.json" \
-        --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::http://localhost:11434" \
-        --run-llm-in-parallel \
-        --num-test-cases="$BESMAN_NUM_TEST_CASES_INSTRUCT"
-elif [[ "$BESMAN_ARTIFACT_PROVIDER" == "HuggingFace" ]]
-then
-    python3 -m CybersecurityBenchmarks.benchmark.run \
-        --benchmark=instruct \
-        --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/instruct/instruct.json" \
-        --response-path="$BESMAN_RESULTS_PATH/instruct_responses.json" \
-        --stat-path="$BESMAN_RESULTS_PATH/instruct_stat.json" \
-        --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_MODEL_REPO_NAMESPACE/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION::random-string" \
-        --run-llm-in-parallel \
-        --num-test-cases="$BESMAN_NUM_TEST_CASES_INSTRUCT"
-fi
-if [[ "$?" -ne 0 ]]; then
-    export INSTRUCT_RESULT=1
-else
-    export INSTRUCT_RESULT=0
-    jq 'to_entries[0].value' "$BESMAN_RESULTS_PATH/instruct_stat.json" >"$BESMAN_RESULTS_PATH/instruct_stat.tmp.json" && mv "$BESMAN_RESULTS_PATH/instruct_stat.tmp.json" "$BESMAN_RESULTS_PATH/instruct_stat.json"
-    if [[ "$?" != "0" ]]; then
-        __besman_echo_red "Could not read the summary file"
+    ## Activate venv
+    if [[ ! -d ~/.venvs/CybersecurityBenchmarks ]]; then
+        __besman_echo_red "[ERROR] Python virtual environment for CybersecurityBenchmarks is missing."
         return 1
     fi
-fi
 
+    source ~/.venvs/CybersecurityBenchmarks/bin/activate
 
+    base_name="${ASSESSMENT_TOOL_NAME}-${ASSESSMENT_TOOL_TYPE// /_}"
+    log_file="/tmp/${base_name}_assessment.log"
+    pid_file="/tmp/${base_name}_assessment.pid"
 
-deactivate
+    __besman_echo_yellow "Log file: $log_file"
+    __besman_echo_yellow "PID file: $pid_file"
+
+    if [[ -f "$pid_file" ]]; then
+        existing_pid=$(<"$pid_file")
+        if ps -p "$existing_pid" > /dev/null 2>&1; then
+            __besman_echo_yellow "[INFO] Assessment is already running with PID $existing_pid"
+            __besman_echo_yellow "[INFO] To view logs: tail -f $log_file"
+            deactivate
+            return 0
+        else
+            __besman_echo_yellow "[INFO] Stale PID file found. Removing it."
+            rm -f "$pid_file"
+        fi
+    fi
+
+    python_command=(
+        python3 -m CybersecurityBenchmarks.benchmark.run
+        --benchmark=instruct
+        --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/instruct/instruct.json"
+        --response-path="$BESMAN_RESULTS_PATH/instruct_responses.json"
+        --stat-path="$BESMAN_RESULTS_PATH/instruct_stat.json"
+        --run-llm-in-parallel
+        --num-test-cases="$BESMAN_NUM_TEST_CASES_INSTRUCT"
+    )
+
+    if [[ "$BESMAN_ARTIFACT_PROVIDER" == "Ollama" ]]; then
+        __besman_echo_yellow "Using Ollama provider"
+        python_command+=(--llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::http://localhost:11434")
+    elif [[ "$BESMAN_ARTIFACT_PROVIDER" == "HuggingFace" ]]; then
+        __besman_echo_yellow "Using HuggingFace provider"
+        python_command+=(--llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_MODEL_REPO_NAMESPACE/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION::random-string")
+    fi
+
+    if [[ "$1" == "--background" ]]; then
+        nohup "${python_command[@]}" > "$log_file" 2>&1 &
+        echo "$!" > "$pid_file"
+        __besman_echo_white "Instruct benchmark started in background (PID: $!)"
+        export INSTRUCT_RESULT=0
+        return 0
+    else
+        nohup "${python_command[@]}" > "$log_file" 2>&1
+        exit_code=$?
+
+        if [[ "$exit_code" -ne 0 ]]; then
+            __besman_echo_red "[ERROR] Instruct benchmark failed."
+            export INSTRUCT_RESULT=1
+        else
+            if [[ -s "$BESMAN_RESULTS_PATH/instruct_stat.json" ]]; then
+                jq 'to_entries[0].value' "$BESMAN_RESULTS_PATH/instruct_stat.json" > "$BESMAN_RESULTS_PATH/instruct_stat.tmp.json"
+                if [[ "$?" -ne 0 ]]; then
+                    __besman_echo_red "Could not parse instruct_stat.json"
+                    export INSTRUCT_RESULT=1
+                    deactivate
+                    return 1
+                fi
+                mv "$BESMAN_RESULTS_PATH/instruct_stat.tmp.json" "$BESMAN_RESULTS_PATH/instruct_stat.json"
+                export INSTRUCT_RESULT=0
+
+                # Optional copy
+                # cp "$BESMAN_RESULTS_PATH/instruct_stat.json" "$INSTRUCT_TEST_REPORT_PATH/instruct_stat.json"
+                # cp "$BESMAN_RESULTS_PATH/instruct_responses.json" "$INSTRUCT_TEST_REPORT_PATH/instruct_responses.json"
+            else
+                __besman_echo_red "[ERROR] instruct_stat.json is missing or empty."
+                export INSTRUCT_RESULT=1
+            fi
+        fi
+    fi
+
+    deactivate
+}

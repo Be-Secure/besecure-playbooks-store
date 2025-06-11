@@ -85,6 +85,22 @@ function __besman_execute() {
     SECONDS=0
     source "$BESMAN_STEPS_FILE_PATH"
     __besman_run_assessment_in_background "$run_flag"
+
+     # Wait on the actual benchmark PID
+    base_name="${ASSESSMENT_TOOL_NAME}-${ASSESSMENT_TOOL_TYPE// /_}"
+    pid_file="/tmp/${base_name}_assessment.pid"
+
+    if [[ -f "$pid_file" ]]; then
+        benchmark_pid=$(<"$pid_file")
+        __besman_echo_white "Waiting for benchmark process (PID: $benchmark_pid) to complete..."
+        wait "$benchmark_pid"
+        exit_code=$?
+    else
+        __besman_echo_red "[ERROR] PID file not found. Cannot wait for assessment process."
+        export PLAYBOOK_EXECUTION_STATUS=failure
+        return 1
+    fi
+
     duration=$SECONDS
 
     export EXECUTION_DURATION=$duration

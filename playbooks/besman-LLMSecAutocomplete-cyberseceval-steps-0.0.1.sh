@@ -19,6 +19,20 @@ function __besman_run_assessment_in_background() {
     __besman_echo_yellow "Log file: $log_file"
     __besman_echo_yellow "PID file: $pid_file"
 
+    # Check if a previous process is already running
+    if [[ -f "$pid_file" ]]; then
+        existing_pid=$(<"$pid_file")
+        if ps -p "$existing_pid" > /dev/null 2>&1; then
+            __besman_echo_yellow "[INFO] Assessment is already running with PID $existing_pid"
+            __besman_echo_yellow "[INFO] To view logs: tail -f $log_file"
+            deactivate
+            return 0
+        else
+            __besman_echo_yellow "[INFO] Found stale PID file. Cleaning up."
+            rm -f "$pid_file"
+        fi
+    fi
+
     local python_command=(
         python3 -m CybersecurityBenchmarks.benchmark.run
         --benchmark=autocomplete
