@@ -154,31 +154,57 @@ function __besman_launch() {
         __besman_cleanup
         return
     fi
-    # Wait on the actual benchmark PID
-    base_name="${ASSESSMENT_TOOL_NAME}-${ASSESSMENT_TOOL_TYPE// /_}"
-    pid_file="/tmp/${base_name}_assessment.pid"
 
-     if [[ -f "$pid_file" ]]; then
-        local pid
-        pid=$(<"$pid_file")
-        __besman_echo_yellow "Waiting for assessment PID $pid to finish..."
-        while ps -p "$pid" > /dev/null 2>&1; do
-            sleep 2
-        done
-        __besman_echo_white "Assessment completed"
-    else
-        __besman_echo_red "PID file not found. Cannot wait."
-        __besman_cleanup
-        return
-    fi
+    # 🔄 Start a background watcher process
+    (
+        base_name="${ASSESSMENT_TOOL_NAME}-${ASSESSMENT_TOOL_TYPE// /_}"
+        pid_file="/tmp/${base_name}_assessment.pid"
 
-    if [[ $flag == 0 ]]; then
-        __besman_prepare
-        __besman_publish
-        __besman_cleanup
-    else
-        __besman_cleanup
-        return
-    fi
+        if [[ -f "$pid_file" ]]; then
+            pid=$(<"$pid_file")
+            __besman_echo_yellow "Monitoring assessment in background (PID: $pid)"
+
+            while ps -p "$pid" > /dev/null 2>&1; do
+                sleep 2
+            done
+
+            __besman_echo_white "Assessment finished. Running post-assessment steps..."
+
+            __besman_prepare
+            __besman_publish
+            __besman_cleanup
+        else
+            __besman_echo_red "PID file not found. Cannot monitor assessment."
+            __besman_cleanup
+        fi
+    ) &
+
+    disown 
+    # # Wait on the actual benchmark PID
+    # base_name="${ASSESSMENT_TOOL_NAME}-${ASSESSMENT_TOOL_TYPE// /_}"
+    # pid_file="/tmp/${base_name}_assessment.pid"
+
+    #  if [[ -f "$pid_file" ]]; then
+    #     local pid
+    #     pid=$(<"$pid_file")
+    #     __besman_echo_yellow "Waiting for assessment PID $pid to finish..."
+    #     while ps -p "$pid" > /dev/null 2>&1; do
+    #         sleep 2
+    #     done
+    #     __besman_echo_white "Assessment completed"
+    # else
+    #     __besman_echo_red "PID file not found. Cannot wait."
+    #     __besman_cleanup
+    #     return
+    # fi
+
+    # if [[ $flag == 0 ]]; then
+    #     __besman_prepare
+    #     __besman_publish
+    #     __besman_cleanup
+    # else
+    #     __besman_cleanup
+    #     return
+    # fi
 }
 
