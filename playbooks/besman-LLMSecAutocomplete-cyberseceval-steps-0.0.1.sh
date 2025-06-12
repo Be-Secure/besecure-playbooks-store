@@ -1,6 +1,7 @@
 #!/bin/bash
 
 function __besman_run_assessment_in_background() {
+    local force_flag="$1"
     __besman_echo_white "Running $ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_TYPE"
 
     cd "$BESMAN_TOOL_PATH/PurpleLlama" || return 1
@@ -20,19 +21,23 @@ function __besman_run_assessment_in_background() {
     pid_file="${log_dir}/${base_name}_assessment.pid"
 
     __besman_echo_yellow "Log file: $log_file"
-    __besman_echo_yellow "PID file: $pid_file"
 
-    # Check if a previous process is already running
-    if [[ -f "$pid_file" ]]; then
-        existing_pid=$(<"$pid_file")
-        if ps -p "$existing_pid" >/dev/null 2>&1; then
-            __besman_echo_yellow "[INFO] Assessment is already running with PID $existing_pid"
-            __besman_echo_yellow "[INFO] To view logs: tail -f $log_file"
-            deactivate
-            return 0
-        else
-            __besman_echo_yellow "[INFO] Found stale PID file. Cleaning up."
-            rm -f "$pid_file"
+    if [[ "$force_flag" == "--background" ]]; then
+
+        __besman_echo_yellow "PID file: $pid_file"
+
+        # Check if a previous process is already running
+        if [[ -f "$pid_file" ]]; then
+            existing_pid=$(<"$pid_file")
+            if ps -p "$existing_pid" >/dev/null 2>&1; then
+                __besman_echo_yellow "[INFO] Assessment is already running with PID $existing_pid"
+                __besman_echo_yellow "[INFO] To view logs: tail -f $log_file"
+                deactivate
+                return 0
+            else
+                __besman_echo_yellow "[INFO] Found stale PID file. Cleaning up."
+                rm -f "$pid_file"
+            fi
         fi
     fi
 
@@ -55,6 +60,7 @@ function __besman_run_assessment_in_background() {
     fi
 
     if [[ "$1" == "--background" ]]; then
+        __besman_echo_yellow "Running in background to see log run: tail -f $log_file"
         nohup "${python_command[@]}" >"$log_file" 2>&1 &
         benchmark_pid=$!
         echo "$benchmark_pid" >"$pid_file"
