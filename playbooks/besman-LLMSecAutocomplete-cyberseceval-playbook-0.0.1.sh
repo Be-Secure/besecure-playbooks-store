@@ -153,53 +153,12 @@ function __besman_launch() {
 
     __besman_init
     flag=$?
-    if [[ $flag == 0 ]]; then
-        __besman_execute "$force_flag"
-        flag=$?
-    else
+    if [[ $flag -ne 0 ]]; then
         __besman_cleanup
-        return
+        return 1
     fi
 
-    if [[ "$force_flag" == "-f" ]]; then
-        base_name="${ASSESSMENT_TOOL_NAME}-${ASSESSMENT_TOOL_TYPE// /_}"
-        log_dir="/tmp/besman_assessment"
-        mkdir -p "$log_dir" # ensures the directory exists
-
-        pid_file="${log_dir}/${base_name}_assessment.pid"
-        log_file="${log_dir}/${base_name}_watcher.log"
-
-        # 🔄 Start a background watcher process
-        nohup bash -c '(
-
-        if [[ -f "$pid_file" ]]; then
-            pid=$(<"$pid_file")
-            __besman_echo_yellow "Monitoring assessment in background (PID: $pid)"
-
-            while ps -p "$pid" > /dev/null 2>&1; do
-                sleep 2
-            done
-
-            __besman_echo_white "Assessment finished. Running post-assessment steps..."
-
-            __besman_prepare
-            __besman_publish
-            __besman_cleanup
-        else
-            __besman_echo_red "PID file not found. Cannot monitor assessment."
-            __besman_cleanup
-        fi
-    )' >"$log_file" 2>&1 &
-
-        disown
-    else
-        if [[ $flag == 0 ]]; then
-            __besman_prepare
-            __besman_publish
-            __besman_cleanup
-        else
-            __besman_cleanup
-            return
-        fi
-    fi
+    __besman_execute "$force_flag"
+    flag=$?
+    return "$flag"
 }
