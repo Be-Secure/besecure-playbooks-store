@@ -13,8 +13,11 @@ function __besman_run_assessment_in_background() {
     source ~/.venvs/CybersecurityBenchmarks/bin/activate
 
     base_name="${ASSESSMENT_TOOL_NAME}-${ASSESSMENT_TOOL_TYPE// /_}"
-    log_file="/tmp/${base_name}_assessment.txt"
-    pid_file="/tmp/${base_name}_assessment.pid"
+    log_dir="/tmp/besman_assessment"
+    mkdir -p "$log_dir" # Ensure the directory exists
+
+    log_file="${log_dir}/${base_name}_assessment.txt"
+    pid_file="${log_dir}/${base_name}_assessment.pid"
 
     __besman_echo_yellow "Log file: $log_file"
     __besman_echo_yellow "PID file: $pid_file"
@@ -22,7 +25,7 @@ function __besman_run_assessment_in_background() {
     # Check if a previous process is already running
     if [[ -f "$pid_file" ]]; then
         existing_pid=$(<"$pid_file")
-        if ps -p "$existing_pid" > /dev/null 2>&1; then
+        if ps -p "$existing_pid" >/dev/null 2>&1; then
             __besman_echo_yellow "[INFO] Assessment is already running with PID $existing_pid"
             __besman_echo_yellow "[INFO] To view logs: tail -f $log_file"
             deactivate
@@ -56,7 +59,7 @@ function __besman_run_assessment_in_background() {
         benchmark_pid=$!
         echo "$benchmark_pid" >"$pid_file"
         __besman_echo_white "Running in background (PID: $benchmark_pid)"
-        export AUTOCOMPLETE_RESULT=0  # You can later check status using PID
+        export AUTOCOMPLETE_RESULT=0 # You can later check status using PID
         return 0
     else
         nohup "${python_command[@]}" >"$log_file" 2>&1

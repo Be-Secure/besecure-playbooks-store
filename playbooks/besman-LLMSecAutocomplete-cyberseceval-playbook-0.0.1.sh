@@ -21,15 +21,14 @@ function __besman_init() {
         __besman_echo_yellow "export BESMAN_MODEL_REPO_NAMESPACE=<namespace>"
         return 1
     elif [[ "$BESMAN_ARTIFACT_PROVIDER" == "Ollama" ]]; then
-        if ! ollama ps | grep -q "$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION" 
-        then
+        if ! ollama ps | grep -q "$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION"; then
             __besman_echo_red "Model $BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION is not running"
             __besman_echo_no_colour ""
             __besman_echo_no_colour "Run the below command to start it"
             __besman_echo_no_colour ""
             __besman_echo_yellow "   ollama run $BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION"
             return 1
-        fi        
+        fi
     fi
 
     local flag=false
@@ -77,8 +76,14 @@ function __besman_init() {
 }
 
 function __besman_execute() {
+    local force_flag="$1"
     local duration
-    local run_flag="--background"  # <-- can toggle this based on user input or config
+    local run_flag=""
+
+    # Set run_flag based on force_flag
+    if [[ "$force_flag" == "-f" ]]; then
+        run_flag="--background"
+    fi
 
     __besman_echo_yellow "Sourcing steps file and running with flag: $run_flag"
 
@@ -142,23 +147,30 @@ function __besman_cleanup() {
 
 # function launch
 function __besman_launch() {
+    local force_flag="$1"
     __besman_echo_yellow "Starting playbook"
     local flag=1
 
     __besman_init
     flag=$?
     if [[ $flag == 0 ]]; then
-        __besman_execute
+        __besman_execute "$force_flag"
         flag=$?
     else
         __besman_cleanup
         return
     fi
 
-    # 🔄 Start a background watcher process
-    (
+    if [[ "$force_flag" == "-f" ]]; then
         base_name="${ASSESSMENT_TOOL_NAME}-${ASSESSMENT_TOOL_TYPE// /_}"
-        pid_file="/tmp/${base_name}_assessment.pid"
+        log_dir="/tmp/besman_assessment"
+        mkdir -p "$log_dir" # ensures the directory exists
+
+        pid_file="${log_dir}/${base_name}_assessment.pid"
+        log_file="${log_dir}/${base_name}_watcher.log"
+
+        # 🔄 Start a background watcher process
+        nohup bash -c '(
 
         if [[ -f "$pid_file" ]]; then
             pid=$(<"$pid_file")
@@ -177,34 +189,17 @@ function __besman_launch() {
             __besman_echo_red "PID file not found. Cannot monitor assessment."
             __besman_cleanup
         fi
-    ) &
+    )' >"$log_file" 2>&1 &
 
-    disown 
-    # # Wait on the actual benchmark PID
-    # base_name="${ASSESSMENT_TOOL_NAME}-${ASSESSMENT_TOOL_TYPE// /_}"
-    # pid_file="/tmp/${base_name}_assessment.pid"
-
-    #  if [[ -f "$pid_file" ]]; then
-    #     local pid
-    #     pid=$(<"$pid_file")
-    #     __besman_echo_yellow "Waiting for assessment PID $pid to finish..."
-    #     while ps -p "$pid" > /dev/null 2>&1; do
-    #         sleep 2
-    #     done
-    #     __besman_echo_white "Assessment completed"
-    # else
-    #     __besman_echo_red "PID file not found. Cannot wait."
-    #     __besman_cleanup
-    #     return
-    # fi
-
-    # if [[ $flag == 0 ]]; then
-    #     __besman_prepare
-    #     __besman_publish
-    #     __besman_cleanup
-    # else
-    #     __besman_cleanup
-    #     return
-    # fi
+        disown
+    else
+        if [[ $flag == 0 ]]; then
+            __besman_prepare
+            __besman_publish
+            __besman_cleanup
+        else
+            __besman_cleanup
+            return
+        fi
+    fi
 }
-
