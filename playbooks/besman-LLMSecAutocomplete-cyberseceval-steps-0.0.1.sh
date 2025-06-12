@@ -68,7 +68,7 @@ function __besman_run_assessment_in_background() {
         export AUTOCOMPLETE_RESULT=0 # You can later check status using PID
         return 0
     else
-        nohup "${python_command[@]}" >"$log_file" 2>&1
+        nohup "${python_command[@]}"
         exit_code=$?
 
         if [[ "$exit_code" -ne 0 ]]; then
