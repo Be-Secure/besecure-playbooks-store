@@ -63,6 +63,7 @@ function __besman_run_assessment_in_background() {
         __besman_echo_yellow "Running in background to see log run: tail -f $log_file"
         nohup "${python_command[@]}" >"$log_file" 2>&1 &
         benchmark_pid=$!
+        echo "$benchmark_pid" > "$pid_file"
         __besman_echo_white "Running in background (PID: $benchmark_pid)"
         export AUTOCOMPLETE_RESULT=0 # You can later check status using PID
         return 0
