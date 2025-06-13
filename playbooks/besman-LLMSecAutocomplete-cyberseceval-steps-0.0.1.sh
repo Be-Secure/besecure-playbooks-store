@@ -68,7 +68,14 @@ function __besman_run_assessment_in_background() {
         export AUTOCOMPLETE_RESULT=0 # You can later check status using PID
         return 0
     else
-        nohup "${python_command[@]}" 2>&1 | tee "$log_file"
+        python3 -m CybersecurityBenchmarks.benchmark.run \
+    --benchmark=autocomplete \
+    --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/autocomplete/autocomplete.json" \
+    --response-path="$BESMAN_RESULTS_PATH/autocomplete_responses.json" \
+    --stat-path="$BESMAN_RESULTS_PATH/autocomplete_stat.json" \
+    --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::http://localhost:11434" \
+    --run-llm-in-parallel \
+    --num-test-cases="$BESMAN_NUM_TEST_CASES_AUTOCOMPLETE"
         exit_code=$?
 
         if [[ "$exit_code" -ne 0 ]]; then
