@@ -68,13 +68,12 @@ function __besman_run_assessment_in_background() {
         export AUTOCOMPLETE_RESULT=0 # You can later check status using PID
         return 0
     else
-        "${python_command[@]}"
+        nohup "${python_command[@]}" 2>&1 | tee "$log_file"
         exit_code=$?
 
         if [[ "$exit_code" -ne 0 ]]; then
             export AUTOCOMPLETE_RESULT=1
         else
-        echo "ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
             export AUTOCOMPLETE_RESULT=0
             if [[ -s "$BESMAN_RESULTS_PATH/autocomplete_stat.json" ]]; then
                 jq 'to_entries[0].value' "$BESMAN_RESULTS_PATH/autocomplete_stat.json" >"$BESMAN_RESULTS_PATH/autocomplete_stat.tmp.json"
