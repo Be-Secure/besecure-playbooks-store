@@ -14,42 +14,50 @@ function __besman_run_prompt_injection_assessment() {
 
     function get_judge_parameters() {
         case "$BESMAN_JUDGE_LLM_PROVIDER" in
-            AWSBedrock)
-                echo "AWSBedrock::$BESMAN_JUDGE_LLM_NAME.$BESMAN_JUDGE_LLM_VERSION::$AWS_ACCESS_KEY_ID/$AWS_SECRET_ACCESS_KEY"
-                ;;
-            Ollama)
-                echo "Ollama::$BESMAN_JUDGE_LLM_NAME:$BESMAN_JUDGE_LLM_VERSION::http://localhost:11434"
-                ;;
-            HuggingFace)
-                echo "HuggingFace::$BESMAN_JUDGE_MODEL_REPO_NAMESPACE/$BESMAN_JUDGE_LLM_NAME-$BESMAN_JUDGE_LLM_VERSION::random-string"
-                ;;
-            *)
-                __besman_echo_red "[ERROR] Unsupported judge provider: $BESMAN_JUDGE_LLM_PROVIDER"
-                return 1
-                ;;
+        AWSBedrock)
+            echo "AWSBedrock::$BESMAN_JUDGE_LLM_NAME.$BESMAN_JUDGE_LLM_VERSION::$AWS_ACCESS_KEY_ID/$AWS_SECRET_ACCESS_KEY"
+            ;;
+        Ollama)
+            echo "Ollama::$BESMAN_JUDGE_LLM_NAME:$BESMAN_JUDGE_LLM_VERSION::http://localhost:11434"
+            ;;
+        HuggingFace)
+            echo "HuggingFace::$BESMAN_JUDGE_MODEL_REPO_NAMESPACE/$BESMAN_JUDGE_LLM_NAME-$BESMAN_JUDGE_LLM_VERSION::random-string"
+            ;;
+        *)
+            __besman_echo_red "[ERROR] Unsupported judge provider: $BESMAN_JUDGE_LLM_PROVIDER"
+            return 1
+            ;;
         esac
     }
 
     judge_parameters=$(get_judge_parameters)
     [[ $? -ne 0 ]] && __besman_echo_red "Failed to get judge parameters." && return 1
 
-    base_name="${ASSESSMENT_TOOL_NAME}-${ASSESSMENT_TOOL_TYPE// /_}"
-    log_file="/tmp/${base_name}_assessment.log"
-    pid_file="/tmp/${base_name}_assessment.pid"
+    base_name="${ASSESSMENT_TOOL_NAME}-${BESMAN_ARTIFACT_NAME}:${BESMAN_ARTIFACT_VERSION}-${ASSESSMENT_TOOL_TYPE// /_}"
+    log_dir="$BESMAN_DIR/log"
+    mkdir -p "$log_dir" # Ensure the directory exists
+
+    log_file="${log_dir}/${base_name}_assessment.log"
+    pid_file="${log_dir}/${base_name}_assessment.pid"
 
     __besman_echo_yellow "Log file: $log_file"
-    __besman_echo_yellow "PID file: $pid_file"
 
-    if [[ -f "$pid_file" ]]; then
-        existing_pid=$(<"$pid_file")
-        if ps -p "$existing_pid" > /dev/null 2>&1; then
-            __besman_echo_yellow "[INFO] Prompt Injection benchmark already running with PID $existing_pid"
-            __besman_echo_yellow "[INFO] To view logs: tail -f $log_file"
-            deactivate
-            return 0
-        else
-            __besman_echo_yellow "[INFO] Stale PID file found. Removing it."
-            rm -f "$pid_file"
+    if [[ "$force_flag" == "--background" ]]; then
+
+        __besman_echo_yellow "PID file: $pid_file"
+
+        # Check if a previous process is already running
+        if [[ -f "$pid_file" ]]; then
+            existing_pid=$(<"$pid_file")
+            if ps -p "$existing_pid" >/dev/null 2>&1; then
+                __besman_echo_yellow "[INFO] Assessment is already running with PID $existing_pid"
+                __besman_echo_yellow "[INFO] To view logs: tail -f $log_file"
+                deactivate
+                return 0
+            else
+                __besman_echo_yellow "[INFO] Found stale PID file. Cleaning up."
+                rm -f "$pid_file"
+            fi
         fi
     fi
 
@@ -76,13 +84,13 @@ function __besman_run_prompt_injection_assessment() {
     fi
 
     if [[ "$1" == "--background" ]]; then
-        nohup "${python_command[@]}" > "$log_file" 2>&1 &
-        echo "$!" > "$pid_file"
+        nohup "${python_command[@]}" >"$log_file" 2>&1 &
+        echo "$!" >"$pid_file"
         __besman_echo_white "Prompt Injection benchmark started in background (PID: $!)"
         export PROMPT_INJECTION_RESULT=0
         return 0
     else
-        nohup "${python_command[@]}" > "$log_file" 2>&1
+        nohup "${python_command[@]}" 2>&1 | tee "$log_file"
         exit_code=$?
 
         if [[ "$exit_code" -ne 0 ]]; then
@@ -91,12 +99,13 @@ function __besman_run_prompt_injection_assessment() {
         else
             export PROMPT_INJECTION_RESULT=0
             # Normalize stat format
-            jq 'to_entries[0].value' "$BESMAN_RESULTS_PATH/prompt_injection_stat.json" > "$BESMAN_RESULTS_PATH/prompt_injection_stat.tmp.json" \
-                && mv "$BESMAN_RESULTS_PATH/prompt_injection_stat.tmp.json" "$BESMAN_RESULTS_PATH/prompt_injection_stat.json"
-            # Optional copy to report path
-            # cp "$BESMAN_RESULTS_PATH/prompt_injection_stat.json" "$PROMPT_INJECTION_TEST_REPORT_PATH/prompt_injection_stat.json"
-            # cp "$BESMAN_RESULTS_PATH/prompt_injection_responses.json" "$PROMPT_INJECTION_TEST_REPORT_PATH/prompt_injection_responses.json"
-            # cp "$BESMAN_RESULTS_PATH/prompt_injection_judge_responses.json" "$PROMPT_INJECTION_TEST_REPORT_PATH/prompt_injection_judge_responses.json"
+            if [[ -s "$BESMAN_RESULTS_PATH/prompt_injection_stat.json" ]]; then
+                jq 'to_entries[0].value' "$BESMAN_RESULTS_PATH/prompt_injection_stat.json" >"$BESMAN_RESULTS_PATH/prompt_injection_stat.tmp.json" &&
+                    mv "$BESMAN_RESULTS_PATH/prompt_injection_stat.tmp.json" "$BESMAN_RESULTS_PATH/prompt_injection_stat.json"
+            else
+                __besman_echo_red "[ERROR] prompt_injection_stat.json is missing or empty."
+                export AUTOCOMPLETE_RESULT=1
+            fi
         fi
     fi
 

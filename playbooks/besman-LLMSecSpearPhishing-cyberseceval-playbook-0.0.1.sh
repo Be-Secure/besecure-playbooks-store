@@ -174,24 +174,18 @@ function __besman_cleanup() {
 
 # function launch
 function __besman_launch() {
+    local force_flag="$1"
     __besman_echo_yellow "Starting playbook"
     local flag=1
 
     __besman_init
     flag=$?
-    if [[ $flag == 0 ]]; then
-        __besman_execute
-        flag=$?
-    else
+    if [[ $flag -ne 0 ]]; then
         __besman_cleanup
-        return
+        return 1
     fi
-    if [[ $flag == 0 ]]; then
-        __besman_prepare
-        __besman_publish
-        __besman_cleanup
-    else
-        __besman_cleanup
-        return
-    fi
+
+    __besman_execute "$force_flag"
+    flag=$?
+    return "$flag"
 }

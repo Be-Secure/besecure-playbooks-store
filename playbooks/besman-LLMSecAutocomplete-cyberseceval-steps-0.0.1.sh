@@ -13,11 +13,11 @@ function __besman_run_assessment_in_background() {
 
     source ~/.venvs/CybersecurityBenchmarks/bin/activate
 
-    base_name="${ASSESSMENT_TOOL_NAME}-${ASSESSMENT_TOOL_TYPE// /_}"
+    base_name="${ASSESSMENT_TOOL_NAME}-${BESMAN_ARTIFACT_NAME}:${BESMAN_ARTIFACT_VERSION}-${ASSESSMENT_TOOL_TYPE// /_}"
     log_dir="$BESMAN_DIR/log"
     mkdir -p "$log_dir" # Ensure the directory exists
 
-    log_file="${log_dir}/${base_name}_assessment.txt"
+    log_file="${log_dir}/${base_name}_assessment.log"
     pid_file="${log_dir}/${base_name}_assessment.pid"
 
     __besman_echo_yellow "Log file: $log_file"

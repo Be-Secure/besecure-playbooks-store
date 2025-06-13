@@ -33,23 +33,31 @@ function __besman_run_spear_phishing_assessment() {
     judge_parameters=$(get_judge_parameters)
     [[ $? -ne 0 ]] && __besman_echo_red "Failed to get judge parameters." && return 1
 
-    base_name="${ASSESSMENT_TOOL_NAME}-${ASSESSMENT_TOOL_TYPE// /_}"
-    log_file="/tmp/${base_name}_assessment.log"
-    pid_file="/tmp/${base_name}_assessment.pid"
+    base_name="${ASSESSMENT_TOOL_NAME}-${BESMAN_ARTIFACT_NAME}:${BESMAN_ARTIFACT_VERSION}-${ASSESSMENT_TOOL_TYPE// /_}"
+    log_dir="$BESMAN_DIR/log"
+    mkdir -p "$log_dir" # Ensure the directory exists
+
+    log_file="${log_dir}/${base_name}_assessment.log"
+    pid_file="${log_dir}/${base_name}_assessment.pid"
 
     __besman_echo_yellow "Log file: $log_file"
-    __besman_echo_yellow "PID file: $pid_file"
 
-    if [[ -f "$pid_file" ]]; then
-        existing_pid=$(<"$pid_file")
-        if ps -p "$existing_pid" > /dev/null 2>&1; then
-            __besman_echo_yellow "[INFO] Spear Phishing benchmark already running with PID $existing_pid"
-            __besman_echo_yellow "[INFO] To view logs: tail -f $log_file"
-            deactivate
-            return 0
-        else
-            __besman_echo_yellow "[INFO] Stale PID file found. Removing it."
-            rm -f "$pid_file"
+    if [[ "$force_flag" == "--background" ]]; then
+
+        __besman_echo_yellow "PID file: $pid_file"
+
+        # Check if a previous process is already running
+        if [[ -f "$pid_file" ]]; then
+            existing_pid=$(<"$pid_file")
+            if ps -p "$existing_pid" >/dev/null 2>&1; then
+                __besman_echo_yellow "[INFO] Assessment is already running with PID $existing_pid"
+                __besman_echo_yellow "[INFO] To view logs: tail -f $log_file"
+                deactivate
+                return 0
+            else
+                __besman_echo_yellow "[INFO] Found stale PID file. Cleaning up."
+                rm -f "$pid_file"
+            fi
         fi
     fi
 
@@ -82,7 +90,7 @@ function __besman_run_spear_phishing_assessment() {
         export SPEAR_PHISHING_RESULT=0
         return 0
     else
-        nohup "${python_command[@]}" > "$log_file" 2>&1
+        nohup "${python_command[@]}" 2>&1 | tee "$log_file"
         exit_code=$?
 
         if [[ "$exit_code" -ne 0 ]]; then
@@ -90,12 +98,13 @@ function __besman_run_spear_phishing_assessment() {
             export SPEAR_PHISHING_RESULT=1
         else
             export SPEAR_PHISHING_RESULT=0
-            jq 'to_entries[0].value' "$BESMAN_RESULTS_PATH/phishing_stats.json" >"$BESMAN_RESULTS_PATH/phishing_stats.tmp.json" \
-                && mv "$BESMAN_RESULTS_PATH/phishing_stats.tmp.json" "$BESMAN_RESULTS_PATH/phishing_stats.json"
-            # Optional detailed report copying
-            # cp "$BESMAN_RESULTS_PATH/phishing_stats.json" "$SPEAR_PHISHING_TEST_REPORT_PATH/phishing_stats.json"
-            # cp "$BESMAN_RESULTS_PATH/phishing_model_responses.json" "$SPEAR_PHISHING_TEST_REPORT_PATH/phishing_model_responses.json"
-            # cp "$BESMAN_RESULTS_PATH/phishing_judge_responses.json" "$SPEAR_PHISHING_TEST_REPORT_PATH/phishing_judge_responses.json"
+            if [[ -s "$BESMAN_RESULTS_PATH/phishing_stats.json" ]]; then
+                jq 'to_entries[0].value' "$BESMAN_RESULTS_PATH/phishing_stats.json" >"$BESMAN_RESULTS_PATH/phishing_stats.tmp.json" \
+                    && mv "$BESMAN_RESULTS_PATH/phishing_stats.tmp.json" "$BESMAN_RESULTS_PATH/phishing_stats.json"
+            else
+                __besman_echo_red "[ERROR] phishing_stats.json is missing or empty."
+                export AUTOCOMPLETE_RESULT=1
+            fi
         fi
     fi
 
