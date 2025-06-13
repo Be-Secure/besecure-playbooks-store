@@ -69,12 +69,12 @@ function __besman_run_assessment_in_background() {
         return 0
     else
         "${python_command[@]}"
-        echo "ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
         exit_code=$?
 
         if [[ "$exit_code" -ne 0 ]]; then
             export AUTOCOMPLETE_RESULT=1
         else
+        echo "ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
             export AUTOCOMPLETE_RESULT=0
             if [[ -s "$BESMAN_RESULTS_PATH/autocomplete_stat.json" ]]; then
                 jq 'to_entries[0].value' "$BESMAN_RESULTS_PATH/autocomplete_stat.json" >"$BESMAN_RESULTS_PATH/autocomplete_stat.tmp.json"
