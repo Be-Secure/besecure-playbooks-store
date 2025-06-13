@@ -14,7 +14,7 @@ function __besman_run_instruct_assessment() {
 
     source ~/.venvs/CybersecurityBenchmarks/bin/activate
 
-    base_name="${ASSESSMENT_TOOL_NAME}-${BESMAN_ARTIFACT_NAME}:${BESMAN_ARTIFACT_VERSION}-${ASSESSMENT_TOOL_TYPE// /_}"
+    base_name="${ASSESSMENT_TOOL_NAME}-${BESMAN_ARTIFACT_NAME}-${BESMAN_ARTIFACT_VERSION}-${ASSESSMENT_TOOL_TYPE// /_}"
     log_dir="$BESMAN_DIR/log"
     mkdir -p "$log_dir" # Ensure the directory exists
 
@@ -53,6 +53,7 @@ function __besman_run_instruct_assessment() {
     )
 
     if [[ "$BESMAN_ARTIFACT_PROVIDER" == "Ollama" ]]; then
+        __besman_echo_yellow "Running in background to see log run: tail -f $log_file"
         __besman_echo_yellow "Using Ollama provider"
         python_command+=(--llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::http://localhost:11434")
     elif [[ "$BESMAN_ARTIFACT_PROVIDER" == "HuggingFace" ]]; then

@@ -16,7 +16,7 @@ function __besman_run_garak_assessment_in_background() {
     }
 
     # Create report name and paths
-    base_name="${ASSESSMENT_TOOL_NAME}-${BESMAN_ARTIFACT_NAME}:${BESMAN_ARTIFACT_VERSION}-${ASSESSMENT_TOOL_TYPE// /_}"
+    base_name="${ASSESSMENT_TOOL_NAME}-${BESMAN_ARTIFACT_NAME}-${BESMAN_ARTIFACT_VERSION}-${ASSESSMENT_TOOL_TYPE// /_}"
     log_dir="$BESMAN_DIR/log"
     mkdir -p "$log_dir" # Ensure the directory exists
 
@@ -52,6 +52,7 @@ function __besman_run_garak_assessment_in_background() {
     )
 
     if [[ "$BESMAN_ARTIFACT_PROVIDER" == "Ollama" ]]; then
+        __besman_echo_yellow "Running in background to see log run: tail -f $log_file"
         __besman_echo_yellow "Using Ollama provider"
         garak_command+=(--model_type ollama --model_name "$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION")
     elif [[ "$BESMAN_ARTIFACT_PROVIDER" == "HuggingFace" ]]; then

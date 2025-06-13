@@ -14,7 +14,7 @@ function __besman_run_frr_assessment() {
 
     source ~/.venvs/CybersecurityBenchmarks/bin/activate
 
-    base_name="${ASSESSMENT_TOOL_NAME}-${BESMAN_ARTIFACT_NAME}:${BESMAN_ARTIFACT_VERSION}-${ASSESSMENT_TOOL_TYPE// /_}"
+    base_name="${ASSESSMENT_TOOL_NAME}-${BESMAN_ARTIFACT_NAME}-${BESMAN_ARTIFACT_VERSION}-${ASSESSMENT_TOOL_TYPE// /_}"
     log_dir="$BESMAN_DIR/log"
     mkdir -p "$log_dir" # Ensure the directory exists
 
@@ -61,6 +61,7 @@ function __besman_run_frr_assessment() {
     fi
 
     if [[ "$1" == "--background" ]]; then
+        __besman_echo_yellow "Running in background to see log run: tail -f $log_file"
         nohup "${python_command[@]}" > "$log_file" 2>&1 &
         echo "$!" > "$pid_file"
         __besman_echo_white "FRR benchmark started in background (PID: $!)"
