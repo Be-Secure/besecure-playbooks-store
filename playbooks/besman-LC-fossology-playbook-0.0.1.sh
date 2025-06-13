@@ -3,7 +3,7 @@
 function __besman_init() {
     __besman_echo_white "initialising"
     export ASSESSMENT_TOOL_NAME="fossology"
-    export ASSESSMENT_TOOL_TYPE="LC"
+    export ASSESSMENT_TOOL_TYPE="license-compliance"
     export ASSESSMENT_TOOL_VERSION=""
     export ASSESSMENT_TOOL_PLAYBOOK="besman-LC-$ASSESSMENT_TOOL_NAME-playbook-0.0.1.sh"
     
