@@ -81,7 +81,7 @@ function __besman_execute() {
     local run_flag=""
 
     # Set run_flag based on force_flag
-    if [[ "$force_flag" == "-f" ]]; then
+    if [[ "$force_flag" == "--background" || "$force_flag" == "-bg" ]]; then
         run_flag="--background"
     fi
 

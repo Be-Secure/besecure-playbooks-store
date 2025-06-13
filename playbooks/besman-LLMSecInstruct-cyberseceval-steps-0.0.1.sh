@@ -1,6 +1,7 @@
 #!/bin/bash
 
 function __besman_run_instruct_assessment() {
+    local force_flag="$1"
     __besman_echo_white "Running $ASSESSMENT_TOOL_NAME-$ASSESSMENT_TOOL_TYPE"
 
     cd "$BESMAN_TOOL_PATH/PurpleLlama" || return 1

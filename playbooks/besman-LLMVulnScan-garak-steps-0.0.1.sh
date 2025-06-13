@@ -1,6 +1,7 @@
 #!/bin/bash
 
 function __besman_run_garak_assessment_in_background() {
+    local force_flag="$1"
     __besman_echo_white "Running Garak assessment"
 
     # Ensure conda is sourced
