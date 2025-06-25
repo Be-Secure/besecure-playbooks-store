@@ -159,6 +159,17 @@ function __besman_launch() {
 
     __besman_execute "$force_flag"
     flag=$?
+    if [[ "$force_flag" != "--background" && "$force_flag" != "-bg" ]]; then
+        if [[ $flag -eq 0 ]]; then
+            __besman_prepare
+            __besman_publish
+            __besman_cleanup
+        else
+            __besman_cleanup
+            return
+        fi
+        return 0
+    fi
     return "$flag"
 }
 
