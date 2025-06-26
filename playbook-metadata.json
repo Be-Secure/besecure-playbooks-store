@@ -5,7 +5,7 @@
       "name": "LC-fossology",
       "version": "0.0.1",
       "type": "tool",
-      "intent": "fossology",
+      "intent": "LC",
       "description": "FOSSology is a open source license compliance software system and toolkit. As a toolkit you can run license, copyright and export control scans from the command line.",
       "author": {
         "name": "Be-Secure",
