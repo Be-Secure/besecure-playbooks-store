@@ -40,8 +40,8 @@ function __besman_init() {
         fi
 
     done
-
-    [[ ! -f $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME ]] && __besman_echo_red "Could not find artifact @ $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME" && flag=true
+    # This is the name of the executable.
+    [[ ! -f "$BESMAN_TOOL_PATH/cyclonedx-sbom-generator" ]] && __besman_echo_red "Could not find artifact @ $BESMAN_TOOL_PATH/$ASSESSMENT_TOOL_NAME" && flag=true
 
     if [[ $flag == true ]]; then
 
