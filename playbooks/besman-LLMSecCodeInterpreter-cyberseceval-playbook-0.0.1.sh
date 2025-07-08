@@ -107,11 +107,20 @@ function __besman_init() {
 }
 
 function __besman_execute() {
+    local force_flag="$1"
     local duration
-    __besman_echo_yellow "Launching steps file"
+    local run_flag=""
+
+    # Set run_flag based on force_flag
+    if [[ "$force_flag" == "--background" || "$force_flag" == "-bg" ]]; then
+        run_flag="--background"
+    fi
+
+    __besman_echo_yellow "Sourcing steps file and running with flag: $run_flag"
 
     SECONDS=0
-    . "$BESMAN_STEPS_FILE_PATH"
+    source "$BESMAN_STEPS_FILE_PATH"
+    __besman_run_interpreter_assessment "$run_flag"
     duration=$SECONDS
 
     export EXECUTION_DURATION=$duration
@@ -168,25 +177,30 @@ function __besman_cleanup() {
 
 # function launch
 function __besman_launch() {
+    local force_flag="$1"
     __besman_echo_yellow "Starting playbook"
     local flag=1
 
     __besman_init
     flag=$?
-    if [[ $flag == 0 ]]; then
-        __besman_execute
-        flag=$?
-    else
+    if [[ $flag -ne 0 ]]; then
         __besman_cleanup
-        return
+        return 1
     fi
-    if [[ $flag == 0 ]]; then
-        __besman_prepare
-        __besman_publish
-        __besman_cleanup
-    else
-        __besman_cleanup
-        return
+
+    __besman_execute "$force_flag"
+    flag=$?
+    if [[ "$force_flag" != "--background" && "$force_flag" != "-bg" ]]; then
+        if [[ $flag -eq 0 ]]; then
+            __besman_prepare
+            __besman_publish
+            __besman_cleanup
+        else
+            __besman_cleanup
+            return
+        fi
+        return 0
     fi
+    return "$flag"
 }
 

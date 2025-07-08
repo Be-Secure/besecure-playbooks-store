@@ -21,15 +21,14 @@ function __besman_init() {
         __besman_echo_yellow "export BESMAN_MODEL_REPO_NAMESPACE=<namespace>"
         return 1
     elif [[ "$BESMAN_ARTIFACT_PROVIDER" == "Ollama" ]]; then
-        if ! ollama ps | grep -q "$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION" 
-        then
+        if ! ollama ps | grep -q "$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION"; then
             __besman_echo_red "Model $BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION is not running"
             __besman_echo_no_colour ""
             __besman_echo_no_colour "Run the below command to start it"
             __besman_echo_no_colour ""
             __besman_echo_yellow "   ollama run $BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION"
             return 1
-        fi        
+        fi
     fi
 
     local flag=false
@@ -77,24 +76,31 @@ function __besman_init() {
 }
 
 function __besman_execute() {
+    local force_flag="$1"
     local duration
-    __besman_echo_yellow "Launching steps file"
+    local run_flag=""
+
+    # Set run_flag based on force_flag
+    if [[ "$force_flag" == "--background" || "$force_flag" == "-bg" ]]; then
+        run_flag="--background"
+    fi
+
+    __besman_echo_yellow "Sourcing steps file and running with flag: $run_flag"
 
     SECONDS=0
-    . "$BESMAN_STEPS_FILE_PATH"
+    source "$BESMAN_STEPS_FILE_PATH"
+    __besman_run_assessment_in_background "$run_flag"
     duration=$SECONDS
 
     export EXECUTION_DURATION=$duration
-    if [[ $AUTOCOMPLETE_RESULT == 1 ]]; then
 
+    if [[ $AUTOCOMPLETE_RESULT == 1 ]]; then
         export PLAYBOOK_EXECUTION_STATUS=failure
         return 1
-
     else
         export PLAYBOOK_EXECUTION_STATUS=success
         return 0
     fi
-
 }
 
 function __besman_prepare() {
@@ -141,18 +147,46 @@ function __besman_cleanup() {
 
 # function launch
 function __besman_launch() {
+    local force_flag="$1"
     __besman_echo_yellow "Starting playbook"
     local flag=1
 
     __besman_init
     flag=$?
-    if [[ $flag == 0 ]]; then
-        __besman_execute
-        flag=$?
-    else
+    if [[ $flag -ne 0 ]]; then
         __besman_cleanup
-        return
+        return 1
     fi
+
+    __besman_execute "$force_flag"
+    flag=$?
+    if [[ "$force_flag" != "--background" && "$force_flag" != "-bg" ]]; then
+        if [[ $flag -eq 0 ]]; then
+            __besman_prepare
+            __besman_publish
+            __besman_cleanup
+        else
+            __besman_cleanup
+            return
+        fi
+        return 0
+    fi
+    return "$flag"
+}
+
+# function __besman_launch() {
+#     __besman_echo_yellow "Starting playbook"
+#     local flag=1
+
+#     __besman_init
+#     flag=$?
+#     if [[ $flag == 0 ]]; then
+#         __besman_execute
+#         flag=$?
+#     else
+#         __besman_cleanup
+#         return
+#     fi
     if [[ $flag == 0 ]]; then
         __besman_prepare
         __besman_publish
@@ -161,5 +195,4 @@ function __besman_launch() {
         __besman_cleanup
         return
     fi
-}
-
+# }
