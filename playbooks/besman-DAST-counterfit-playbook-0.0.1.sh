@@ -2,15 +2,16 @@
 
 function __besman_init() {
     __besman_echo_white "initializing"
+
     export ASSESSMENT_TOOL_NAME="counterfit"
-    export ASSESSMENT_TOOL_TYPE="dast"
+    export ASSESSMENT_TOOL_TYPE="DAST"
     export ASSESSMENT_TOOL_VERSION="0.1.1"
     export ASSESSMENT_PLAYBOOK_VERSION=$(basename "$0" | cut -d "-" -f 3)
-    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_NAME-$ASSESSMENT_PLAYBOOK_VERSION-playbook.sh"
+    export ASSESSMENT_TOOL_PLAYBOOK="besman-$ASSESSMENT_TOOL_TYPE-$ASSESSMENT_TOOL_NAME-playbook-$ASSESSMENT_PLAYBOOK_VERSION.sh"
     export COUNTERFIT_TARGETS_PATH="$BESMAN_COUNTERFIT_LOCAL_PATH/counterfit/targets"
     export COUNTERFIT_RESULTS_PATH="$COUNTERFIT_TARGETS_PATH/results"
 
-    local steps_file_name="besman-$ASSESSMENT_TOOL_NAME-$ASSESSMENT_PLAYBOOK_VERSION-steps.ipynb"
+    local steps_file_name="besman-$ASSESSMENT_TOOL_TYPE-$ASSESSMENT_TOOL_NAME-steps-$ASSESSMENT_PLAYBOOK_VERSION.ipynb"
     export BESMAN_STEPS_FILE_PATH="$BESMAN_PLAYBOOK_DIR/$steps_file_name"
 
     local var_array=("BESMAN_COUNTERFIT_LOCAL_PATH" "BESMAN_COUNTERFIT_BRANCH" "BESMAN_COUNTERFIT_URL" "BESMAN_ARTIFACT_NAME" "BESMAN_ASSESSMENT_DATASTORE_DIR" "BESMAN_ARTIFACT_VERSION" "BESMAN_ARTIFACT_URL" "BESMAN_ENV_NAME" "BESMAN_LAB_TYPE" "BESMAN_LAB_NAME" "BESMAN_ASSESSMENT_DATASTORE_URL")
@@ -44,7 +45,7 @@ function __besman_init() {
         export DETAILED_REPORT_PATH="$ASSESSMENT_MODELS_PATH/$BESMAN_ARTIFACT_NAME/$ASSESSMENT_TOOL_TYPE/$BESMAN_ARTIFACT_NAME-$ASSESSMENT_TOOL_VERSION-$ASSESSMENT_TOOL_TYPE-detailed-report.json"
         export SUMMARY_REPORT_PATH="$ASSESSMENT_MODELS_PATH/$BESMAN_ARTIFACT_NAME/$ASSESSMENT_TOOL_TYPE/$BESMAN_ARTIFACT_NAME-$ASSESSMENT_TOOL_VERSION-$ASSESSMENT_TOOL_TYPE-summary-report.json"
 	export OSAR_PATH="$ASSESSMENT_MODELS_PATH/$BESMAN_ARTIFACT_NAME/$BESMAN_ARTIFACT_NAME-osar.json"
-        __besman_fetch_steps_file "$steps_file_name" || return 1
+        
 	__besman_fetch_source && return 1
         return 0
     fi
@@ -189,18 +190,7 @@ function __besman_launch() {
     fi
 }
 
-function __besman_fetch_steps_file() {
-    __besman_echo_yellow "Fetching steps file"
-    local steps_file_name=$1
-    local steps_file_url="https://raw.githubusercontent.com/$BESMAN_PLAYBOOK_REPO/$BESMAN_PLAYBOOK_REPO_BRANCH/playbooks/$steps_file_name"
-    __besman_check_url_valid "$steps_file_url" || return 1
 
-    if [[ ! -f "$BESMAN_STEPS_FILE_PATH" ]]; then
-        touch "$BESMAN_STEPS_FILE_PATH"
-        __besman_secure_curl "$steps_file_url" >>"$BESMAN_STEPS_FILE_PATH"
-        [[ "$?" != "0" ]] && echo "Failed to fetch from $steps_file_url" && return 1
-    fi
-}
 
 function __besman_fetch_source() {
     __besman_echo_yellow "Fetching model files"

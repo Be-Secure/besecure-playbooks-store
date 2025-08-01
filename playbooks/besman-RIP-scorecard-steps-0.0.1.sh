@@ -1,39 +1,36 @@
 #!/bin/bash
 
-function __besman_get_workflow_id()
-{
+function __besman_get_workflow_id() {
+    sleep 10
     local workflow_id
     workflow_id=$(curl --insecure -s -H "Authorization: token $BESMAN_GH_TOKEN" -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME/actions/workflows" | jq '.workflows[]  | select(.name == "Scorecard supply-chain security") | .id')
     echo "$workflow_id"
 }
 
-function __besman_get_workflow_runs()
-{
+function __besman_get_workflow_runs() {
     local workflow_id workflow_run_id
     workflow_id=$1
 
-    workflow_run_id=$(curl --insecure -s -H "Authorization: token  $BESMAN_GH_TOKEN"      -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME/actions/workflows/$workflow_id/runs" | jq '.workflow_runs[0].id')
+    workflow_run_id=$(curl --insecure -s -H "Authorization: token  $BESMAN_GH_TOKEN" -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME/actions/workflows/$workflow_id/runs" | jq '.workflow_runs[0].id')
 
     echo "$workflow_run_id"
 }
 
-function __besman_get_job_id()
-{
+function __besman_get_job_id() {
     local workflow_run_id job_id
     workflow_run_id=$1
 
-    job_id=$(curl --insecure -s -H "Authorization: token $BESMAN_GH_TOKEN" -H "Accept: application/vnd.github.v3+json"      "https://api.github.com/repos/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME/actions/runs/$workflow_run_id/jobs" |  jq '.jobs[0].id')
+    job_id=$(curl --insecure -s -H "Authorization: token $BESMAN_GH_TOKEN" -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME/actions/runs/$workflow_run_id/jobs" | jq '.jobs[0].id')
     echo "$job_id"
 }
 
-function __besman_rerun_job()
-{
+function __besman_rerun_job() {
     local workflow_run_id job_id workflow_id
     __besman_echo_yellow "Re-run workflow"
     workflow_id=$(__besman_get_workflow_id)
     workflow_run_id=$(__besman_get_workflow_runs "$workflow_id")
     job_id=$(__besman_get_job_id "$workflow_run_id")
-    curl --insecure -L --silent  -X POST   -H "Accept: application/vnd.github+json"   -H "Authorization: Bearer $BESMAN_GH_TOKEN"   -H "X-GitHub-Api-Version: 2022-11-28"   https://api.github.com/repos/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME/actions/jobs/$job_id/rerun
+    curl --insecure -L --silent -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $BESMAN_GH_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME/actions/jobs/$job_id/rerun
 
 }
 
@@ -44,7 +41,7 @@ function __besman_change_default_branch() {
         -H "Authorization: token $BESMAN_GH_TOKEN" \
         -H "Accept: application/vnd.github.v3+json" \
         https://api.github.com/repos/"$BESMAN_USER_NAMESPACE"/"$BESMAN_ARTIFACT_NAME" \
-        -d '{"default_branch": "'"$BESMAN_ARTIFACT_VERSION"_tavoss'"}' >> /dev/null
+        -d '{"default_branch": "'"$BESMAN_ARTIFACT_VERSION"_tavoss'"}' >>/dev/null
     # [[ "$?" != "0" ]] && __besman_echo_red "Something went wrong while changing default branch" && return 1
 }
 
@@ -119,9 +116,9 @@ jobs:
       # Upload the results as artifacts (optional). Commenting out will disable uploads of run results in SARIF
       # format to the repository Actions tab.
       - name: "Upload artifact"
-        uses: actions/upload-artifact@97a0fba1372883ab732affbe8f94b823f91727db # v3.pre.node20
+        uses: actions/upload-artifact@v4
         with:
-          name: SARIF file
+          name: sc_\${{ github.run_id }}
           path: results.sarif
           retention-days: 5
 
@@ -141,21 +138,19 @@ EOF
 
     cd "$HOME"
 
-    sleep 2
+    sleep 10
 
 }
 
-function __besman_status_url()
-{
+function __besman_status_url() {
     local url=$1
     local status
-    status=$(curl --insecure --silent -H  "Accept: application/vnd.github+json"   -H "Authorization: Bearer $BESMAN_GH_TOKEN"   -H "X-GitHub-Api-Version: 2022-11-28" "$url" | jq '.workflow_runs[0].status')
+    status=$(curl --insecure --silent -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $BESMAN_GH_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" "$url" | jq '.workflow_runs[0].status')
 
     echo "$status"
 }
 
-function __besman_get_workflow_status()
-{
+function __besman_get_workflow_status() {
     local workflow_id=$1
     local status
     local url
@@ -163,63 +158,59 @@ function __besman_get_workflow_status()
     # status=$(curl --insecure   -H "Accept: application/vnd.github+json"   -H "Authorization: Bearer $BESMAN_GH_TOKEN"   -H "X-GitHub-Api-Version: 2022-11-28"   https://api.github.com/repos/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME/actions/workflows/$workflow_id/runs | jq '.workflow_runs[0].status')
 
     start_time=$(date +%s)
-
     # Loop until a successful response is received or timeout occurs
     while true; do
         status=$(__besman_status_url "$url")
-        if echo "$status" | grep -q "completed" 
-        then
+        if echo "$status" | grep -q "completed"; then
             __besman_echo_green "Workflow done"
             break
         else
             # Check if 15 minutes have passed
             current_time=$(date +%s)
             elapsed_time=$((current_time - start_time))
-            if [ "$elapsed_time" -ge 300 ]; then
+            if [ "$elapsed_time" -ge 900 ]; then
                 __besman_echo_red "Exiting... Time limit exceeded"
                 return 1
             fi
             __besman_echo_no_colour "Waiting for workflow to complete, status: $status"
-            sleep 10 # Adjust the sleep duration as needed
+            sleep 20 # Adjust the sleep duration as needed
         fi
     done
 
 }
 
-function __besman_get_conclusion()
-{
+function __besman_get_conclusion() {
     local workflow_id=$1
     local conclusion
     local url
     url="https://api.github.com/repos/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME/actions/workflows/$workflow_id/runs"
 
-    conclusion=$(curl --insecure --silent -H "Accept: application/vnd.github+json"   -H "Authorization: Bearer $BESMAN_GH_TOKEN"   -H "X-GitHub-Api-Version: 2022-11-28" "$url" | jq '.workflow_runs[0].conclusion')
+    conclusion=$(curl --insecure --silent -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $BESMAN_GH_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" "$url" | jq '.workflow_runs[0].conclusion')
 
     echo "$conclusion"
 }
 
 function __besman_download_data() {
-    local url 
+    local url
     GLOBAL_RESPONSE_CODE=0
     url="$1"
-    
+
     GLOBAL_RESPONSE_CODE=$(curl -s --insecure -X 'GET' \
-    "$url" \
-    -H 'accept: application/json' \
-    -o "$DETAILED_REPORT_PATH" \
-    -w "%{http_code}")
-    
-   # curl -s --insecure -X 'GET' \
-   #     "$url" \
+        "$url" \
+        -H 'accept: application/json' \
+        -o "$DETAILED_REPORT_PATH" \
+        -w "%{http_code}")
+
+    # curl -s --insecure -X 'GET' \
+    #     "$url" \
     #    -H 'accept: application/json' \
-     #   -o "$DETAILED_REPORT_PATH" \
-      #  -w "%{http_code}" \
-       # -o /dev/null
+    #   -o "$DETAILED_REPORT_PATH" \
+    #  -w "%{http_code}" \
+    # -o /dev/null
 }
 
 function __besman_download_report() {
-    
-    
+
     local code_collab
     local response_code
     local start_time
@@ -228,14 +219,14 @@ function __besman_download_report() {
     local workflow_id
     local conclusion
     local url
-    
+
     if [[ "$BESMAN_CODE_COLLAB_URL" == "https://github.com" ]]; then
         code_collab="github.com"
     else
         code_collab="gitlab.com"
     fi
     # Define the url
-    
+
     url="https://api.securityscorecards.dev/projects/$code_collab/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME"
 
     workflow_id=$(__besman_get_workflow_id)
@@ -244,8 +235,7 @@ function __besman_download_report() {
     __besman_echo_yellow "Check workflow conclusion"
     conclusion=$(__besman_get_conclusion "$workflow_id")
 
-    if ! echo "$conclusion" | grep -q "success" 
-    then
+    if ! echo "$conclusion" | grep -q "success"; then
         __besman_echo_red "Workflow failed"
         return 1
     fi
@@ -274,8 +264,7 @@ function __besman_download_report() {
     done
 }
 
-function __besman_get_default_branch()
-{
+function __besman_get_default_branch() {
     local default_branch
 
     default_branch=$(curl --insecure -s -H "Authorization: token $BESMAN_GH_TOKEN" -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/$BESMAN_USER_NAMESPACE/$BESMAN_ARTIFACT_NAME" | jq -r '.default_branch')
@@ -286,28 +275,38 @@ function __besman_get_default_branch()
 function __besman_execute_steps() {
 
     local default_branch
-    default_branch=$(__besman_get_default_branch)
-    if [[ "$default_branch" != ""$BESMAN_ARTIFACT_VERSION"_tavoss" ]] 
-    then
-        __besman_echo_yellow "Changing default branch"
+
+    if [[ -n "$BESMAN_SCORECARD_ASSESSMENT_MODE" && "$BESMAN_SCORECARD_ASSESSMENT_MODE" == "github-action" ]]; then
+        __besman_echo_yellow "Running scorecard GitHub action"
+        default_branch=$(__besman_get_default_branch)
+        if [[ "$default_branch" != ""$BESMAN_ARTIFACT_VERSION"_tavoss" ]]; then
+            __besman_echo_yellow "Changing default branch"
+            cd "$BESMAN_ARTIFACT_DIR" || return 1
+
+            git checkout -b "$BESMAN_ARTIFACT_VERSION"_tavoss "$BESMAN_ARTIFACT_VERSION"
+
+            git push origin -u "$BESMAN_ARTIFACT_VERSION"_tavoss
+
+            __besman_change_default_branch || return 1
+        fi
+        __besman_write_workflow_file
+
+        __besman_download_report || return 1
+        if [[ "$?" == "0" ]]; then
+            export PLAYBOOK_EXECUTION_STATUS="success"
+        else
+            export PLAYBOOK_EXECUTION_STATUS="failure"
+        fi
+    elif [[ -z "$BESMAN_SCORECARD_ASSESSMENT_MODE" || "$BESMAN_SCORECARD_ASSESSMENT_MODE" == "cli" ]]; then
+        __besman_echo_yellow "Running scorecard CLI"
         cd "$BESMAN_ARTIFACT_DIR" || return 1
 
-        git checkout -b "$BESMAN_ARTIFACT_VERSION"_tavoss "$BESMAN_ARTIFACT_VERSION"
-
-        git push origin -u "$BESMAN_ARTIFACT_VERSION"_tavoss
-
-        __besman_change_default_branch || return 1
-    fi
-
-    __besman_write_workflow_file
-
-    __besman_download_report || return 1
-
-    if [[ "$?" == "0" ]] 
-    then
-        export PLAYBOOK_EXECUTION_STATUS="success"
-    else
-        export PLAYBOOK_EXECUTION_STATUS="failure"
+        scorecard --repo "$BESMAN_ARTIFACT_ORIGIN_URL" --format json --output "$DETAILED_REPORT_PATH"
+        if [[ "$?" == "0" ]]; then
+            export PLAYBOOK_EXECUTION_STATUS="success"
+        else
+            export PLAYBOOK_EXECUTION_STATUS="failure"
+        fi
     fi
 
 }
