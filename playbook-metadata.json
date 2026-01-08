@@ -358,5 +358,27 @@
       },
       "detailed_report_path": "STRING"
     }
+    ,
+    {
+      "name": "AgentRT-promptfoo",
+      "version": "0.0.1",
+      "type": "tool",
+      "intent": "AgentRT",
+      "description": "Performs agent red teaming of LLM-based agents using promptfoo strategies and plugins to identify security vulnerabilities.",
+      "author": {
+        "name": "Be-Secure",
+        "type": "Organization"
+      },
+      "date_of_creation": "2025-10-17T00:00:00",
+      "last_update_date": "2025-10-17T00:00:00",
+      "last_execution": {
+        "name": "Be-Secure",
+        "type": "Organization",
+        "status": "Pending",
+        "timestamp": "2025-10-17T00:00:00",
+        "environment": "promptfoo-RT-env"
+      },
+      "detailed_report_path": "STRING"
+    }
   ]
 }
