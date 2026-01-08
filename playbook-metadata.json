@@ -357,6 +357,27 @@
         "environment": "LLMSafety-assessment-env"
       },
       "detailed_report_path": "STRING"
+    },
+    {
+      "name": "MLSecEvasion-ART",
+      "version": "0.0.1",
+      "type": "tool",
+      "intent": "MLSecEvasion",
+      "description": "Performs Adversarial robustness evaluation of ML/DL model",
+      "author": {
+        "name": "Be-Secure",
+        "type": "Organization"
+      },
+      "date_of_creation": "2025-10-13T16:21:47Z",
+      "last_update_date": "2025-10-14T16:21:47Z",
+      "last_execution": {
+        "name": "Be-Secure",
+        "type": "Organization",
+        "status": "Success",
+        "timestamp": "2025-10-15T16:21:47Z",
+        "environment": "MLAssessment-RT-env"
+      },
+      "detailed_report_path": "STRING"
     }
     ,
     {
