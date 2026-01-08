@@ -15,8 +15,8 @@ source ~/.venvs/CybersecurityBenchmarks/bin/activate
 if  [[ "$BESMAN_ARTIFACT_PROVIDER" == "Ollama" ]]
 then
     python3 -m CybersecurityBenchmarks.benchmark.run \
-        --benchmark=frr \
-        --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/frr/frr.json" \
+        --benchmark=mitre-frr \
+        --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/mitre_frr/mitre_frr.json" \
         --response-path="$BESMAN_RESULTS_PATH/frr_responses.json" \
         --stat-path="$BESMAN_RESULTS_PATH/frr_stat.json" \
         --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_ARTIFACT_NAME:$BESMAN_ARTIFACT_VERSION::http://localhost:11434" \
@@ -25,8 +25,8 @@ then
 elif [[ "$BESMAN_ARTIFACT_PROVIDER" == "HuggingFace" ]] 
 then
     python3 -m CybersecurityBenchmarks.benchmark.run \
-        --benchmark=frr \
-        --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/frr/frr.json" \
+        --benchmark=mitre-frr \
+        --prompt-path="$BESMAN_CYBERSECEVAL_DATASETS/mitre_frr/mitre_frr.json" \
         --response-path="$BESMAN_RESULTS_PATH/frr_responses.json" \
         --stat-path="$BESMAN_RESULTS_PATH/frr_stat.json" \
         --llm-under-test="$BESMAN_ARTIFACT_PROVIDER::$BESMAN_MODEL_REPO_NAMESPACE/$BESMAN_ARTIFACT_NAME-$BESMAN_ARTIFACT_VERSION::random-string" \
